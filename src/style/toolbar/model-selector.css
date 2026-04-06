@@ -78,3 +78,23 @@
   color: var(--claudian-brand);
   font-weight: 500;
 }
+
+/* Model Dropdown Slash UI */
+.claudian-slash-dropdown-fixed {
+  position: fixed !important;
+  z-index: 10001 !important;
+}
+
+.claudian-model-header {
+  font-weight: 600 !important;
+  padding: 10px 12px 8px 12px !important;
+  border-bottom: 1px solid var(--background-modifier-border) !important;
+  margin-bottom: 0 !important;
+  pointer-events: none !important;
+  color: var(--text-normal) !important;
+}
+
+.claudian-slash-item .claudian-slash-name {
+  display: inline-block;
+  min-width: 20px;
+}

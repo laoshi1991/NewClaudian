@@ -117,6 +117,7 @@ export class TabManager implements TabManagerInterface {
     // Initialize UI components with shared SDK commands callback
     initializeTabUI(tab, this.plugin, {
       getSdkCommands: () => this.getSdkCommands(),
+      getSdkModels: () => this.getSdkModels(),
     });
 
     // Initialize controllers (pass mcpManager for lazy service initialization)
@@ -548,7 +549,7 @@ export class TabManager implements TabManagerInterface {
   }
 
   // ============================================
-  // SDK Commands (Shared)
+  // SDK Commands & Models (Shared)
   // ============================================
 
   /**
@@ -561,6 +562,21 @@ export class TabManager implements TabManagerInterface {
     for (const tab of this.tabs.values()) {
       if (tab.service?.isReady()) {
         return tab.service.getSupportedCommands();
+      }
+    }
+    return [];
+  }
+
+  /**
+   * Gets SDK supported models from any ready service.
+   * The model list is the same for all tabs, so we just need one ready service.
+   * @returns Array of SDK models, or empty array if no service is ready.
+   */
+  async getSdkModels(): Promise<{ value: string; label: string; description?: string }[]> {
+    // Find any tab with a ready service
+    for (const tab of this.tabs.values()) {
+      if (tab.service?.isReady()) {
+        return tab.service.getSupportedModels();
       }
     }
     return [];

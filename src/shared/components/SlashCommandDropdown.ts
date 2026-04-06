@@ -114,6 +114,13 @@ export class SlashCommandDropdown {
 
     const searchText = textBeforeCursor.substring(slashIndex + 1);
 
+    // If the command is /model, don't show the slash command dropdown,
+    // let ModelDropdown handle it.
+    if (searchText === 'model' || searchText.startsWith('model ')) {
+      this.hide();
+      return;
+    }
+
     // Hide if there's whitespace in the search text (command already selected)
     if (/\s/.test(searchText)) {
       this.hide();
@@ -280,9 +287,24 @@ export class SlashCommandDropdown {
       }
       
       // If filtering to skills only, only include commands with id starting with 'skill-' or 'sdk:'
-      // Some skills might be from SDK and have 'sdk:' prefix
-      if (this.filterToSkillsOnly && !(cmd.id.startsWith('skill-') || cmd.id.startsWith('sdk:'))) {
-        continue;
+      // Exclude specific built-in CLI commands that start with 'sdk:' but are not skills
+      if (this.filterToSkillsOnly) {
+        const isSkill = cmd.id.startsWith('skill-');
+        // 'follow-ai-builders' has id 'sdk:follow-ai-builders' but 'batch' has 'sdk:batch'
+        // Let's exclude all known core CLI commands. Based on Claude Code built-ins:
+        const coreCommands = [
+          'batch', 'bug', 'clear', 'claude-api', 'compact', 'config', 
+          'cost', 'debug', 'doctor', 'exit', 'help', 'history', 'init',
+          'login', 'logout', 'loop', 'model', 'pr', 'prompt', 'resume', 
+          'review', 'schedule', 'status', 'terminal', 'test', 'update', 'heapdump', 'insights'
+        ];
+        
+        const isCoreCommand = coreCommands.includes(nameLower);
+        const isSdkSkill = cmd.id.startsWith('sdk:') && !isCoreCommand;
+        
+        if (!isSkill && !isSdkSkill) {
+          continue;
+        }
       }
       
       seenNames.add(nameLower);

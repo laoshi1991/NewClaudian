@@ -7,6 +7,7 @@ import type { ChatMessage, ClaudeModel, Conversation, EffortLevel, PermissionMod
 import { DEFAULT_CLAUDE_MODELS, DEFAULT_EFFORT_LEVEL, DEFAULT_THINKING_BUDGET, getContextWindowSize, isAdaptiveThinkingModel } from '../../../core/types';
 import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
+import { ModelDropdown } from '../../../shared/components/ModelDropdown';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import { getEnhancedPath } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
@@ -122,6 +123,7 @@ export function createTab(options: TabCreateOptions): TabData {
       mcpServerSelector: null,
       permissionToggle: null,
       slashCommandDropdown: null,
+      modelDropdown: null,
       instructionModeManager: null,
       bangBashModeManager: null,
       contextUsageMeter: null,
@@ -421,7 +423,11 @@ function initializeInstructionAndTodo(tab: TabData, plugin: ClaudianPlugin): voi
 /**
  * Creates and wires the input toolbar for a tab.
  */
-function initializeInputToolbar(tab: TabData, plugin: ClaudianPlugin): void {
+function initializeInputToolbar(
+  tab: TabData,
+  plugin: ClaudianPlugin,
+  options: InitializeTabUIOptions = {}
+): void {
   const { dom } = tab;
 
   const inputToolbar = dom.inputWrapper.createDiv({ cls: 'claudian-input-toolbar' });
@@ -435,8 +441,10 @@ function initializeInputToolbar(tab: TabData, plugin: ClaudianPlugin): void {
       enableSonnet1M: plugin.settings.enableSonnet1M,
     }),
     getEnvironmentVariables: () => plugin.getActiveEnvironmentVariables(),
+    getSdkModels: options.getSdkModels,
     onInsertCommand: (command: string) => {
       const inputEl = dom.inputEl;
+      
       // If the command is empty, just insert /
       const insertText = command ? `/${command} ` : '/';
       
@@ -533,6 +541,7 @@ function initializeInputToolbar(tab: TabData, plugin: ClaudianPlugin): void {
 
 export interface InitializeTabUIOptions {
   getSdkCommands?: () => Promise<SlashCommand[]>;
+  getSdkModels?: () => Promise<{ value: string; label: string; description?: string }[]>;
 }
 
 /**
@@ -568,6 +577,48 @@ export function initializeTabUI(
     () => new Set((plugin.settings.hiddenSlashCommands || []).map(c => c.toLowerCase()))
   );
 
+  // Initialize model dropdown
+  tab.ui.modelDropdown = new ModelDropdown(
+    dom.inputContainerEl,
+    dom.inputEl,
+    {
+      onSelect: async (model) => {
+        plugin.settings.model = model;
+        const isDefaultModel = DEFAULT_CLAUDE_MODELS.find((m) => m.value === model);
+        if (isDefaultModel) {
+          plugin.settings.thinkingBudget = DEFAULT_THINKING_BUDGET[model];
+          if (isAdaptiveThinkingModel(model)) {
+            plugin.settings.effortLevel = DEFAULT_EFFORT_LEVEL[model] ?? 'high';
+          }
+          plugin.settings.lastClaudeModel = model;
+        } else {
+          plugin.settings.lastCustomModel = model;
+        }
+        await plugin.saveSettings();
+        tab.ui.thinkingBudgetSelector?.updateDisplay();
+        tab.ui.modelSelector?.updateDisplay();
+        tab.ui.modelSelector?.renderOptions();
+
+        // Recalculate context usage percentage for the new model's context window
+        const currentUsage = tab.state.usage;
+        if (currentUsage) {
+          const newContextWindow = getContextWindowSize(model, plugin.settings.customContextLimits);
+          const newPercentage = Math.min(100, Math.max(0, Math.round((currentUsage.contextTokens / newContextWindow) * 100)));
+          tab.state.usage = {
+            ...currentUsage,
+            model,
+            contextWindow: newContextWindow,
+            percentage: newPercentage,
+          };
+        }
+      },
+      onHide: () => {},
+      getSettings: () => plugin.settings,
+      getEnvironmentVariables: () => plugin.getActiveEnvironmentVariables(),
+      getSdkModels: options.getSdkModels,
+    }
+  );
+
   // Initialize navigation sidebar
   if (dom.messagesEl.parentElement) {
     tab.ui.navigationSidebar = new NavigationSidebar(
@@ -580,7 +631,7 @@ export function initializeTabUI(
   initializeInstructionAndTodo(tab, plugin);
 
   // Initialize input toolbar
-  initializeInputToolbar(tab, plugin);
+  initializeInputToolbar(tab, plugin, options);
 
   // Update ChatState callbacks for UI updates
   state.callbacks = {
@@ -907,6 +958,7 @@ export function initializeTabControllers(
       if (ui.bangBashModeManager?.isActive()) return true;
       if (tab.controllers.inputController?.isResumeDropdownVisible()) return true;
       if (ui.slashCommandDropdown?.isVisible()) return true;
+      if (ui.modelDropdown?.isVisible()) return true;
       if (ui.fileContextManager?.isMentionDropdownVisible()) return true;
       return false;
     },
@@ -958,6 +1010,10 @@ export function wireTabInputEvents(tab: TabData, plugin: ClaudianPlugin): void {
     }
 
     if (controllers.inputController?.handleResumeKeydown(e)) {
+      return;
+    }
+
+    if (ui.modelDropdown?.handleKeydown(e)) {
       return;
     }
 
@@ -1102,6 +1158,8 @@ export async function destroyTab(tab: TabData): Promise<void> {
   tab.ui.fileContextManager?.destroy();
   tab.ui.slashCommandDropdown?.destroy();
   tab.ui.slashCommandDropdown = null;
+  tab.ui.modelDropdown?.destroy();
+  tab.ui.modelDropdown = null;
   tab.ui.instructionModeManager?.destroy();
   tab.ui.instructionModeManager = null;
   tab.ui.bangBashModeManager?.destroy();

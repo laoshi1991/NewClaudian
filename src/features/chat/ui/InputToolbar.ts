@@ -39,6 +39,7 @@ export interface ToolbarCallbacks {
   getSettings: () => ToolbarSettings;
   getEnvironmentVariables?: () => string;
   onInsertCommand?: (command: string) => void;
+  getSdkModels?: () => Promise<{ value: string; label: string; description?: string }[]>;
 }
 
 export class SlashCommandButton {
@@ -984,9 +985,9 @@ export function createInputToolbar(
   const contextUsageMeter = new ContextUsageMeter(parentEl);
   const externalContextSelector = new ExternalContextSelector(parentEl, callbacks);
   const mcpServerSelector = new McpServerSelector(parentEl);
-  const permissionToggle = new PermissionToggle(parentEl, callbacks);
   const modelCommandBtn = new SlashCommandButton(parentEl, callbacks, '/model', 'model');
   const skillCommandBtn = new SlashCommandButton(parentEl, callbacks, '✨ 技能', ''); // Empty string to just type /
+  const permissionToggle = new PermissionToggle(parentEl, callbacks); // Moved to end
 
   return { modelSelector, thinkingBudgetSelector, contextUsageMeter, externalContextSelector, mcpServerSelector, permissionToggle, modelCommandBtn, skillCommandBtn };
 }

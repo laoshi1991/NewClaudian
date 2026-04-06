@@ -1466,6 +1466,27 @@ export class ClaudianService {
   }
 
   /**
+   * Get supported models from the persistent query.
+   * Returns an empty array if the query is not ready.
+   */
+  async getSupportedModels(): Promise<{ value: string; label: string; description?: string }[]> {
+    if (!this.persistentQuery) {
+      return [];
+    }
+
+    try {
+      const sdkModels = await this.persistentQuery.supportedModels();
+      return sdkModels.map((model: any) => ({
+        value: model.id || model.value,
+        label: model.name || model.label || model.displayName || model.id || model.value,
+        description: model.description,
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  /**
    * Set the session ID (for restoring from saved conversation).
    * Closes persistent query synchronously if session is changing, then ensures query is ready.
    *
