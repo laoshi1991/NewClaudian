@@ -435,6 +435,24 @@ function initializeInputToolbar(tab: TabData, plugin: ClaudianPlugin): void {
       enableSonnet1M: plugin.settings.enableSonnet1M,
     }),
     getEnvironmentVariables: () => plugin.getActiveEnvironmentVariables(),
+    onInsertCommand: (command: string) => {
+      const inputEl = dom.inputEl;
+      // If the command is empty, just insert /
+      const insertText = command ? `/${command} ` : '/';
+      
+      inputEl.value = insertText;
+      inputEl.selectionStart = inputEl.value.length;
+      inputEl.selectionEnd = inputEl.value.length;
+      inputEl.focus();
+      
+      if (!command) {
+        // If clicking Skill button, let the dropdown handle it but explicitly set state to only show skills
+        // We can pass a hint to the dropdown or rely on the fact that if it's empty we show all
+        inputEl.dispatchEvent(new CustomEvent('skill-dropdown-open', { bubbles: true }));
+      } else {
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    },
     onModelChange: async (model: ClaudeModel) => {
       plugin.settings.model = model;
       const isDefaultModel = DEFAULT_CLAUDE_MODELS.find((m) => m.value === model);

@@ -9,6 +9,7 @@ export {
   McpServerSelector,
   ModelSelector,
   PermissionToggle,
+  SlashCommandButton,
   ThinkingBudgetSelector,
 } from './InputToolbar';
 export { type InstructionModeCallbacks, InstructionModeManager, type InstructionModeState } from './InstructionModeManager';

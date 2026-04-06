@@ -50,6 +50,7 @@ export class SlashCommandDropdown {
   private filteredCommands: SlashCommand[] = [];
   private isFixed: boolean;
   private hiddenCommands: Set<string>;
+  private filterToSkillsOnly: boolean = false;
 
   // SDK skills cache
   private cachedSdkSkills: SlashCommand[] = [];
@@ -72,6 +73,10 @@ export class SlashCommandDropdown {
 
     this.onInput = () => this.handleInputChange();
     this.inputEl.addEventListener('input', this.onInput);
+    this.inputEl.addEventListener('skill-dropdown-open', () => {
+      this.filterToSkillsOnly = true;
+      this.handleInputChange();
+    });
   }
 
   setEnabled(enabled: boolean): void {
@@ -87,6 +92,13 @@ export class SlashCommandDropdown {
 
   handleInputChange(): void {
     if (!this.enabled) return;
+
+    // Reset filterToSkillsOnly on normal input unless it was triggered by the skill button
+    // The event listener for skill-dropdown-open sets filterToSkillsOnly = true right before calling this
+    // We want to clear it when the user manually types or deletes
+    if (this.filterToSkillsOnly && this.inputEl.value !== '/') {
+      this.filterToSkillsOnly = false;
+    }
 
     const text = this.getInputValue();
     const cursorPos = this.getCursorPosition();
@@ -149,6 +161,7 @@ export class SlashCommandDropdown {
       this.dropdownEl.removeClass('visible');
     }
     this.slashStartIndex = -1;
+    this.filterToSkillsOnly = false;
     this.callbacks.onHide();
   }
 
@@ -243,13 +256,16 @@ export class SlashCommandDropdown {
     const seenNames = new Set<string>();
     const allCommands: SlashCommand[] = [];
 
-    // Add Claudian built-in commands first (highest priority)
-    // Built-in commands are not subject to user hiding (they are essential UI actions)
-    for (const cmd of builtInCommands) {
-      const nameLower = cmd.name.toLowerCase();
-      if (!seenNames.has(nameLower)) {
-        seenNames.add(nameLower);
-        allCommands.push(cmd);
+    // If filtering to skills only, skip built-in commands
+    if (!this.filterToSkillsOnly) {
+      // Add Claudian built-in commands first (highest priority)
+      // Built-in commands are not subject to user hiding (they are essential UI actions)
+      for (const cmd of builtInCommands) {
+        const nameLower = cmd.name.toLowerCase();
+        if (!seenNames.has(nameLower)) {
+          seenNames.add(nameLower);
+          allCommands.push(cmd);
+        }
       }
     }
 
@@ -262,6 +278,13 @@ export class SlashCommandDropdown {
       ) {
         continue;
       }
+      
+      // If filtering to skills only, only include commands with id starting with 'skill-' or 'sdk:'
+      // Some skills might be from SDK and have 'sdk:' prefix
+      if (this.filterToSkillsOnly && !(cmd.id.startsWith('skill-') || cmd.id.startsWith('sdk:'))) {
+        continue;
+      }
+      
       seenNames.add(nameLower);
       allCommands.push(cmd);
     }

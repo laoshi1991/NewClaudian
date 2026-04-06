@@ -7,6 +7,7 @@ import {
   McpServerSelector,
   ModelSelector,
   PermissionToggle,
+  SlashCommandButton,
   ThinkingBudgetSelector,
 } from '@/features/chat/ui/InputToolbar';
 
@@ -42,6 +43,7 @@ function createMockCallbacks(overrides: Record<string, any> = {}) {
       enableSonnet1M: false,
     }),
     getEnvironmentVariables: jest.fn().mockReturnValue(''),
+    onInsertCommand: jest.fn(),
     ...overrides,
   };
 }
@@ -741,5 +743,7 @@ describe('createInputToolbar', () => {
     expect(toolbar.contextUsageMeter).toBeInstanceOf(ContextUsageMeter);
     expect(toolbar.mcpServerSelector).toBeInstanceOf(McpServerSelector);
     expect(toolbar.permissionToggle).toBeInstanceOf(PermissionToggle);
+    expect(toolbar.modelCommandBtn).toBeInstanceOf(SlashCommandButton);
+    expect(toolbar.skillCommandBtn).toBeInstanceOf(SlashCommandButton);
   });
 });

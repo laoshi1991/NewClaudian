@@ -38,6 +38,36 @@ export interface ToolbarCallbacks {
   onPermissionModeChange: (mode: PermissionMode) => Promise<void>;
   getSettings: () => ToolbarSettings;
   getEnvironmentVariables?: () => string;
+  onInsertCommand?: (command: string) => void;
+}
+
+export class SlashCommandButton {
+  private container: HTMLElement;
+  private buttonEl: HTMLElement | null = null;
+  private callbacks: ToolbarCallbacks;
+  private label: string;
+  private command: string;
+
+  constructor(parentEl: HTMLElement, callbacks: ToolbarCallbacks, label: string, command: string) {
+    this.callbacks = callbacks;
+    this.label = label;
+    this.command = command;
+    this.container = parentEl.createDiv({ cls: 'claudian-model-selector' }); // Reuse model selector styles for layout
+    this.render();
+  }
+
+  private render() {
+    this.buttonEl = this.container.createDiv({ cls: 'claudian-model-btn ready' });
+    const labelEl = this.buttonEl.createSpan({ cls: 'claudian-model-label' });
+    labelEl.setText(this.label);
+
+    this.buttonEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (this.callbacks.onInsertCommand) {
+        this.callbacks.onInsertCommand(this.command);
+      }
+    });
+  }
 }
 
 export class ModelSelector {
@@ -946,6 +976,8 @@ export function createInputToolbar(
   externalContextSelector: ExternalContextSelector;
   mcpServerSelector: McpServerSelector;
   permissionToggle: PermissionToggle;
+  modelCommandBtn: SlashCommandButton;
+  skillCommandBtn: SlashCommandButton;
 } {
   const modelSelector = new ModelSelector(parentEl, callbacks);
   const thinkingBudgetSelector = new ThinkingBudgetSelector(parentEl, callbacks);
@@ -953,6 +985,8 @@ export function createInputToolbar(
   const externalContextSelector = new ExternalContextSelector(parentEl, callbacks);
   const mcpServerSelector = new McpServerSelector(parentEl);
   const permissionToggle = new PermissionToggle(parentEl, callbacks);
+  const modelCommandBtn = new SlashCommandButton(parentEl, callbacks, '/model', 'model');
+  const skillCommandBtn = new SlashCommandButton(parentEl, callbacks, '✨ 技能', ''); // Empty string to just type /
 
-  return { modelSelector, thinkingBudgetSelector, contextUsageMeter, externalContextSelector, mcpServerSelector, permissionToggle };
+  return { modelSelector, thinkingBudgetSelector, contextUsageMeter, externalContextSelector, mcpServerSelector, permissionToggle, modelCommandBtn, skillCommandBtn };
 }
