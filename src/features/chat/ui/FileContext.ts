@@ -106,6 +106,66 @@ export class FileContextManager {
     this.renameEventRef = this.app.vault.on('rename', (file, oldPath) => {
       if (file instanceof TFile) this.handleFileRenamed(oldPath, file.path);
     });
+
+    this.setupDragAndDrop();
+  }
+
+  private setupDragAndDrop() {
+    const dropZone = typeof this.inputEl.closest === 'function' 
+      ? this.inputEl.closest('.claudian-input-wrapper') || this.inputEl 
+      : this.inputEl;
+    
+    // Only handle 'drop' because 'dragenter', 'dragover' and 'dragleave' 
+    // are already correctly preventing default natively for valid drops, 
+    // or handled by ImageContextManager for files.
+    dropZone.addEventListener('dragover', (e) => {
+      // Allow dropping internal Obsidian items
+      if (e instanceof DragEvent && e.dataTransfer?.types.includes('application/x-obsidian-dnd')) {
+        e.preventDefault();
+      }
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      if (!(e instanceof DragEvent) || !e.dataTransfer) return;
+
+      if (e.dataTransfer.types.includes('application/x-obsidian-dnd')) {
+        const data = e.dataTransfer.getData('application/x-obsidian-dnd');
+        try {
+          const parsed = JSON.parse(data);
+          let filesToAttach: string[] = [];
+          
+          if (parsed.type === 'file' && typeof parsed.file === 'string') {
+            filesToAttach.push(parsed.file);
+          } else if (parsed.type === 'files' && Array.isArray(parsed.files)) {
+            filesToAttach.push(...parsed.files);
+          }
+
+          if (filesToAttach.length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            let attachedCount = 0;
+            
+            for (const rawPath of filesToAttach) {
+              const normalized = this.normalizePathForVault(rawPath);
+              if (normalized) {
+                const file = this.app.vault.getAbstractFileByPath(normalized);
+                if (file instanceof TFile && !this.hasExcludedTag(file)) {
+                  this.state.attachFile(normalized);
+                  attachedCount++;
+                }
+              }
+            }
+            
+            if (attachedCount > 0) {
+              this.refreshCurrentNoteChip();
+              this.callbacks.onChipsChanged?.();
+            }
+          }
+        } catch (err) {
+          // Ignore JSON parse errors for dnd data
+        }
+      }
+    });
   }
 
   /** Returns the current note path (shown as chip). */

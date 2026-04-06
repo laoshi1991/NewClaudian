@@ -499,6 +499,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
+        dataTransfer: { types: ['Files'] },
       };
 
       manager['handleDragOver'](event as any);
@@ -514,6 +515,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
+        dataTransfer: { types: ['Files'] },
         clientX: -1, // Outside bounds
         clientY: -1,
       };
@@ -532,7 +534,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } } },
+        dataTransfer: { types: ['Files'], files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } } },
       };
 
       await manager['handleDrop'](event as any);
@@ -552,7 +554,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: { length: 1, 0: mockFile } },
+        dataTransfer: { types: ['Files'], files: { length: 1, 0: mockFile } },
       };
 
       await manager['handleDrop'](event as any);
@@ -565,7 +567,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { files: undefined },
+        dataTransfer: { types: ['Files'], files: undefined },
       };
 
       await manager['handleDrop'](event as any);

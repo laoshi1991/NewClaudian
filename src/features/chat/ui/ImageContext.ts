@@ -118,11 +118,15 @@ export class ImageContextManager {
   }
 
   private handleDragOver(e: DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e.dataTransfer?.types.includes('Files')) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
 
   private handleDragLeave(e: DragEvent) {
+    if (!e.dataTransfer?.types.includes('Files')) return;
+    
     e.preventDefault();
     e.stopPropagation();
 
@@ -144,6 +148,8 @@ export class ImageContextManager {
   }
 
   private async handleDrop(e: DragEvent) {
+    if (!e.dataTransfer?.types.includes('Files')) return;
+
     e.preventDefault();
     e.stopPropagation();
     this.dropOverlay?.removeClass('visible');
