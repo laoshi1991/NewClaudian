@@ -176,14 +176,23 @@ export class FileContextManager {
     let dragCounter = 0;
 
     const isValidDrag = (e: DragEvent): boolean => {
-      if (!e.dataTransfer || !e.dataTransfer.types) return false;
-      // Convert DOMStringList to array to safely use .includes()
-      const types = Array.from(e.dataTransfer.types);
-      return types.includes('application/x-obsidian-dnd') ||
-             types.includes('text/plain') ||
-             types.includes('Files') ||
-             types.includes('application/vnd.obsidian.drag.folder') ||
-             types.includes('text/uri-list');
+      const types = e.dataTransfer?.types;
+      if (!types) return false;
+      
+      // High-performance check avoiding Array.from() and object creation during frequent events
+      for (let i = 0; i < types.length; i++) {
+        const type = types[i];
+        if (
+          type === 'application/x-obsidian-dnd' ||
+          type === 'text/plain' ||
+          type === 'Files' ||
+          type === 'application/vnd.obsidian.drag.folder' ||
+          type === 'text/uri-list'
+        ) {
+          return true;
+        }
+      }
+      return false;
     };
 
     const handleDragEnter = (e: Event) => {

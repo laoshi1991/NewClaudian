@@ -114,15 +114,20 @@
   background: rgba(var(--claudian-brand-rgb), 0.08);
   border: 2px dashed var(--claudian-brand);
   border-radius: 6px;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
   pointer-events: none; /* Make sure overlay doesn't block drag events */
+  will-change: opacity, visibility;
+  transition: opacity 0.1s ease-in-out, visibility 0.1s ease-in-out;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .claudian-drop-overlay.visible {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
 }
 
 .claudian-drop-content {

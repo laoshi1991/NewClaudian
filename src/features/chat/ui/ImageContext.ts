@@ -109,8 +109,15 @@ export class ImageContextManager {
     dropZone.addEventListener('drop', (e) => this.handleDrop(e as DragEvent));
   }
 
+  private hasFiles(types: DataTransferItemList | readonly string[] | DOMStringList): boolean {
+    for (let i = 0; i < types.length; i++) {
+      if (types[i] === 'Files') return true;
+    }
+    return false;
+  }
+
   private handleDragEnter(e: DragEvent) {
-    if (!e.dataTransfer || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
+    if (!e.dataTransfer || !e.dataTransfer.types || !this.hasFiles(e.dataTransfer.types)) return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -143,8 +150,8 @@ export class ImageContextManager {
     }
   }
 
-  private async handleDrop(e: DragEvent) {
-    if (!e.dataTransfer || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
+  private async handleDrop(e: DragEvent): Promise<void> {
+    if (!e.dataTransfer || !e.dataTransfer.types || !this.hasFiles(e.dataTransfer.types)) return;
 
     e.preventDefault();
     e.stopPropagation();
