@@ -50,6 +50,7 @@ export interface ChatMessage {
   contentBlocks?: ContentBlock[];
   currentNote?: string;
   images?: ImageAttachment[];
+  attachedFiles?: string[];
   /** True if this message represents a user interrupt (from SDK storage). */
   isInterrupt?: boolean;
   /** True if this message is rebuilt context sent to SDK on session reset (should be hidden). */

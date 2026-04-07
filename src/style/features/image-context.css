@@ -144,8 +144,9 @@
 
 /* Images in Messages (displayed above user bubble) */
 
-/* Images container - right-aligned above user message */
-.claudian-message-images {
+/* Images and Files container - right-aligned above user message */
+.claudian-message-images,
+.claudian-message-attached-files {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;

@@ -280,6 +280,7 @@ export class InputController {
       timestamp: Date.now(),
       currentNote: currentNoteForMessage,
       images: imagesForMessage,
+      attachedFiles: attachedFiles.length > 0 ? attachedFiles : undefined,
     };
     state.addMessage(userMsg);
     renderer.addMessage(userMsg);

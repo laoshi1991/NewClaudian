@@ -193,6 +193,10 @@
   opacity: 1;
 }
 
+.claudian-file-chip.claudian-file-chip-readonly:hover .claudian-file-chip-icon {
+  opacity: 1;
+}
+
 .claudian-file-chip-name {
   overflow: hidden;
   text-overflow: ellipsis;

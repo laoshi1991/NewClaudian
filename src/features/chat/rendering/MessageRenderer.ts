@@ -1,5 +1,5 @@
 import type { App, Component } from 'obsidian';
-import { MarkdownRenderer, Notice } from 'obsidian';
+import { MarkdownRenderer, Notice, setIcon } from 'obsidian';
 
 import { isSubagentToolName, isWriteEditTool, TOOL_AGENT_OUTPUT } from '../../../core/tools/toolNames';
 import type { ChatMessage, ImageAttachment, SubagentInfo, ToolCallInfo } from '../../../core/types';
@@ -64,6 +64,11 @@ export class MessageRenderer {
    * Returns the message element for content updates.
    */
   addMessage(msg: ChatMessage): HTMLElement {
+    // Render attached files above message bubble for user messages
+    if (msg.role === 'user' && msg.attachedFiles && msg.attachedFiles.length > 0) {
+      this.renderMessageAttachedFiles(this.messagesEl, msg.attachedFiles);
+    }
+
     // Render images above message bubble for user messages
     if (msg.role === 'user' && msg.images && msg.images.length > 0) {
       this.renderMessageImages(this.messagesEl, msg.images);
@@ -145,6 +150,11 @@ export class MessageRenderer {
     // These are internal context for the AI, not actual user messages to display
     if (msg.isRebuiltContext) {
       return;
+    }
+
+    // Render attached files above bubble for user messages
+    if (msg.role === 'user' && msg.attachedFiles && msg.attachedFiles.length > 0) {
+      this.renderMessageAttachedFiles(this.messagesEl, msg.attachedFiles);
     }
 
     // Render images above bubble for user messages
@@ -389,8 +399,36 @@ export class MessageRenderer {
   }
 
   // ============================================
-  // Image Rendering
+  // Attachments Rendering (Files/Images)
   // ============================================
+
+  /**
+   * Renders file attachments above a message.
+   */
+  renderMessageAttachedFiles(containerEl: HTMLElement, files: string[]): void {
+    const filesEl = containerEl.createDiv({ cls: 'claudian-message-attached-files' });
+
+    for (const filePath of files) {
+      const chipEl = filesEl.createDiv({ cls: 'claudian-file-chip claudian-file-chip-readonly' });
+
+      const iconWrapperEl = chipEl.createDiv({ cls: 'claudian-file-chip-icon-wrapper' });
+      const iconEl = iconWrapperEl.createSpan({ cls: 'claudian-file-chip-icon' });
+      setIcon(iconEl, 'file-text');
+
+      const normalizedPath = filePath.replace(/\\/g, '/');
+      const filename = normalizedPath.split('/').pop() || filePath;
+      const nameEl = chipEl.createSpan({ cls: 'claudian-file-chip-name' });
+      nameEl.setText(filename);
+      nameEl.setAttribute('title', filePath);
+
+      chipEl.addEventListener('click', () => {
+        const fileManager = (this.plugin as any).fileManager;
+        if (fileManager) {
+          fileManager.openFile(filePath);
+        }
+      });
+    }
+  }
 
   /**
    * Renders image attachments above a message.
