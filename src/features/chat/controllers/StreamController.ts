@@ -436,9 +436,9 @@ export class StreamController {
     if (msg && state.currentTextContent) {
       msg.contentBlocks = msg.contentBlocks || [];
       msg.contentBlocks.push({ type: 'text', content: state.currentTextContent });
-      // Copy button added here (not during streaming) to match history-loaded messages
+      // Action buttons added here (not during streaming) to match history-loaded messages
       if (state.currentTextEl) {
-        renderer.addTextCopyButton(state.currentTextEl, state.currentTextContent);
+        renderer.addTextActionButtons(state.currentTextEl, state.currentTextContent);
       }
     }
     state.currentTextEl = null;

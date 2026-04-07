@@ -153,7 +153,7 @@ export class FileContextManager {
         if (data) {
           try {
             const parsed = JSON.parse(data);
-            let filesToAttach: string[] = [];
+            const filesToAttach: string[] = [];
             
             const items = Array.isArray(parsed) ? parsed : [parsed];
             for (const item of items) {

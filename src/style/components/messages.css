@@ -91,38 +91,51 @@
   margin: 0;
 }
 
-.claudian-text-copy-btn {
+.claudian-text-actions {
   position: absolute;
   bottom: 0;
   inset-inline-end: 0;
-  border: none;
-  color: var(--text-faint);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s ease, color 0.15s ease;
-  z-index: 2;
   display: flex;
   align-items: center;
   gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 2;
 }
 
-.claudian-text-copy-btn svg {
+.claudian-text-block:hover .claudian-text-actions {
+  opacity: 1;
+}
+
+.claudian-text-action-btn {
+  border: none;
+  background: none;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.claudian-text-action-btn svg {
   width: 16px;
   height: 16px;
 }
 
-.claudian-text-block:hover .claudian-text-copy-btn {
-  opacity: 1;
-}
-
-.claudian-text-copy-btn:hover {
+.claudian-text-action-btn:hover {
   color: var(--text-normal);
+  background-color: var(--background-modifier-hover);
 }
 
-.claudian-text-copy-btn.copied {
+.claudian-text-action-btn.action-success {
   color: var(--text-accent);
   font-size: 11px;
   font-family: var(--font-monospace);
+  background: none;
+  padding: 4px 8px;
 }
 
 .claudian-text-block+.claudian-tool-call {

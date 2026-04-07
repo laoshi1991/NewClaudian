@@ -238,7 +238,7 @@ export class MessageRenderer {
           }
           const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
           void this.renderContent(textEl, block.content);
-          this.addTextCopyButton(textEl, block.content);
+          this.addTextActionButtons(textEl, block.content);
         } else if (block.type === 'tool_use') {
           const toolCall = msg.toolCalls?.find(tc => tc.id === block.toolId);
           if (toolCall) {
@@ -272,7 +272,7 @@ export class MessageRenderer {
       if (msg.content) {
         const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
         void this.renderContent(textEl, msg.content);
-        this.addTextCopyButton(textEl, msg.content);
+        this.addTextActionButtons(textEl, msg.content);
       }
       if (msg.toolCalls) {
         for (const toolCall of msg.toolCalls) {
@@ -568,23 +568,75 @@ export class MessageRenderer {
   }
 
   // ============================================
-  // Copy Button
+  // Action Buttons (Save, Copy)
   // ============================================
 
   /** Clipboard icon SVG for copy button. */
   private static readonly COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+  
+  /** Save icon SVG for save to note button. */
+  private static readonly SAVE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
 
   /**
-   * Adds a copy button to a text block.
-   * Button shows clipboard icon on hover, changes to "copied!" on click.
+   * Adds action buttons (Save to Note, Copy) to a text block.
+   * Buttons show icons on hover, change to feedback text on click.
    * @param textEl The rendered text element
-   * @param markdown The original markdown content to copy
+   * @param markdown The original markdown content to copy/save
    */
-  addTextCopyButton(textEl: HTMLElement, markdown: string): void {
-    const copyBtn = textEl.createSpan({ cls: 'claudian-text-copy-btn' });
-    copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+  addTextActionButtons(textEl: HTMLElement, markdown: string): void {
+    const actionsContainer = textEl.createDiv({ cls: 'claudian-text-actions' });
 
-    let feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
+    // Save Button
+    const saveBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-save-btn' });
+    saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
+    saveBtn.setAttribute('aria-label', 'Save to Note');
+
+    let saveFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    saveBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+
+      try {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const MM = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        const formattedTime = `${yyyy}${MM}${dd}-${hh}${mm}${ss}`;
+        const defaultFilename = `response-${formattedTime}.md`;
+        
+        // Create the file in the root of the vault (or a default folder if specified)
+        const file = await this.app.vault.create(defaultFilename, markdown);
+        
+        // Open the file in a new leaf
+        const leaf = this.app.workspace.getLeaf(true);
+        await leaf.openFile(file);
+      } catch (err) {
+        new Notice(`Failed to save note: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        return;
+      }
+
+      if (saveFeedbackTimeout) clearTimeout(saveFeedbackTimeout);
+
+      saveBtn.innerHTML = '';
+      saveBtn.setText('saved!');
+      saveBtn.classList.add('action-success');
+
+      saveFeedbackTimeout = setTimeout(() => {
+        saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
+        saveBtn.classList.remove('action-success');
+        saveFeedbackTimeout = null;
+      }, 1500);
+    });
+
+    // Copy Button
+    const copyBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-copy-btn' });
+    copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+    copyBtn.setAttribute('aria-label', 'Copy message');
+
+    let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
     copyBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -592,24 +644,19 @@ export class MessageRenderer {
       try {
         await navigator.clipboard.writeText(markdown);
       } catch {
-        // Clipboard API may fail in non-secure contexts
         return;
       }
 
-      // Clear any pending timeout from rapid clicks
-      if (feedbackTimeout) {
-        clearTimeout(feedbackTimeout);
-      }
+      if (copyFeedbackTimeout) clearTimeout(copyFeedbackTimeout);
 
-      // Show "copied!" feedback
       copyBtn.innerHTML = '';
       copyBtn.setText('copied!');
-      copyBtn.classList.add('copied');
+      copyBtn.classList.add('action-success');
 
-      feedbackTimeout = setTimeout(() => {
+      copyFeedbackTimeout = setTimeout(() => {
         copyBtn.innerHTML = MessageRenderer.COPY_ICON;
-        copyBtn.classList.remove('copied');
-        feedbackTimeout = null;
+        copyBtn.classList.remove('action-success');
+        copyFeedbackTimeout = null;
       }, 1500);
     });
   }
