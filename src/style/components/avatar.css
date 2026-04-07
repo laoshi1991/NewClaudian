@@ -27,14 +27,14 @@
   margin-top: 12px;
 }
 
-/* Hide the "No file chosen" text when an avatar is present */
-.claudian-avatar-input-container.has-avatar input[type="file"] {
+/* Hide the "No file chosen" text unconditionally */
+.claudian-avatar-input-container input[type="file"] {
   width: 90px; /* Constrain width to only show the button */
   color: transparent;
 }
 
-.claudian-avatar-input-container.has-avatar input[type="file"]::file-selector-button,
-.claudian-avatar-input-container.has-avatar input[type="file"]::-webkit-file-upload-button {
+.claudian-avatar-input-container input[type="file"]::file-selector-button,
+.claudian-avatar-input-container input[type="file"]::-webkit-file-upload-button {
   color: var(--text-normal);
   font-size: var(--font-text-size, 14px); /* Restore button text size */
 }

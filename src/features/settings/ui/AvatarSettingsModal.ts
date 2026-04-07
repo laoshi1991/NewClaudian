@@ -104,18 +104,13 @@ export class AvatarSettingsModal extends Modal {
     }
 
     const inputContainer = setting.controlEl.createDiv({ cls: 'claudian-avatar-input-container' });
-    if (currentAvatar) {
-      inputContainer.addClass('has-avatar');
-    }
 
     const fileInput = inputContainer.createEl('input', {
       type: 'file',
       attr: { accept: ALLOWED_TYPES.join(',') }
     });
 
-    if (currentAvatar) {
-      fileInput.title = ' ';
-    }
+    fileInput.title = ' ';
 
     const clearBtn = inputContainer.createEl('button', {
       text: 'Clear',
@@ -132,8 +127,6 @@ export class AvatarSettingsModal extends Modal {
       previewEl.style.display = 'none';
       clearBtn.style.display = 'none';
       fileInput.value = '';
-      fileInput.title = '';
-      inputContainer.removeClass('has-avatar');
     });
 
     fileInput.addEventListener('change', async (e) => {
@@ -164,8 +157,6 @@ export class AvatarSettingsModal extends Modal {
             previewEl.src = croppedBase64;
             previewEl.style.display = 'block';
             clearBtn.style.display = 'inline-block';
-            inputContainer.addClass('has-avatar');
-            fileInput.title = ' ';
             new Notice(`${name} uploaded and cropped successfully!`);
           }).open();
         }
