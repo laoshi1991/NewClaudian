@@ -1,8 +1,8 @@
-# Claudian
+# NewClaudian
 
-![GitHub stars](https://img.shields.io/github/stars/YishenTu/claudian?style=social)
-![GitHub release](https://img.shields.io/github/v/release/YishenTu/claudian)
-![License](https://img.shields.io/github/license/YishenTu/claudian)
+![GitHub stars](https://img.shields.io/github/stars/laoshi1991/NewClaudian?style=social)
+![GitHub release](https://img.shields.io/github/v/release/laoshi1991/NewClaudian)
+![License](https://img.shields.io/github/license/laoshi1991/NewClaudian)
 
 ![Preview](Preview.png)
 
@@ -16,12 +16,12 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
 - **Inline Edit**: Edit selected text or insert content at cursor position directly in notes with word-level diff preview and read-only tool access for context.
 - **Instruction Mode (`#`)**: Add refined custom instructions to your system prompt directly from the chat input, with review/edit in a modal.
 - **Slash Commands**: Create reusable prompt templates triggered by `/command`, with argument placeholders, `@file` references, and optional inline bash substitutions.
-- **Skills**: Extend Claudian with reusable capability modules that are automatically invoked based on context, compatible with Claude Code's skill format.
+- **Skills**: Extend NewClaudian with reusable capability modules that are automatically invoked based on context, compatible with Claude Code's skill format.
 - **Custom Agents**: Define custom subagents that Claude can invoke, with support for tool restrictions and model overrides.
 - **Claude Code Plugins**: Enable Claude Code plugins installed via the CLI, with automatic discovery from `~/.claude/plugins` and per-vault configuration. Plugin skills, agents, and slash commands integrate seamlessly.
 - **MCP Support**: Connect external tools and data sources via Model Context Protocol servers (stdio, SSE, HTTP) with context-saving mode and `@`-mention activation.
 - **Advanced Model Control**: Select between Haiku, Sonnet, and Opus, configure custom models via environment variables, fine-tune thinking budget, and enable Opus and Sonnet with 1M context window (requires Max subscription or extra usage).
-- **Plan Mode**: Toggle plan mode via Shift+Tab in the chat input. Claudian explores and designs before implementing, presenting a plan for approval with options to approve in a new session, continue in the current session, or provide feedback.
+- **Plan Mode**: Toggle plan mode via Shift+Tab in the chat input. NewClaudian explores and designs before implementing, presenting a plan for approval with options to approve in a new session, continue in the current session, or provide feedback.
 - **Security**: Permission modes (YOLO/Safe/Plan), safety blocklist, and vault confinement with symlink-safe checks.
 - **Claude in Chrome**: Allow Claude to interact with Chrome through the `claude-in-chrome` extension.
 
@@ -36,14 +36,14 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
 
 ### From GitHub Release (recommended)
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/YishenTu/claudian/releases/latest)
-2. Create a folder called `claudian` in your vault's plugins folder:
+1. Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/laoshi1991/NewClaudian/releases/latest)
+2. Create a folder called `NewClaudian` in your vault's plugins folder:
    ```
-   /path/to/vault/.obsidian/plugins/claudian/
+   /path/to/vault/.obsidian/plugins/NewClaudian/
    ```
-3. Copy the downloaded files into the `claudian` folder
+3. Copy the downloaded files into the `NewClaudian` folder
 4. Enable the plugin in Obsidian:
-   - Settings → Community plugins → Enable "Claudian"
+   - Settings → Community plugins → Enable "NewClaudian"
 
 ### Using BRAT
 
@@ -52,9 +52,9 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
 1. Install the BRAT plugin from Obsidian Community Plugins
 2. Enable BRAT in Settings → Community plugins
 3. Open BRAT settings and click "Add Beta plugin"
-4. Enter the repository URL: `https://github.com/YishenTu/claudian`
-5. Click "Add Plugin" and BRAT will install Claudian automatically
-6. Enable Claudian in Settings → Community plugins
+4. Enter the repository URL: `https://github.com/laoshi1991/NewClaudian`
+5. Click "Add Plugin" and BRAT will install NewClaudian automatically
+6. Enable NewClaudian in Settings → Community plugins
 
 > **Tip**: BRAT will automatically check for updates and notify you when a new version is available.
 
@@ -63,8 +63,8 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
 1. Clone this repository into your vault's plugins folder:
    ```bash
    cd /path/to/vault/.obsidian/plugins
-   git clone https://github.com/YishenTu/claudian.git
-   cd claudian
+   git clone https://github.com/laoshi1991/NewClaudian.git
+   cd NewClaudian
    ```
 
 2. Install dependencies and build:
@@ -74,7 +74,7 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
    ```
 
 3. Enable the plugin in Obsidian:
-   - Settings → Community plugins → Enable "Claudian"
+   - Settings → Community plugins → Enable "NewClaudian"
 
 ### Development
 
@@ -114,7 +114,7 @@ Use it like Claude Code—read, write, edit, search files in your vault.
 - **Instruction Mode**: Type `#` to add refined instructions to system prompt
 - **Slash Commands**: Type `/` for custom prompt templates or skills
 - **Skills**: Add `skill/SKILL.md` files to `~/.claude/skills/` or `{vault}/.claude/skills/`, recommended to use Claude Code to manage skills
-- **Custom Agents**: Add `agent.md` files to `~/.claude/agents/` (global) or `{vault}/.claude/agents/` (vault-specific); select via `@Agents/` in chat, or prompt Claudian to invoke agents
+- **Custom Agents**: Add `agent.md` files to `~/.claude/agents/` (global) or `{vault}/.claude/agents/` (vault-specific); select via `@Agents/` in chat, or prompt NewClaudian to invoke agents
 - **Claude Code Plugins**: Enable plugins via Settings → Claude Code Plugins, recommended to use Claude Code to manage plugins
 - **MCP**: Add external tools via Settings → MCP Servers; use `@mcp-server` in chat to activate
 
@@ -209,7 +209,7 @@ If different, GUI apps like Obsidian may not find Node.js.
 1. Install native binary (recommended)
 2. Add Node.js path to Settings → Environment: `PATH=/path/to/node/bin`
 
-**Still having issues?** [Open a GitHub issue](https://github.com/YishenTu/claudian/issues) with your platform, CLI path, and error message.
+**Still having issues?** [Open a GitHub issue](https://github.com/laoshi1991/NewClaudian/issues) with your platform, CLI path, and error message.
 
 ## Architecture
 
@@ -217,7 +217,7 @@ If different, GUI apps like Obsidian may not find Node.js.
 src/
 ├── main.ts                      # Plugin entry point
 ├── core/                        # Core infrastructure
-│   ├── agent/                   # Claude Agent SDK wrapper (ClaudianService)
+│   ├── agent/                   # Claude Agent SDK wrapper (NewClaudianService)
 │   ├── agents/                  # Custom agent management (AgentManager)
 │   ├── commands/                # Slash command management (SlashCommandManager)
 │   ├── hooks/                   # PreToolUse/PostToolUse hooks
@@ -265,11 +265,11 @@ Licensed under the [MIT License](LICENSE).
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=YishenTu%2Fclaudian&type=date&legend=top-left">
+<a href="https://www.star-history.com/?repos=laoshi1991%2FNewClaudian&type=date&legend=top-left">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=YishenTu/claudian&type=date&legend=top-left&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=YishenTu/claudian&type=date&legend=top-left" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=YishenTu/claudian&type=date&legend=top-left" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=laoshi1991/NewClaudian&type=date&legend=top-left&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=laoshi1991/NewClaudian&type=date&legend=top-left" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=laoshi1991/NewClaudian&type=date&legend=top-left" />
   </picture>
 </a>
 
