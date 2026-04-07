@@ -29,8 +29,8 @@ export class AvatarSettingsModal extends Modal {
     // User Avatar Setting
     this.createAvatarUploadSetting(
       contentEl,
-      'User Avatar',
-      'Upload an image to display next to your messages (max 5MB). Will be cropped to 1:1 ratio.',
+      '我的头像',
+      '上传图片（最大5MB），将自动裁剪为 1:1 正方形。',
       this.tempUserAvatar,
       (base64) => { this.tempUserAvatar = base64; }
     );
@@ -38,8 +38,8 @@ export class AvatarSettingsModal extends Modal {
     // AI Avatar Setting
     this.createAvatarUploadSetting(
       contentEl,
-      'AI Avatar',
-      'Upload an image to display next to the AI messages (max 5MB). Will be cropped to 1:1 ratio.',
+      'AI头像',
+      '上传图片（最大5MB），将自动裁剪为 1:1 正方形。',
       this.tempAIAvatar,
       (base64) => { this.tempAIAvatar = base64; }
     );
@@ -104,6 +104,10 @@ export class AvatarSettingsModal extends Modal {
     }
 
     const inputContainer = setting.controlEl.createDiv({ cls: 'claudian-avatar-input-container' });
+    if (currentAvatar) {
+      inputContainer.addClass('has-avatar');
+    }
+
     const fileInput = inputContainer.createEl('input', {
       type: 'file',
       attr: { accept: ALLOWED_TYPES.join(',') }
@@ -124,6 +128,7 @@ export class AvatarSettingsModal extends Modal {
       previewEl.style.display = 'none';
       clearBtn.style.display = 'none';
       fileInput.value = '';
+      inputContainer.removeClass('has-avatar');
     });
 
     fileInput.addEventListener('change', async (e) => {
@@ -154,6 +159,7 @@ export class AvatarSettingsModal extends Modal {
             previewEl.src = croppedBase64;
             previewEl.style.display = 'block';
             clearBtn.style.display = 'inline-block';
+            inputContainer.addClass('has-avatar');
             new Notice(`${name} uploaded and cropped successfully!`);
           }).open();
         }

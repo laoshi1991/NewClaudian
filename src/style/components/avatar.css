@@ -27,6 +27,17 @@
   margin-top: 12px;
 }
 
+/* Hide the "No file chosen" text when an avatar is present */
+.claudian-avatar-input-container.has-avatar input[type="file"] {
+  color: transparent;
+  font-size: 0;
+}
+
+.claudian-avatar-input-container.has-avatar input[type="file"]::-webkit-file-upload-button {
+  color: var(--text-normal);
+  font-size: var(--font-text-size, 14px); /* Restore button text size */
+}
+
 .claudian-avatar-clear-btn {
   background-color: transparent;
   color: var(--text-error);
