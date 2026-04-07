@@ -77,29 +77,39 @@ export class ImageContextManager {
     const inputWrapper = this.containerEl.querySelector('.claudian-input-wrapper') as HTMLElement;
     if (!inputWrapper) return;
 
-    this.dropOverlay = inputWrapper.createDiv({ cls: 'claudian-drop-overlay' });
-    const dropContent = this.dropOverlay.createDiv({ cls: 'claudian-drop-content' });
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('viewBox', '0 0 24 24');
-    svg.setAttribute('width', '32');
-    svg.setAttribute('height', '32');
-    svg.setAttribute('fill', 'none');
-    svg.setAttribute('stroke', 'currentColor');
-    svg.setAttribute('stroke-width', '2');
-    const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    pathEl.setAttribute('d', 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4');
-    const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    polyline.setAttribute('points', '17 8 12 3 7 8');
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', '12');
-    line.setAttribute('y1', '3');
-    line.setAttribute('x2', '12');
-    line.setAttribute('y2', '15');
-    svg.appendChild(pathEl);
-      svg.appendChild(polyline);
+    let dropOverlay = inputWrapper.querySelector('.claudian-drop-overlay') as HTMLElement | null;
+    
+    if (!dropOverlay) {
+      dropOverlay = inputWrapper.createDiv({ cls: 'claudian-drop-overlay' });
+      const dropContent = dropOverlay.createDiv({ cls: 'claudian-drop-content' });
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('width', '32');
+      svg.setAttribute('height', '32');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathEl.setAttribute('d', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z');
+      const polyline1 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      polyline1.setAttribute('points', '14 2 14 8 20 8');
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', '12');
+      line.setAttribute('y1', '18');
+      line.setAttribute('x2', '12');
+      line.setAttribute('y2', '12');
+      const polyline2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      polyline2.setAttribute('points', '9 15 12 18 15 15');
+      
+      svg.appendChild(pathEl);
+      svg.appendChild(polyline1);
       svg.appendChild(line);
+      svg.appendChild(polyline2);
       dropContent.appendChild(svg);
-      dropContent.createSpan({ text: 'Drop file/image here' });
+      dropContent.createSpan({ text: '将文件或文件夹拖放到此处以添加到您的消息中' });
+    }
+    
+    this.dropOverlay = dropOverlay;
 
     const dropZone = inputWrapper;
 
