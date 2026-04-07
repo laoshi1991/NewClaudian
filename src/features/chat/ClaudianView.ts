@@ -7,6 +7,8 @@ import { LOGO_SVG } from './constants';
 import { TabBar, TabManager, updatePlanModeUI } from './tabs';
 import type { TabData, TabId } from './tabs/types';
 
+import { AvatarSettingsModal } from '../settings/ui/AvatarSettingsModal';
+
 export class ClaudianView extends ItemView {
   private plugin: ClaudianPlugin;
 
@@ -282,6 +284,14 @@ export class ClaudianView extends ItemView {
     historyBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggleHistoryDropdown();
+    });
+
+    // Avatar Settings button (gear icon)
+    const settingsBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn' });
+    setIcon(settingsBtn, 'settings');
+    settingsBtn.setAttribute('aria-label', 'Avatar Settings');
+    settingsBtn.addEventListener('click', () => {
+      new AvatarSettingsModal(this.app, this.plugin).open();
     });
 
     fragment.appendChild(this.headerActionsContent);

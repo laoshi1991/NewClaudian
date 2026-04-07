@@ -92,6 +92,12 @@ export class MessageRenderer {
       },
     });
 
+    const avatarEl = msgEl.createDiv({ cls: 'claudian-message-avatar' });
+    const avatarUrl = msg.role === 'user' ? this.plugin.settings.userAvatar : this.plugin.settings.aiAvatar;
+    if (avatarUrl) {
+      avatarEl.createEl('img', { attr: { src: avatarUrl } });
+    }
+
     const contentEl = msgEl.createDiv({ cls: 'claudian-message-content', attr: { dir: 'auto' } });
 
     if (msg.role === 'user') {
@@ -177,6 +183,12 @@ export class MessageRenderer {
         'data-role': msg.role,
       },
     });
+
+    const avatarEl = msgEl.createDiv({ cls: 'claudian-message-avatar' });
+    const avatarUrl = msg.role === 'user' ? this.plugin.settings.userAvatar : this.plugin.settings.aiAvatar;
+    if (avatarUrl) {
+      avatarEl.createEl('img', { attr: { src: avatarUrl } });
+    }
 
     const contentEl = msgEl.createDiv({ cls: 'claudian-message-content', attr: { dir: 'auto' } });
 

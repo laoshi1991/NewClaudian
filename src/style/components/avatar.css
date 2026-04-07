@@ -1,0 +1,111 @@
+/* Avatar Settings Modal */
+.claudian-avatar-modal h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.claudian-avatar-preview-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.claudian-avatar-preview {
+  max-width: 60px;
+  max-height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.claudian-avatar-input-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.claudian-avatar-clear-btn {
+  background-color: transparent;
+  color: var(--text-error);
+  box-shadow: none;
+  border: 1px solid var(--text-error);
+}
+
+.claudian-avatar-clear-btn:hover {
+  background-color: var(--background-modifier-error);
+  color: var(--text-on-accent);
+}
+
+.claudian-avatar-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Chat Message Avatar Styling */
+.claudian-message {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start; /* align avatar and content to the top */
+}
+
+/* User messages: avatar on the right, content on the left */
+.claudian-message-user {
+  flex-direction: row-reverse;
+  align-self: flex-end; /* ensure the whole message block aligns to the right */
+}
+
+.claudian-message-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--background-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--background-modifier-border);
+  margin-top: 4px; /* slight adjustment to align with text */
+}
+
+.claudian-message-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Assistant messages: avatar on the left, content on the right */
+.claudian-message-assistant {
+  flex-direction: row;
+  align-self: flex-start;
+}
+
+/* Ensure content takes remaining space but has a max-width */
+.claudian-message-content {
+  flex-grow: 1;
+  max-width: calc(100% - 48px); /* 36px avatar + 12px gap */
+}
+
+/* Update user message content background and padding */
+.claudian-message-user .claudian-message-content {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border-top-right-radius: 2px;
+  padding: 10px 14px;
+}
+
+/* Update assistant message content padding */
+.claudian-message-assistant .claudian-message-content {
+  background: transparent;
+  border-radius: 8px;
+  border-top-left-radius: 2px;
+  padding: 0; /* padding is handled by the content itself for assistant */
+}

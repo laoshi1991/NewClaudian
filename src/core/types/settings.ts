@@ -274,6 +274,8 @@ export interface ClaudianSettings {
 
   // UI settings
   keyboardNavigation: KeyboardNavigationSettings;
+  userAvatar?: string; // base64 encoded user avatar
+  aiAvatar?: string;   // base64 encoded ai avatar
 
   // Internationalization
   locale: Locale;  // UI language setting
@@ -341,6 +343,8 @@ export const DEFAULT_SETTINGS: ClaudianSettings = {
     scrollDownKey: 's',
     focusInputKey: 'i',
   },
+  userAvatar: '',
+  aiAvatar: '',
 
   // Internationalization
   locale: 'en',  // Default to English
