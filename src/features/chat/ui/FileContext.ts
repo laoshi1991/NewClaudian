@@ -338,6 +338,12 @@ export class FileContextManager {
             if (!file) {
               file = this.app.metadataCache.getFirstLinkpathDest(decodedPath, '');
             }
+            // Ultimate fallback: search all loaded files and folders by exact name match
+            if (!file) {
+              const allFiles = this.app.vault.getAllLoadedFiles();
+              file = allFiles.find(f => f.name === decodedPath || f.name === decodedPath + '.md') || null;
+            }
+
             if (file instanceof TFile || file instanceof TFolder) {
               filesToProcess.push(file);
             }
