@@ -21,6 +21,10 @@
 @import "./components/context-footer.css";
 @import "./components/scroll-to-bottom.css";
 @import "./components/avatar.css";
+@import "./components/cropper.css";
+
+/* Import Cropper.js base styles */
+@import "../../node_modules/cropperjs/dist/cropper.css";
 
 /* Toolbar */
 @import "./toolbar/model-selector.css";

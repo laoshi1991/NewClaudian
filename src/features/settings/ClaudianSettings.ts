@@ -74,7 +74,7 @@ function addHotkeySettingRow(
   item.addEventListener('click', () => openHotkeySettings(app));
 }
 
-import { AvatarSettingsModal } from './ui/AvatarSettingsModal';
+
 
 export class ClaudianSettingTab extends PluginSettingTab {
   plugin: ClaudianPlugin;

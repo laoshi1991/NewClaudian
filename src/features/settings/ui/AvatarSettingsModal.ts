@@ -1,7 +1,10 @@
-import { Modal, App, Setting, Notice } from 'obsidian';
-import type ClaudianPlugin from '../../../main';
+import type { App} from 'obsidian';
+import { Modal, Notice,Setting } from 'obsidian';
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+import type ClaudianPlugin from '../../../main';
+import { ImageCropperModal } from './ImageCropperModal';
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
 
 export class AvatarSettingsModal extends Modal {
@@ -27,7 +30,7 @@ export class AvatarSettingsModal extends Modal {
     this.createAvatarUploadSetting(
       contentEl,
       'User Avatar',
-      'Upload an image to display next to your messages (max 2MB).',
+      'Upload an image to display next to your messages (max 5MB). Will be cropped to 1:1 ratio.',
       this.tempUserAvatar,
       (base64) => { this.tempUserAvatar = base64; }
     );
@@ -36,7 +39,7 @@ export class AvatarSettingsModal extends Modal {
     this.createAvatarUploadSetting(
       contentEl,
       'AI Avatar',
-      'Upload an image to display next to the AI messages (max 2MB).',
+      'Upload an image to display next to the AI messages (max 5MB). Will be cropped to 1:1 ratio.',
       this.tempAIAvatar,
       (base64) => { this.tempAIAvatar = base64; }
     );
@@ -144,11 +147,15 @@ export class AvatarSettingsModal extends Modal {
       reader.onload = (event) => {
         const result = event.target?.result as string;
         if (result) {
-          onUpload(result);
-          previewEl.src = result;
-          previewEl.style.display = 'block';
-          clearBtn.style.display = 'inline-block';
-          new Notice(`${name} uploaded successfully!`);
+          target.value = ''; // Reset input
+          // Open cropper modal
+          new ImageCropperModal(this.app, result, (croppedBase64) => {
+            onUpload(croppedBase64);
+            previewEl.src = croppedBase64;
+            previewEl.style.display = 'block';
+            clearBtn.style.display = 'inline-block';
+            new Notice(`${name} uploaded and cropped successfully!`);
+          }).open();
         }
       };
       reader.onerror = () => {

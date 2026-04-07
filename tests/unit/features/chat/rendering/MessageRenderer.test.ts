@@ -44,7 +44,7 @@ function createRenderer(messagesEl?: any) {
   const comp = createMockComponent();
   const plugin = {
     app: {},
-    settings: { mediaFolder: '' },
+    settings: { mediaFolder: '', userAvatar: '', aiAvatar: '' },
   };
   return { renderer: new MessageRenderer(plugin as any, comp as any, el), messagesEl: el };
 }
@@ -62,7 +62,7 @@ describe('MessageRenderer', () => {
     const messagesEl = createMockEl();
     const emptySpy = jest.spyOn(messagesEl, 'empty');
     const mockComponent = createMockComponent();
-    const renderer = new MessageRenderer({} as any, mockComponent as any, messagesEl);
+    const renderer = new MessageRenderer({ settings: {} } as any, mockComponent as any, messagesEl);
     const renderStoredSpy = jest.spyOn(renderer, 'renderStoredMessage').mockImplementation(() => {});
 
     const messages: ChatMessage[] = [
@@ -94,7 +94,7 @@ describe('MessageRenderer', () => {
   it('renders interrupt messages with interrupt styling instead of user bubble', () => {
     const messagesEl = createMockEl();
     const mockComponent = createMockComponent();
-    const renderer = new MessageRenderer({} as any, mockComponent as any, messagesEl);
+    const renderer = new MessageRenderer({ settings: {} } as any, mockComponent as any, messagesEl);
 
     const interruptMsg: ChatMessage = {
       id: 'interrupt-1',
@@ -221,7 +221,7 @@ describe('MessageRenderer', () => {
   it('adds a rewind button for eligible stored user messages', () => {
     const messagesEl = createMockEl();
     const rewindCallback = jest.fn().mockResolvedValue(undefined);
-    const renderer = new MessageRenderer({ app: {}, settings: { mediaFolder: '' } } as any, createMockComponent() as any, messagesEl, rewindCallback);
+    const renderer = new MessageRenderer({ app: {}, settings: { mediaFolder: '', userAvatar: '', aiAvatar: '' } } as any, createMockComponent() as any, messagesEl, rewindCallback);
     jest.spyOn(renderer, 'renderContent').mockResolvedValue(undefined);
 
     const allMessages: ChatMessage[] = [
@@ -238,7 +238,7 @@ describe('MessageRenderer', () => {
   it('does not add a rewind button when stored render is called without context', () => {
     const messagesEl = createMockEl();
     const rewindCallback = jest.fn().mockResolvedValue(undefined);
-    const renderer = new MessageRenderer({ app: {}, settings: { mediaFolder: '' } } as any, createMockComponent() as any, messagesEl, rewindCallback);
+    const renderer = new MessageRenderer({ app: {}, settings: { mediaFolder: '', userAvatar: '', aiAvatar: '' } } as any, createMockComponent() as any, messagesEl, rewindCallback);
     jest.spyOn(renderer, 'renderContent').mockResolvedValue(undefined);
 
     const msg: ChatMessage = {
@@ -257,7 +257,7 @@ describe('MessageRenderer', () => {
   it('adds a rewind button for eligible streamed user messages via refreshActionButtons', () => {
     const messagesEl = createMockEl();
     const rewindCallback = jest.fn().mockResolvedValue(undefined);
-    const renderer = new MessageRenderer({ app: {}, settings: { mediaFolder: '' } } as any, createMockComponent() as any, messagesEl, rewindCallback);
+    const renderer = new MessageRenderer({ app: {}, settings: { mediaFolder: '', userAvatar: '', aiAvatar: '' } } as any, createMockComponent() as any, messagesEl, rewindCallback);
     jest.spyOn(renderer, 'renderContent').mockResolvedValue(undefined);
 
     const userMsg: ChatMessage = {
@@ -291,7 +291,7 @@ describe('MessageRenderer', () => {
   it('renders assistant content blocks using specialized renderers', () => {
     const messagesEl = createMockEl();
     const mockComponent = createMockComponent();
-    const renderer = new MessageRenderer({} as any, mockComponent as any, messagesEl);
+    const renderer = new MessageRenderer({ settings: {} } as any, mockComponent as any, messagesEl);
     const renderContentSpy = jest.spyOn(renderer, 'renderContent').mockResolvedValue(undefined);
 
     const msg: ChatMessage = {
@@ -384,8 +384,8 @@ describe('MessageRenderer', () => {
     renderer.renderStoredMessage(msg);
 
     // Find the footer element
-    const msgEl = messagesEl.children[0];
-    const contentEl = msgEl.children[0]; // claudian-message-content
+    const msgEl = messagesEl.children.find((c: any) => c.hasClass('claudian-message-assistant'));
+    const contentEl = msgEl.children.find((c: any) => c.hasClass('claudian-message-content'));
     const footerEl = contentEl.children.find((c: any) => c.hasClass('claudian-response-footer'));
     expect(footerEl).toBeDefined();
     const durationSpan = footerEl!.children[0];
@@ -411,8 +411,8 @@ describe('MessageRenderer', () => {
 
     renderer.renderStoredMessage(msg);
 
-    const msgEl = messagesEl.children[0];
-    const contentEl = msgEl.children[0];
+    const msgEl = messagesEl.children.find((c: any) => c.hasClass('claudian-message-assistant'));
+    const contentEl = msgEl.children.find((c: any) => c.hasClass('claudian-message-content'));
     const footerEl = contentEl.children.find((c: any) => c.hasClass('claudian-response-footer'));
     expect(footerEl).toBeUndefined();
   });
@@ -435,8 +435,8 @@ describe('MessageRenderer', () => {
 
     renderer.renderStoredMessage(msg);
 
-    const msgEl = messagesEl.children[0];
-    const contentEl = msgEl.children[0];
+    const msgEl = messagesEl.children.find((c: any) => c.hasClass('claudian-message-assistant'));
+    const contentEl = msgEl.children.find((c: any) => c.hasClass('claudian-message-content'));
     const footerEl = contentEl.children.find((c: any) => c.hasClass('claudian-response-footer'));
     expect(footerEl).toBeDefined();
     expect(footerEl!.children[0].textContent).toContain('Baked');
@@ -446,7 +446,7 @@ describe('MessageRenderer', () => {
     const messagesEl = createMockEl();
     const { renderer } = createRenderer(messagesEl);
     const renderContentSpy = jest.spyOn(renderer, 'renderContent').mockResolvedValue(undefined);
-    const addCopySpy = jest.spyOn(renderer, 'addTextCopyButton').mockImplementation(() => {});
+    const addCopySpy = jest.spyOn(renderer, 'addTextActionButtons').mockImplementation(() => {});
 
     const msg: ChatMessage = {
       id: 'm1',
@@ -634,7 +634,7 @@ describe('MessageRenderer', () => {
   it('should skip TaskOutput tool calls (internal async subagent communication)', () => {
     const messagesEl = createMockEl();
     const mockComponent = createMockComponent();
-    const renderer = new MessageRenderer({} as any, mockComponent as any, messagesEl);
+    const renderer = new MessageRenderer({ settings: {} } as any, mockComponent as any, messagesEl);
 
     (renderStoredToolCall as jest.Mock).mockClear();
 
@@ -659,7 +659,7 @@ describe('MessageRenderer', () => {
   it('should render other tool calls but skip TaskOutput when mixed', () => {
     const messagesEl = createMockEl();
     const mockComponent = createMockComponent();
-    const renderer = new MessageRenderer({} as any, mockComponent as any, messagesEl);
+    const renderer = new MessageRenderer({ settings: {} } as any, mockComponent as any, messagesEl);
 
     (renderStoredToolCall as jest.Mock).mockClear();
 
@@ -857,18 +857,21 @@ describe('MessageRenderer', () => {
     }
   });
 
-  // ============================================
-  // Copy button
+  // addTextActionButtons
   // ============================================
 
-  it('addTextCopyButton adds a copy button element', () => {
+  it('addTextActionButtons adds an action container element', () => {
     const textEl = createMockEl();
     const { renderer } = createRenderer();
 
-    renderer.addTextCopyButton(textEl, 'some markdown');
+    renderer.addTextActionButtons(textEl, 'some markdown');
 
     expect(textEl.children.length).toBe(1);
-    const copyBtn = textEl.children[0];
+    const actionContainer = textEl.children[0];
+    expect(actionContainer.hasClass('claudian-text-actions')).toBe(true);
+    
+    // Copy button should be the second child
+    const copyBtn = actionContainer.children[1];
     expect(copyBtn.hasClass('claudian-text-copy-btn')).toBe(true);
   });
 
@@ -945,10 +948,10 @@ describe('MessageRenderer', () => {
   });
 
   // ============================================
-  // addTextCopyButton - click behavior
+  // addTextActionButtons - click behavior
   // ============================================
 
-  describe('addTextCopyButton - click behavior', () => {
+  describe('addTextActionButtons - click behavior', () => {
     let originalNavigator: Navigator;
 
     beforeEach(() => {
@@ -976,9 +979,9 @@ describe('MessageRenderer', () => {
         configurable: true,
       });
 
-      renderer.addTextCopyButton(textEl, 'markdown content');
+      renderer.addTextActionButtons(textEl, 'markdown content');
 
-      const copyBtn = textEl.children[0];
+      const copyBtn = textEl.children[0].children[1];
       expect(copyBtn.hasClass('claudian-text-copy-btn')).toBe(true);
 
       // Simulate click
@@ -989,7 +992,7 @@ describe('MessageRenderer', () => {
 
       expect(writeTextMock).toHaveBeenCalledWith('markdown content');
       expect(copyBtn.textContent).toBe('copied!');
-      expect(copyBtn.classList.contains('copied')).toBe(true);
+      expect(copyBtn.classList.contains('action-success')).toBe(true);
     });
 
     it('should handle clipboard API failure gracefully', async () => {
@@ -1003,9 +1006,9 @@ describe('MessageRenderer', () => {
         configurable: true,
       });
 
-      renderer.addTextCopyButton(textEl, 'content');
+      renderer.addTextActionButtons(textEl, 'content');
 
-      const copyBtn = textEl.children[0];
+      const copyBtn = textEl.children[0].children[1];
       const clickHandlers = copyBtn._eventListeners.get('click');
 
       // Should not throw
@@ -1309,10 +1312,10 @@ describe('MessageRenderer', () => {
   });
 
   // ============================================
-  // addTextCopyButton - rapid click handling
+  // addTextActionButtons - rapid click handling
   // ============================================
 
-  describe('addTextCopyButton - rapid click handling', () => {
+  describe('addTextActionButtons - rapid click handling', () => {
     let originalNavigator: Navigator;
 
     beforeEach(() => {
@@ -1339,9 +1342,9 @@ describe('MessageRenderer', () => {
       const textEl = createMockEl();
       const clearTimeoutSpy = jest.spyOn(globalThis, 'clearTimeout');
 
-      renderer.addTextCopyButton(textEl, 'content to copy');
+      renderer.addTextActionButtons(textEl, 'content to copy');
 
-      const copyBtn = textEl.children[0];
+      const copyBtn = textEl.children[0].children[1];
       const clickHandlers = copyBtn._eventListeners.get('click');
       expect(clickHandlers).toBeDefined();
 
@@ -1363,23 +1366,23 @@ describe('MessageRenderer', () => {
       const { renderer } = createRenderer();
       const textEl = createMockEl();
 
-      renderer.addTextCopyButton(textEl, 'content to copy');
+      renderer.addTextActionButtons(textEl, 'content to copy');
 
-      const copyBtn = textEl.children[0];
+      const copyBtn = textEl.children[0].children[1];
       const originalInnerHTML = copyBtn.innerHTML;
       const clickHandlers = copyBtn._eventListeners.get('click');
 
       // Click to copy
       await clickHandlers![0]({ stopPropagation: jest.fn() });
       expect(copyBtn.textContent).toBe('copied!');
-      expect(copyBtn.classList.contains('copied')).toBe(true);
+      expect(copyBtn.classList.contains('action-success')).toBe(true);
 
       // Advance timers by 1500ms (the feedback duration)
       jest.advanceTimersByTime(1500);
 
       // Icon should be restored and copied class removed
       expect(copyBtn.innerHTML).toBe(originalInnerHTML);
-      expect(copyBtn.classList.contains('copied')).toBe(false);
+      expect(copyBtn.classList.contains('action-success')).toBe(false);
     });
   });
 

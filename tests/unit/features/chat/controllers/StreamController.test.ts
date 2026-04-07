@@ -82,7 +82,7 @@ function createMockDeps(): StreamControllerDeps {
     state,
     renderer: {
       renderContent: jest.fn(),
-      addTextCopyButton: jest.fn(),
+      addTextActionButtons: jest.fn(),
     } as any,
     subagentManager: {
       isAsyncTask: jest.fn().mockReturnValue(false),
@@ -186,7 +186,7 @@ describe('StreamController - Text Content', () => {
 
       controller.finalizeCurrentTextBlock(msg);
 
-      expect(deps.renderer.addTextCopyButton).toHaveBeenCalledWith(
+      expect(deps.renderer.addTextActionButtons).toHaveBeenCalledWith(
         expect.anything(),
         'Hello World'
       );
@@ -196,14 +196,14 @@ describe('StreamController - Text Content', () => {
       });
     });
 
-    it('should not add copy button when no text element exists', () => {
+    it('should not add action buttons when no text element exists', () => {
       const msg = createTestMessage();
       deps.state.currentTextEl = null;
       deps.state.currentTextContent = 'Hello World';
 
       controller.finalizeCurrentTextBlock(msg);
 
-      expect(deps.renderer.addTextCopyButton).not.toHaveBeenCalled();
+      expect(deps.renderer.addTextActionButtons).not.toHaveBeenCalled();
       // Content block should still be added
       expect(msg.contentBlocks).toContainEqual({
         type: 'text',
@@ -211,14 +211,14 @@ describe('StreamController - Text Content', () => {
       });
     });
 
-    it('should not add copy button when no text content exists', () => {
+    it('should not add action buttons when no text content exists', () => {
       const msg = createTestMessage();
       deps.state.currentTextEl = createMockEl();
       deps.state.currentTextContent = '';
 
       controller.finalizeCurrentTextBlock(msg);
 
-      expect(deps.renderer.addTextCopyButton).not.toHaveBeenCalled();
+      expect(deps.renderer.addTextActionButtons).not.toHaveBeenCalled();
       expect(msg.contentBlocks).toEqual([]);
     });
 
@@ -1313,7 +1313,7 @@ describe('StreamController - Text Content', () => {
       expect(msg.contentBlocks).toContainEqual(
         expect.objectContaining({ type: 'text', content: 'Some text' })
       );
-      expect(deps.renderer.addTextCopyButton).toHaveBeenCalledWith(
+      expect(deps.renderer.addTextActionButtons).toHaveBeenCalledWith(
         expect.anything(),
         'Some text'
       );

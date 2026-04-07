@@ -57,6 +57,20 @@ function listCssFiles(dir, baseDir = dir) {
 function build() {
   const moduleOrder = getModuleOrder();
   const parts = ['/* Claudian Plugin Styles */\n/* Built from src/style/ modules */\n'];
+  
+  // Directly append cropperjs styles
+  try {
+    const cropperCss = readFileSync(join(ROOT, 'node_modules/cropper/dist/cropper.css'), 'utf-8');
+    parts.push('/* ============================================\n   cropperjs\n   ============================================ */\n' + cropperCss);
+  } catch (e) {
+    try {
+      const cropperCss = readFileSync(join(ROOT, 'node_modules/cropperjs/dist/cropper.css'), 'utf-8');
+      parts.push('/* ============================================\n   cropperjs\n   ============================================ */\n' + cropperCss);
+    } catch(e2) {
+      console.error('Could not load cropperjs css:', e2);
+    }
+  }
+
   const missingFiles = [];
   const invalidImports = [];
   const normalizedImports = [];
@@ -65,13 +79,17 @@ function build() {
     const resolvedPath = resolve(STYLE_DIR, modulePath);
     const relativePath = relative(STYLE_DIR, resolvedPath);
 
-    if (relativePath.startsWith('..') || !relativePath.endsWith('.css')) {
+    if ((relativePath.startsWith('..') && !modulePath.includes('node_modules')) || (!relativePath.endsWith('.css') && !modulePath.endsWith('.css'))) {
       invalidImports.push(modulePath);
       continue;
     }
 
     const normalizedPath = relativePath.split('\\').join('/');
     normalizedImports.push(normalizedPath);
+
+    if (modulePath.includes('cropperjs')) {
+      continue; // already handled
+    }
 
     if (!existsSync(resolvedPath)) {
       missingFiles.push(normalizedPath);
