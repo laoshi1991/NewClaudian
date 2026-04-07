@@ -62,9 +62,19 @@ export class FileContextManager {
 
     this.chipsView = new FileChipsView(this.chipsContainerEl, {
       onRemoveAttachment: (filePath) => {
+        let changed = false;
+        
         if (filePath === this.currentNotePath) {
           this.currentNotePath = null;
+          changed = true;
+        }
+        
+        if (this.state.getAttachedFiles().has(filePath)) {
           this.state.detachFile(filePath);
+          changed = true;
+        }
+
+        if (changed) {
           this.refreshCurrentNoteChip();
         }
       },
@@ -115,36 +125,45 @@ export class FileContextManager {
       ? this.inputEl.closest('.claudian-input-wrapper') || this.inputEl 
       : this.inputEl;
     
-    // Only handle 'drop' because 'dragenter', 'dragover' and 'dragleave' 
-    // are already correctly preventing default natively for valid drops, 
-    // or handled by ImageContextManager for files.
-    dropZone.addEventListener('dragover', (e) => {
-      // Allow dropping internal Obsidian items
-      if (e instanceof DragEvent && e.dataTransfer?.types.includes('application/x-obsidian-dnd')) {
+    const handleDrag = (e: Event) => {
+      if (!(e instanceof DragEvent) || !e.dataTransfer) return;
+      
+      const hasObsidianDnd = e.dataTransfer.types.includes('application/x-obsidian-dnd');
+      const hasTextPlain = e.dataTransfer.types.includes('text/plain');
+      
+      // We must prevent default on dragenter and dragover to allow drop
+      if (hasObsidianDnd || hasTextPlain) {
         e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'copy';
       }
-    });
+    };
+
+    dropZone.addEventListener('dragenter', handleDrag);
+    dropZone.addEventListener('dragover', handleDrag);
 
     dropZone.addEventListener('drop', (e) => {
       if (!(e instanceof DragEvent) || !e.dataTransfer) return;
 
+      let attachedCount = 0;
+
+      // 1. Try to process Obsidian's internal drag and drop format
       if (e.dataTransfer.types.includes('application/x-obsidian-dnd')) {
         const data = e.dataTransfer.getData('application/x-obsidian-dnd');
-        try {
-          const parsed = JSON.parse(data);
-          let filesToAttach: string[] = [];
-          
-          if (parsed.type === 'file' && typeof parsed.file === 'string') {
-            filesToAttach.push(parsed.file);
-          } else if (parsed.type === 'files' && Array.isArray(parsed.files)) {
-            filesToAttach.push(...parsed.files);
-          }
-
-          if (filesToAttach.length > 0) {
-            e.preventDefault();
-            e.stopPropagation();
-            let attachedCount = 0;
+        if (data) {
+          try {
+            const parsed = JSON.parse(data);
+            let filesToAttach: string[] = [];
             
+            const items = Array.isArray(parsed) ? parsed : [parsed];
+            for (const item of items) {
+              if (item.type === 'file' && typeof item.file === 'string') {
+                filesToAttach.push(item.file);
+              } else if (item.type === 'files' && Array.isArray(item.files)) {
+                filesToAttach.push(...item.files);
+              }
+            }
+
             for (const rawPath of filesToAttach) {
               const normalized = this.normalizePathForVault(rawPath);
               if (normalized) {
@@ -155,14 +174,60 @@ export class FileContextManager {
                 }
               }
             }
-            
-            if (attachedCount > 0) {
-              this.refreshCurrentNoteChip();
-              this.callbacks.onChipsChanged?.();
+          } catch {
+            // Ignore parse errors, fall through to text/plain
+          }
+        }
+      }
+
+      // 2. Fallback to text/plain (URI or Markdown links)
+      if (attachedCount === 0 && e.dataTransfer.types.includes('text/plain')) {
+        const text = e.dataTransfer.getData('text/plain');
+        if (text) {
+          // Match obsidian://open?vault=...&file=...
+          const uriMatch = text.match(/file=([^&\]\s]+)/);
+          // Match markdown link [name](path.md)
+          const mdMatch = text.match(/\]\(([^)]+\.md)\)/i);
+          // Match wikilink [[path]]
+          const wikiMatch = text.match(/\[\[([^\]]+)\]\]/);
+
+          let decodedPath = '';
+          if (uriMatch && uriMatch[1]) {
+            try { decodedPath = decodeURIComponent(uriMatch[1]); } catch { /* ignore */ }
+          } else if (mdMatch && mdMatch[1]) {
+            try { decodedPath = decodeURIComponent(mdMatch[1]); } catch { /* ignore */ }
+          } else if (wikiMatch && wikiMatch[1]) {
+            decodedPath = wikiMatch[1];
+          }
+
+          if (decodedPath) {
+            // The path might be missing the .md extension in some URIs
+            let file = this.app.vault.getAbstractFileByPath(decodedPath);
+            if (!file && !decodedPath.toLowerCase().endsWith('.md')) {
+              file = this.app.vault.getAbstractFileByPath(decodedPath + '.md');
+            }
+            if (!file) {
+              file = this.app.metadataCache.getFirstLinkpathDest(decodedPath, '');
+            }
+
+            if (file instanceof TFile && !this.hasExcludedTag(file)) {
+              const normalized = this.normalizePathForVault(file.path);
+              if (normalized) {
+                this.state.attachFile(normalized);
+                attachedCount++;
+              }
             }
           }
-        } catch (err) {
-          // Ignore JSON parse errors for dnd data
+        }
+      }
+
+      // 3. If we successfully found files or if it's an obsidian DND event, intercept it
+      if (attachedCount > 0 || e.dataTransfer.types.includes('application/x-obsidian-dnd') || e.dataTransfer.types.includes('text/plain')) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (attachedCount > 0) {
+          this.refreshCurrentNoteChip();
+          this.callbacks.onChipsChanged?.();
         }
       }
     });
@@ -326,7 +391,10 @@ export class FileContextManager {
   }
 
   private refreshCurrentNoteChip(): void {
-    this.chipsView.renderCurrentNote(this.currentNotePath);
+    this.chipsView.renderFileChips(
+      this.currentNotePath,
+      Array.from(this.state.getAttachedFiles())
+    );
     this.callbacks.onChipsChanged?.();
   }
 

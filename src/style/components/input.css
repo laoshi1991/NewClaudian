@@ -119,57 +119,85 @@
 .claudian-file-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 6px 3px 8px;
-  background: var(--background-primary);
-  border: 1px solid var(--background-modifier-border);
-  border-radius: 12px;
-  font-size: 12px;
+  gap: 6px;
+  padding: 4px 8px;
+  background: rgba(var(--interactive-accent-rgb, 59, 130, 246), 0.1);
+  border: 1px solid rgba(var(--interactive-accent-rgb, 59, 130, 246), 0.3);
+  border-radius: 4px;
+  font-size: 13px;
   line-height: 1;
   max-width: 200px;
   cursor: pointer;
+  color: var(--text-normal);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.claudian-file-chip-icon {
+.claudian-file-chip:hover {
+  background: rgba(var(--interactive-accent-rgb, 59, 130, 246), 0.15);
+  border-color: rgba(var(--interactive-accent-rgb, 59, 130, 246), 0.5);
+}
+
+.claudian-file-chip-icon-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  color: var(--text-muted);
+  justify-content: center;
+  width: 14px;
+  height: 14px;
   flex-shrink: 0;
 }
 
+.claudian-file-chip-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--interactive-accent);
+  transition: opacity 0.15s ease;
+  opacity: 1;
+}
+
 .claudian-file-chip-icon svg {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
+}
+
+.claudian-file-chip-remove {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: opacity 0.15s ease, color 0.15s ease;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.claudian-file-chip-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.claudian-file-chip-remove:hover {
+  color: var(--text-error);
+  background: var(--background-modifier-hover);
+}
+
+.claudian-file-chip:hover .claudian-file-chip-icon {
+  opacity: 0;
+}
+
+.claudian-file-chip:hover .claudian-file-chip-remove {
+  opacity: 1;
 }
 
 .claudian-file-chip-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--text-normal);
-}
-
-.claudian-file-chip-remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  cursor: pointer;
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.claudian-file-chip-remove:hover {
-  background: var(--background-modifier-hover);
-  color: var(--text-normal);
-}
-
-.claudian-file-chip:hover {
-  background: var(--background-modifier-hover);
+  font-family: var(--font-monospace);
 }
 
 /* Message Queue Indicator (shown below flavor text in thinking indicator) */
