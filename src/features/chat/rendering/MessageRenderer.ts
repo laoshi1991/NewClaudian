@@ -421,24 +421,31 @@ export class MessageRenderer {
     const filesEl = containerEl.createDiv({ cls: 'claudian-message-attached-files' });
 
     for (const filePath of files) {
+      const isFolder = filePath.endsWith('/');
+      const displayPath = isFolder ? filePath.slice(0, -1) : filePath;
+
       const chipEl = filesEl.createDiv({ cls: 'claudian-file-chip claudian-file-chip-readonly' });
 
       const iconWrapperEl = chipEl.createDiv({ cls: 'claudian-file-chip-icon-wrapper' });
       const iconEl = iconWrapperEl.createSpan({ cls: 'claudian-file-chip-icon' });
-      setIcon(iconEl, 'file-text');
+      setIcon(iconEl, isFolder ? 'folder' : 'file-text');
 
-      const normalizedPath = filePath.replace(/\\/g, '/');
-      const filename = normalizedPath.split('/').pop() || filePath;
+      const normalizedPath = displayPath.replace(/\\/g, '/');
+      const filename = normalizedPath.split('/').pop() || displayPath;
       const nameEl = chipEl.createSpan({ cls: 'claudian-file-chip-name' });
       nameEl.setText(filename);
-      nameEl.setAttribute('title', filePath);
+      nameEl.setAttribute('title', displayPath);
 
-      chipEl.addEventListener('click', () => {
-        const fileManager = (this.plugin as any).fileManager;
-        if (fileManager) {
-          fileManager.openFile(filePath);
-        }
-      });
+      if (!isFolder) {
+        chipEl.addEventListener('click', () => {
+          const fileManager = (this.plugin as any).fileManager;
+          if (fileManager) {
+            fileManager.openFile(displayPath);
+          }
+        });
+      } else {
+        chipEl.style.cursor = 'default';
+      }
     }
   }
 

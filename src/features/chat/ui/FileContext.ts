@@ -217,24 +217,9 @@ export class FileContextManager {
       }
 
       let attachedCount = 0;
-      const filesToProcess: TFile[] = [];
+      const filesToProcess: (TFile | TFolder)[] = [];
 
       const typesArray = Array.from(dragEvent.dataTransfer.types);
-
-      const addFolderFiles = (folder: TFolder) => {
-        const files: TFile[] = [];
-        const process = (f: TFolder) => {
-          for (const child of f.children) {
-            if (child instanceof TFile) {
-              files.push(child);
-            } else if (child instanceof TFolder) {
-              process(child);
-            }
-          }
-        };
-        process(folder);
-        return files;
-      };
 
       // 1. Internal Obsidian DND
       if (typesArray.includes('application/x-obsidian-dnd')) {
@@ -248,10 +233,8 @@ export class FileContextManager {
                 const normalized = this.normalizePathForVault(item.file);
                 if (normalized) {
                   const file = this.app.vault.getAbstractFileByPath(normalized);
-                  if (file instanceof TFile) {
+                  if (file instanceof TFile || file instanceof TFolder) {
                     filesToProcess.push(file);
-                  } else if (file instanceof TFolder) {
-                    filesToProcess.push(...addFolderFiles(file));
                   }
                 }
               } else if (item.type === 'files' && Array.isArray(item.files)) {
@@ -259,10 +242,8 @@ export class FileContextManager {
                   const normalized = this.normalizePathForVault(f);
                   if (normalized) {
                     const file = this.app.vault.getAbstractFileByPath(normalized);
-                    if (file instanceof TFile) {
+                    if (file instanceof TFile || file instanceof TFolder) {
                       filesToProcess.push(file);
-                    } else if (file instanceof TFolder) {
-                      filesToProcess.push(...addFolderFiles(file));
                     }
                   }
                 }
@@ -297,10 +278,8 @@ export class FileContextManager {
             if (!file) {
               file = this.app.metadataCache.getFirstLinkpathDest(decodedPath, '');
             }
-            if (file instanceof TFile) {
+            if (file instanceof TFile || file instanceof TFolder) {
               filesToProcess.push(file);
-            } else if (file instanceof TFolder) {
-              filesToProcess.push(...addFolderFiles(file));
             }
           }
         }
@@ -308,10 +287,16 @@ export class FileContextManager {
 
       // 3. Process Vault Files (.md)
       for (const file of filesToProcess) {
-        if (file.extension === 'md' && !this.hasExcludedTag(file)) {
+        if (file instanceof TFile && file.extension === 'md' && !this.hasExcludedTag(file)) {
           const normalized = this.normalizePathForVault(file.path);
           if (normalized) {
             this.state.attachFile(normalized);
+            attachedCount++;
+          }
+        } else if (file instanceof TFolder) {
+          const normalized = this.normalizePathForVault(file.path);
+          if (normalized) {
+            this.state.attachFile(normalized + '/');
             attachedCount++;
           }
         }

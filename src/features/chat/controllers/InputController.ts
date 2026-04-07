@@ -208,7 +208,7 @@ export class InputController {
     const shouldSendCurrentNote = fileContextManager?.shouldSendCurrentNote(currentNotePath) ?? false;
 
     // Cache attached files before potentially clearing them
-    const attachedFiles = fileContextManager ? Array.from(fileContextManager.getAttachedFiles()) : [];
+    const rawAttachedFiles = fileContextManager ? Array.from(fileContextManager.getAttachedFiles()) : [];
 
     // Only clear images and attached files if we consumed user input (not for programmatic content override)
     if (shouldUseInput) {
@@ -231,6 +231,40 @@ export class InputController {
     // User content first, context XML appended after (enables slash command detection)
     let promptToSend = content;
     let currentNoteForMessage: string | undefined;
+
+    // Resolve folders to files for prompt context
+    const attachedFiles: string[] = [];
+    if (this.deps.plugin?.app?.vault) {
+      const vault = this.deps.plugin.app.vault;
+      const processFolder = (folderPath: string) => {
+        // Use abstract file to recursively get children
+        const folder = vault.getAbstractFileByPath(folderPath);
+        // @ts-ignore - TFolder has children
+        if (folder && typeof folder.children !== 'undefined') {
+          // @ts-ignore
+          const process = (f: any) => {
+            for (const child of f.children) {
+              if (child.children) {
+                process(child);
+              } else if (child.extension === 'md') {
+                attachedFiles.push(child.path);
+              }
+            }
+          };
+          process(folder);
+        }
+      };
+      
+      for (const path of rawAttachedFiles) {
+        if (path.endsWith('/')) {
+          processFolder(path.slice(0, -1));
+        } else {
+          attachedFiles.push(path);
+        }
+      }
+    } else {
+      attachedFiles.push(...rawAttachedFiles);
+    }
 
     // SDK built-in commands (e.g., /compact) must be sent bare — context XML breaks detection
     if (!isCompact) {
@@ -280,7 +314,7 @@ export class InputController {
       timestamp: Date.now(),
       currentNote: currentNoteForMessage,
       images: imagesForMessage,
-      attachedFiles: attachedFiles.length > 0 ? attachedFiles : undefined,
+      attachedFiles: rawAttachedFiles.length > 0 ? rawAttachedFiles : undefined,
     };
     state.addMessage(userMsg);
     renderer.addMessage(userMsg);
