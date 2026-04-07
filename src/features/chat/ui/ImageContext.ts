@@ -122,7 +122,8 @@ export class ImageContextManager {
   }
 
   private handleDragOver(e: DragEvent) {
-    if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes('Files')) {
+    // Extremely lightweight check for dragover to prevent lag
+    if (e.dataTransfer && e.dataTransfer.types) {
       e.preventDefault();
       e.stopPropagation();
       e.dataTransfer.dropEffect = 'copy';
@@ -130,13 +131,14 @@ export class ImageContextManager {
   }
 
   private handleDragLeave(e: DragEvent) {
-    if (!e.dataTransfer || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
+    if (!e.dataTransfer || !e.dataTransfer.types) return;
     
     e.preventDefault();
     e.stopPropagation();
 
     this.dragCounter--;
-    if (this.dragCounter === 0) {
+    if (this.dragCounter <= 0) {
+      this.dragCounter = 0;
       this.dropOverlay?.removeClass('visible');
     }
   }

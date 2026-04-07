@@ -515,7 +515,7 @@ describe('ImageContextManager - Private Helpers', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { types: ['text/plain'] },
+        dataTransfer: { types: null },
       };
 
       manager['handleDragOver'](event as any);

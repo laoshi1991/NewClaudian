@@ -199,7 +199,10 @@ export class FileContextManager {
 
     const handleDragOver = (e: Event) => {
       const dragEvent = e as DragEvent;
-      if (!isValidDrag(dragEvent)) return;
+      
+      // Extremely lightweight check for dragover to prevent lag
+      if (!dragEvent.dataTransfer || !dragEvent.dataTransfer.types) return;
+      
       dragEvent.preventDefault();
       dragEvent.stopPropagation();
       if (dragEvent.dataTransfer) {
@@ -209,12 +212,17 @@ export class FileContextManager {
 
     const handleDragLeave = (e: Event) => {
       const dragEvent = e as DragEvent;
-      if (!isValidDrag(dragEvent)) return;
+      // Lightweight check for dragleave
+      if (!dragEvent.dataTransfer || !dragEvent.dataTransfer.types) return;
+      
       dragEvent.preventDefault();
       dragEvent.stopPropagation();
       dragCounter--;
-      if (dragCounter === 0 && dropOverlay) {
-        dropOverlay.removeClass('visible');
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        if (dropOverlay) {
+          dropOverlay.removeClass('visible');
+        }
       }
     };
 
