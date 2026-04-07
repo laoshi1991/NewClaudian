@@ -1,4 +1,4 @@
-import type { App, EventRef, TAbstractFile } from 'obsidian';
+import type { App, EventRef } from 'obsidian';
 import { Notice, TFile, TFolder } from 'obsidian';
 
 import type { AgentManager } from '../../../core/agents';
@@ -237,6 +237,25 @@ export class FileContextManager {
                     filesToProcess.push(file);
                   }
                 }
+              } else if (item.type === 'folder' && (typeof item.folder === 'string' || typeof item.file === 'string')) {
+                const pathStr = typeof item.folder === 'string' ? item.folder : item.file;
+                const normalized = this.normalizePathForVault(pathStr);
+                if (normalized) {
+                  const file = this.app.vault.getAbstractFileByPath(normalized);
+                  if (file instanceof TFile || file instanceof TFolder) {
+                    filesToProcess.push(file);
+                  }
+                }
+              } else if (item.type === 'folders' && Array.isArray(item.folders)) {
+                for (const f of item.folders) {
+                  const normalized = this.normalizePathForVault(f);
+                  if (normalized) {
+                    const file = this.app.vault.getAbstractFileByPath(normalized);
+                    if (file instanceof TFile || file instanceof TFolder) {
+                      filesToProcess.push(file);
+                    }
+                  }
+                }
               } else if (item.type === 'files' && Array.isArray(item.files)) {
                 for (const f of item.files) {
                   const normalized = this.normalizePathForVault(f);
@@ -304,9 +323,27 @@ export class FileContextManager {
 
       // 4. OS Files Fallback
       if (attachedCount === 0 && dragEvent.dataTransfer.files && dragEvent.dataTransfer.files.length > 0) {
-        // Only vault files are supported for file attachments in Claudian right now.
-        // External dropped files won't be read into input content per user request.
-        new Notice('Only files within the vault can be attached.');
+        for (let i = 0; i < dragEvent.dataTransfer.files.length; i++) {
+          const f = dragEvent.dataTransfer.files[i];
+          // f.path is available in Electron environments like Obsidian
+          const absolutePath = (f as any).path;
+          if (absolutePath) {
+            const normalized = this.normalizePathForVault(absolutePath);
+            if (normalized) {
+              const file = this.app.vault.getAbstractFileByPath(normalized);
+              if (file instanceof TFile && file.extension === 'md' && !this.hasExcludedTag(file)) {
+                this.state.attachFile(normalized);
+                attachedCount++;
+              } else if (file instanceof TFolder) {
+                this.state.attachFile(normalized + '/');
+                attachedCount++;
+              }
+            }
+          }
+        }
+        if (attachedCount === 0) {
+          new Notice('Only files within the vault can be attached.');
+        }
       }
 
       if (attachedCount > 0) {

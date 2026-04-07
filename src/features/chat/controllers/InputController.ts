@@ -239,9 +239,8 @@ export class InputController {
       const processFolder = (folderPath: string) => {
         // Use abstract file to recursively get children
         const folder = vault.getAbstractFileByPath(folderPath);
-        // @ts-ignore - TFolder has children
+        // @ts-expect-error - TFolder has children
         if (folder && typeof folder.children !== 'undefined') {
-          // @ts-ignore
           const process = (f: any) => {
             for (const child of f.children) {
               if (child.children) {
