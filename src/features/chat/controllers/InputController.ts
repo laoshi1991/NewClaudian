@@ -9,7 +9,7 @@ import { ResumeSessionDropdown } from '../../../shared/components/ResumeSessionD
 import { InstructionModal } from '../../../shared/modals/InstructionConfirmModal';
 import { appendBrowserContext, type BrowserSelectionContext } from '../../../utils/browser';
 import { appendCanvasContext, type CanvasSelectionContext } from '../../../utils/canvas';
-import { appendCurrentNote } from '../../../utils/context';
+import { appendContextFiles, appendCurrentNote } from '../../../utils/context';
 import { formatDurationMmSs } from '../../../utils/date';
 import { appendEditorContext, type EditorSelectionContext } from '../../../utils/editor';
 import { appendMarkdownSnippet } from '../../../utils/markdown';
@@ -204,13 +204,17 @@ export class InputController {
     const images = imageContextManager?.getAttachedImages() || [];
     const imagesForMessage = images.length > 0 ? [...images] : undefined;
 
-    // Only clear images if we consumed user input (not for programmatic content override)
-    if (shouldUseInput) {
-      imageContextManager?.clearImages();
-    }
-
     const currentNotePath = fileContextManager?.getCurrentNotePath() || null;
     const shouldSendCurrentNote = fileContextManager?.shouldSendCurrentNote(currentNotePath) ?? false;
+
+    // Cache attached files before potentially clearing them
+    const attachedFiles = fileContextManager ? Array.from(fileContextManager.getAttachedFiles()) : [];
+
+    // Only clear images and attached files if we consumed user input (not for programmatic content override)
+    if (shouldUseInput) {
+      imageContextManager?.clearImages();
+      fileContextManager?.clearAttachedFiles();
+    }
 
     const editorContextOverride = options?.editorContextOverride;
     const editorContext = editorContextOverride !== undefined
@@ -253,6 +257,11 @@ export class InputController {
         : canvasSelectionController.getContext();
       if (canvasContext) {
         promptToSend = appendCanvasContext(promptToSend, canvasContext);
+      }
+
+      // Append attached context files (from @ mentions or drag & drop)
+      if (attachedFiles.length > 0) {
+        promptToSend = appendContextFiles(promptToSend, attachedFiles);
       }
 
       // Transform context file mentions (e.g., @folder/file.ts) to absolute paths

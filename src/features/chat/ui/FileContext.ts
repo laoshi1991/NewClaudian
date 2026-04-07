@@ -242,6 +242,12 @@ export class FileContextManager {
     return this.state.getAttachedFiles();
   }
 
+  clearAttachedFiles(): void {
+    this.state.clearAttachments();
+    this.refreshCurrentNoteChip();
+    this.callbacks.onChipsChanged?.();
+  }
+
   /** Checks whether current note should be sent for this session. */
   shouldSendCurrentNote(notePath?: string | null): boolean {
     const resolvedPath = notePath ?? this.currentNotePath;

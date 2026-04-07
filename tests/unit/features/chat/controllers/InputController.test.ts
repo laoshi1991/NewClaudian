@@ -36,6 +36,8 @@ function createMockFileContextManager() {
     shouldSendCurrentNote: jest.fn().mockReturnValue(false),
     markCurrentNoteSent: jest.fn(),
     transformContextMentions: jest.fn().mockImplementation((text: string) => text),
+    getAttachedFiles: jest.fn().mockReturnValue(new Set()),
+    clearAttachedFiles: jest.fn(),
   };
 }
 
@@ -150,6 +152,8 @@ function createMockDeps(overrides: Partial<InputControllerDeps> = {}): InputCont
       shouldSendCurrentNote: jest.fn().mockReturnValue(false),
       markCurrentNoteSent: jest.fn(),
       transformContextMentions: jest.fn().mockImplementation((text: string) => text),
+      getAttachedFiles: jest.fn().mockReturnValue(new Set()),
+      clearAttachedFiles: jest.fn(),
     }) as any,
     getImageContextManager: () => imageContextManager as any,
     getMcpServerSelector: () => null,
@@ -434,6 +438,8 @@ describe('InputController - Message Queue', () => {
         shouldSendCurrentNote: jest.fn().mockImplementation(() => !currentNoteSent),
         markCurrentNoteSent: jest.fn().mockImplementation(() => { currentNoteSent = true; }),
         transformContextMentions: jest.fn().mockImplementation((text: string) => text),
+        getAttachedFiles: jest.fn().mockReturnValue(new Set()),
+        clearAttachedFiles: jest.fn(),
       };
 
       deps.getFileContextManager = () => fileContextManager as any;
