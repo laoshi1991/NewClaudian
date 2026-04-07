@@ -1,5 +1,5 @@
-import type { App, EventRef } from 'obsidian';
-import { Notice, TFile } from 'obsidian';
+import type { App, EventRef, TAbstractFile } from 'obsidian';
+import { Notice, TFile, TFolder } from 'obsidian';
 
 import type { AgentManager } from '../../../core/agents';
 import type { McpServerManager } from '../../../core/mcp';
@@ -158,7 +158,7 @@ export class FileContextManager {
       svg.appendChild(line);
       svg.appendChild(polyline2);
       dropContent.appendChild(svg);
-      dropContent.createSpan({ text: '将文件拖放到此处以添加到您的消息中' });
+      dropContent.createSpan({ text: '将文件或文件夹拖放到此处以添加到您的消息中' });
     }
 
     let dragCounter = 0;
@@ -221,6 +221,21 @@ export class FileContextManager {
 
       const typesArray = Array.from(dragEvent.dataTransfer.types);
 
+      const addFolderFiles = (folder: TFolder) => {
+        const files: TFile[] = [];
+        const process = (f: TFolder) => {
+          for (const child of f.children) {
+            if (child instanceof TFile) {
+              files.push(child);
+            } else if (child instanceof TFolder) {
+              process(child);
+            }
+          }
+        };
+        process(folder);
+        return files;
+      };
+
       // 1. Internal Obsidian DND
       if (typesArray.includes('application/x-obsidian-dnd')) {
         const data = dragEvent.dataTransfer.getData('application/x-obsidian-dnd');
@@ -233,14 +248,22 @@ export class FileContextManager {
                 const normalized = this.normalizePathForVault(item.file);
                 if (normalized) {
                   const file = this.app.vault.getAbstractFileByPath(normalized);
-                  if (file instanceof TFile) filesToProcess.push(file);
+                  if (file instanceof TFile) {
+                    filesToProcess.push(file);
+                  } else if (file instanceof TFolder) {
+                    filesToProcess.push(...addFolderFiles(file));
+                  }
                 }
               } else if (item.type === 'files' && Array.isArray(item.files)) {
                 for (const f of item.files) {
                   const normalized = this.normalizePathForVault(f);
                   if (normalized) {
                     const file = this.app.vault.getAbstractFileByPath(normalized);
-                    if (file instanceof TFile) filesToProcess.push(file);
+                    if (file instanceof TFile) {
+                      filesToProcess.push(file);
+                    } else if (file instanceof TFolder) {
+                      filesToProcess.push(...addFolderFiles(file));
+                    }
                   }
                 }
               }
@@ -274,7 +297,11 @@ export class FileContextManager {
             if (!file) {
               file = this.app.metadataCache.getFirstLinkpathDest(decodedPath, '');
             }
-            if (file instanceof TFile) filesToProcess.push(file);
+            if (file instanceof TFile) {
+              filesToProcess.push(file);
+            } else if (file instanceof TFolder) {
+              filesToProcess.push(...addFolderFiles(file));
+            }
           }
         }
       }
