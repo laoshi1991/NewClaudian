@@ -899,7 +899,7 @@ describe('FileContextManager', () => {
   });
 
   describe('getAttachedFilesWithAbsolutePaths', () => {
-    it('returns absolute paths for all attached files', () => {
+    it('should return absolute paths for all attached files', () => {
       const app = createMockApp();
       const manager = new FileContextManager(
         app,
@@ -918,6 +918,65 @@ describe('FileContextManager', () => {
       const formatted = Array.from(manager.getAttachedFiles()).map(f => `/vault/${f}`);
       expect(formatted).toEqual(['/vault/a.md', '/vault/folder/c.md']);
 
+      manager.destroy();
+    });
+  });
+
+  describe('Drag and Drop', () => {
+    let mockAddEventListener: jest.Mock;
+    
+    beforeEach(() => {
+      mockAddEventListener = inputEl.addEventListener as jest.Mock;
+    });
+
+    it('should attach supported file types', () => {
+      const app = createMockApp({ files: ['document.pdf', 'archive.zip', 'script.py'] });
+      const manager = new FileContextManager(app, containerEl as any, inputEl, createMockCallbacks());
+      
+      const dropHandler = mockAddEventListener.mock.calls.find(c => c[0] === 'drop')[1];
+      
+      const dropEvent = new Event('drop') as any;
+      dropEvent.dataTransfer = {
+        types: ['Files'],
+        files: [
+          { path: '/vault/document.pdf' },
+          { path: '/vault/archive.zip' },
+          { path: '/vault/script.py' }
+        ]
+      };
+      dropEvent.preventDefault = jest.fn();
+      dropEvent.stopPropagation = jest.fn();
+
+      dropHandler(dropEvent);
+
+      const attached = Array.from(manager.getAttachedFiles());
+      expect(attached).toContain('document.pdf');
+      expect(attached).toContain('archive.zip');
+      expect(attached).toContain('script.py');
+      manager.destroy();
+    });
+
+    it('should ignore unsupported file types and show notice', () => {
+      const { Notice: NoticeMock } = jest.requireMock('obsidian');
+      const app = createMockApp({ files: ['test.unknown'] });
+      const manager = new FileContextManager(app, containerEl as any, inputEl, createMockCallbacks());
+      
+      const dropHandler = mockAddEventListener.mock.calls.find(c => c[0] === 'drop')[1];
+
+      const dropEvent = new Event('drop') as any;
+      dropEvent.dataTransfer = {
+        types: ['Files'],
+        files: [
+          { path: '/vault/test.unknown' }
+        ]
+      };
+      dropEvent.preventDefault = jest.fn();
+      dropEvent.stopPropagation = jest.fn();
+
+      dropHandler(dropEvent);
+
+      expect(manager.getAttachedFiles().size).toBe(0);
+      expect(NoticeMock).toHaveBeenCalledWith('Ignored 1 file(s) with unsupported formats.');
       manager.destroy();
     });
   });

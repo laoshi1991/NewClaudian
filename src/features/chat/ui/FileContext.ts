@@ -16,6 +16,18 @@ import { getVaultPath, normalizePathForVault as normalizePathForVaultUtil } from
 import { FileContextState } from './file-context/state/FileContextState';
 import { FileChipsView } from './file-context/view/FileChipsView';
 
+const SUPPORTED_EXTENSIONS = new Set([
+  // Documents & Text
+  'md', 'txt', 'csv', 'tsv', 'json', 'yaml', 'yml', 'xml', 'html', 'css', 'js', 'jsx', 'ts', 'tsx', 'py', 'java', 'c', 'cpp', 'go', 'rs', 'php', 'rb', 'swift', 'kt', 'sql', 'sh', 'bat',
+  'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'rtf', 'pages', 'odt',
+  // Images
+  'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico',
+  // Archives
+  'zip', 'rar', '7z', 'tar', 'gz', 'bz2',
+  // Audio/Video
+  'mp3', 'mp4', 'wav', 'avi', 'mov', 'mkv'
+]);
+
 export interface FileContextCallbacks {
   getExcludedTags: () => string[];
   onChipsChanged?: () => void;
@@ -223,14 +235,6 @@ export class FileContextManager {
 
       const typesArray = Array.from(dragEvent.dataTransfer.types);
 
-      // Debug: Log all types for missing DND folder issue
-      console.log('Drop event types:', typesArray);
-      for (const type of typesArray) {
-        try {
-          console.log(`Drop data for ${type}:`, dragEvent.dataTransfer.getData(type));
-        } catch { /* ignore */ }
-      }
-
       // 1. Internal Obsidian DND
       if (typesArray.includes('application/x-obsidian-dnd')) {
         const data = dragEvent.dataTransfer.getData('application/x-obsidian-dnd');
@@ -332,8 +336,16 @@ export class FileContextManager {
 
           if (decodedPath) {
             let file = this.app.vault.getAbstractFileByPath(decodedPath);
-            if (!file && !decodedPath.toLowerCase().endsWith('.md')) {
-              file = this.app.vault.getAbstractFileByPath(decodedPath + '.md');
+            if (!file) {
+              // Try appending supported extensions if missing
+              for (const ext of SUPPORTED_EXTENSIONS) {
+                if (decodedPath.toLowerCase().endsWith('.' + ext)) {
+                  break;
+                }
+              }
+              if (!decodedPath.match(/\.[a-zA-Z0-9]+$/)) {
+                file = this.app.vault.getAbstractFileByPath(decodedPath + '.md');
+              }
             }
             if (!file) {
               file = this.app.metadataCache.getFirstLinkpathDest(decodedPath, '');
@@ -351,13 +363,19 @@ export class FileContextManager {
         }
       }
 
-      // 3. Process Vault Files (.md)
+      // 3. Process Vault Files
+      let unsupportedCount = 0;
       for (const file of filesToProcess) {
-        if (file instanceof TFile && file.extension === 'md' && !this.hasExcludedTag(file)) {
-          const normalized = this.normalizePathForVault(file.path);
-          if (normalized) {
-            this.state.attachFile(normalized);
-            attachedCount++;
+        if (file instanceof TFile) {
+          const ext = file.extension.toLowerCase();
+          if (SUPPORTED_EXTENSIONS.has(ext) && !this.hasExcludedTag(file)) {
+            const normalized = this.normalizePathForVault(file.path);
+            if (normalized) {
+              this.state.attachFile(normalized);
+              attachedCount++;
+            }
+          } else if (!SUPPORTED_EXTENSIONS.has(ext)) {
+            unsupportedCount++;
           }
         } else if (file instanceof TFolder) {
           const normalized = this.normalizePathForVault(file.path);
@@ -378,9 +396,14 @@ export class FileContextManager {
             const normalized = this.normalizePathForVault(absolutePath);
             if (normalized) {
               const file = this.app.vault.getAbstractFileByPath(normalized);
-              if (file instanceof TFile && file.extension === 'md' && !this.hasExcludedTag(file)) {
-                this.state.attachFile(normalized);
-                attachedCount++;
+              if (file instanceof TFile) {
+                const ext = file.extension.toLowerCase();
+                if (SUPPORTED_EXTENSIONS.has(ext) && !this.hasExcludedTag(file)) {
+                  this.state.attachFile(normalized);
+                  attachedCount++;
+                } else if (!SUPPORTED_EXTENSIONS.has(ext)) {
+                  unsupportedCount++;
+                }
               } else if (file instanceof TFolder) {
                 this.state.attachFile(normalized + '/');
                 attachedCount++;
@@ -388,9 +411,13 @@ export class FileContextManager {
             }
           }
         }
-        if (attachedCount === 0) {
+        if (attachedCount === 0 && unsupportedCount === 0) {
           new Notice('Only files within the vault can be attached.');
         }
+      }
+
+      if (unsupportedCount > 0) {
+        new Notice(`Ignored ${unsupportedCount} file(s) with unsupported formats.`);
       }
 
       if (attachedCount > 0) {
