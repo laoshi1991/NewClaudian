@@ -492,38 +492,71 @@ describe('ImageContextManager - Private Helpers', () => {
 
       manager['handleDragEnter'](event as any);
 
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(event.stopPropagation).not.toHaveBeenCalled();
       expect(manager['dropOverlay']?.hasClass('visible')).toBeFalsy();
     });
 
-    it('handleDragOver should prevent default', () => {
+    it('handleDragOver should prevent default for files', () => {
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'] },
+        dataTransfer: { types: ['Files'], dropEffect: 'none' },
       };
 
       manager['handleDragOver'](event as any);
 
       expect(event.preventDefault).toHaveBeenCalled();
       expect(event.stopPropagation).toHaveBeenCalled();
+      expect(event.dataTransfer.dropEffect).toBe('copy');
+    });
+
+    it('handleDragOver should do nothing for non-files', () => {
+      const event = {
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+        dataTransfer: { types: ['text/plain'] },
+      };
+
+      manager['handleDragOver'](event as any);
+
+      expect(event.preventDefault).not.toHaveBeenCalled();
+      expect(event.stopPropagation).not.toHaveBeenCalled();
     });
 
     it('handleDragLeave should hide overlay when cursor leaves input wrapper', () => {
       // Show overlay first
+      manager['dragCounter'] = 1;
       manager['dropOverlay']?.addClass('visible');
 
       const event = {
         preventDefault: jest.fn(),
         stopPropagation: jest.fn(),
         dataTransfer: { types: ['Files'] },
-        clientX: -1, // Outside bounds
-        clientY: -1,
       };
 
       manager['handleDragLeave'](event as any);
 
       expect(event.preventDefault).toHaveBeenCalled();
+      expect(manager['dragCounter']).toBe(0);
       expect(manager['dropOverlay']?.hasClass('visible')).toBe(false);
+    });
+
+    it('handleDragLeave should not hide overlay if entering a child element', () => {
+      manager['dragCounter'] = 2;
+      manager['dropOverlay']?.addClass('visible');
+
+      const event = {
+        preventDefault: jest.fn(),
+        stopPropagation: jest.fn(),
+        dataTransfer: { types: ['Files'] },
+      };
+
+      manager['handleDragLeave'](event as any);
+
+      expect(event.preventDefault).toHaveBeenCalled();
+      expect(manager['dragCounter']).toBe(1);
+      expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
     });
 
     it('handleDrop should hide overlay and process image files', async () => {

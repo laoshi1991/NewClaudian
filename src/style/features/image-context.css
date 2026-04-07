@@ -118,7 +118,7 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
-  pointer-events: none;
+  pointer-events: none; /* Make sure overlay doesn't block drag events */
 }
 
 .claudian-drop-overlay.visible {

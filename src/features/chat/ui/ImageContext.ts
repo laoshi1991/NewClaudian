@@ -24,6 +24,7 @@ export class ImageContextManager {
   private imagePreviewEl: HTMLElement;
   private inputEl: HTMLTextAreaElement;
   private dropOverlay: HTMLElement | null = null;
+  private dragCounter = 0;
   private attachedImages: Map<string, ImageAttachment> = new Map();
 
   constructor(
@@ -95,10 +96,10 @@ export class ImageContextManager {
     line.setAttribute('x2', '12');
     line.setAttribute('y2', '15');
     svg.appendChild(pathEl);
-    svg.appendChild(polyline);
-    svg.appendChild(line);
-    dropContent.appendChild(svg);
-    dropContent.createSpan({ text: 'Drop image here' });
+      svg.appendChild(polyline);
+      svg.appendChild(line);
+      dropContent.appendChild(svg);
+      dropContent.createSpan({ text: 'Drop file/image here' });
 
     const dropZone = inputWrapper;
 
@@ -109,49 +110,44 @@ export class ImageContextManager {
   }
 
   private handleDragEnter(e: DragEvent) {
+    if (!e.dataTransfer || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
+
     e.preventDefault();
     e.stopPropagation();
 
-    if (e.dataTransfer?.types.includes('Files')) {
+    this.dragCounter++;
+    if (this.dragCounter === 1) {
       this.dropOverlay?.addClass('visible');
     }
   }
 
   private handleDragOver(e: DragEvent) {
-    if (e.dataTransfer?.types.includes('Files')) {
+    if (e.dataTransfer && e.dataTransfer.types && Array.from(e.dataTransfer.types).includes('Files')) {
       e.preventDefault();
       e.stopPropagation();
+      e.dataTransfer.dropEffect = 'copy';
     }
   }
 
   private handleDragLeave(e: DragEvent) {
-    if (!e.dataTransfer?.types.includes('Files')) return;
+    if (!e.dataTransfer || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
     
     e.preventDefault();
     e.stopPropagation();
 
-    const inputWrapper = this.containerEl.querySelector('.claudian-input-wrapper');
-    if (!inputWrapper) {
-      this.dropOverlay?.removeClass('visible');
-      return;
-    }
-
-    const rect = inputWrapper.getBoundingClientRect();
-    if (
-      e.clientX <= rect.left ||
-      e.clientX >= rect.right ||
-      e.clientY <= rect.top ||
-      e.clientY >= rect.bottom
-    ) {
+    this.dragCounter--;
+    if (this.dragCounter === 0) {
       this.dropOverlay?.removeClass('visible');
     }
   }
 
   private async handleDrop(e: DragEvent) {
-    if (!e.dataTransfer?.types.includes('Files')) return;
+    if (!e.dataTransfer || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
 
     e.preventDefault();
     e.stopPropagation();
+
+    this.dragCounter = 0;
     this.dropOverlay?.removeClass('visible');
 
     const files = e.dataTransfer?.files;

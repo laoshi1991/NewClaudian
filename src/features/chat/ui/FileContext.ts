@@ -121,74 +121,140 @@ export class FileContextManager {
   }
 
   private setupDragAndDrop() {
-    const dropZone = typeof this.inputEl.closest === 'function' 
-      ? this.inputEl.closest('.claudian-input-wrapper') || this.inputEl 
+    const inputWrapper = typeof this.inputEl.closest === 'function' 
+      ? this.inputEl.closest('.claudian-input-wrapper') as HTMLElement || this.inputEl 
       : this.inputEl;
     
-    const handleDrag = (e: Event) => {
-      if (!(e instanceof DragEvent) || !e.dataTransfer) return;
+    const dropZone = inputWrapper;
+
+    let dropOverlay = typeof dropZone.querySelector === 'function' 
+      ? dropZone.querySelector('.claudian-drop-overlay') as HTMLElement 
+      : null;
       
-      const hasObsidianDnd = e.dataTransfer.types.includes('application/x-obsidian-dnd');
-      const hasTextPlain = e.dataTransfer.types.includes('text/plain');
+    if (!dropOverlay && dropZone !== this.inputEl && typeof dropZone.createDiv === 'function') {
+      dropOverlay = dropZone.createDiv({ cls: 'claudian-drop-overlay' });
+      const dropContent = dropOverlay.createDiv({ cls: 'claudian-drop-content' });
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('width', '32');
+      svg.setAttribute('height', '32');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '2');
+      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      pathEl.setAttribute('d', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z');
+      const polyline1 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      polyline1.setAttribute('points', '14 2 14 8 20 8');
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', '12');
+      line.setAttribute('y1', '18');
+      line.setAttribute('x2', '12');
+      line.setAttribute('y2', '12');
+      const polyline2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      polyline2.setAttribute('points', '9 15 12 18 15 15');
       
-      // We must prevent default on dragenter and dragover to allow drop
-      if (hasObsidianDnd || hasTextPlain) {
-        e.preventDefault();
-        e.stopPropagation();
-        e.dataTransfer.dropEffect = 'copy';
+      svg.appendChild(pathEl);
+      svg.appendChild(polyline1);
+      svg.appendChild(line);
+      svg.appendChild(polyline2);
+      dropContent.appendChild(svg);
+      dropContent.createSpan({ text: 'Drop files here' });
+    }
+
+    let dragCounter = 0;
+
+    const isValidDrag = (e: DragEvent): boolean => {
+      if (!e.dataTransfer || !e.dataTransfer.types) return false;
+      // Convert DOMStringList to array to safely use .includes()
+      const types = Array.from(e.dataTransfer.types);
+      return types.includes('application/x-obsidian-dnd') ||
+             types.includes('text/plain') ||
+             types.includes('Files');
+    };
+
+    const handleDragEnter = (e: Event) => {
+      const dragEvent = e as DragEvent;
+      if (!isValidDrag(dragEvent)) return;
+      dragEvent.preventDefault();
+      dragEvent.stopPropagation();
+      dragCounter++;
+      if (dragCounter === 1 && dropOverlay) {
+        dropOverlay.addClass('visible');
       }
     };
 
-    dropZone.addEventListener('dragenter', handleDrag);
-    dropZone.addEventListener('dragover', handleDrag);
+    const handleDragOver = (e: Event) => {
+      const dragEvent = e as DragEvent;
+      if (!isValidDrag(dragEvent)) return;
+      dragEvent.preventDefault();
+      dragEvent.stopPropagation();
+      if (dragEvent.dataTransfer) {
+        dragEvent.dataTransfer.dropEffect = 'copy';
+      }
+    };
 
-    dropZone.addEventListener('drop', (e) => {
-      if (!(e instanceof DragEvent) || !e.dataTransfer) return;
+    const handleDragLeave = (e: Event) => {
+      const dragEvent = e as DragEvent;
+      if (!isValidDrag(dragEvent)) return;
+      dragEvent.preventDefault();
+      dragEvent.stopPropagation();
+      dragCounter--;
+      if (dragCounter === 0 && dropOverlay) {
+        dropOverlay.removeClass('visible');
+      }
+    };
+
+    const handleDrop = async (e: Event) => {
+      const dragEvent = e as DragEvent;
+      if (!isValidDrag(dragEvent) || !dragEvent.dataTransfer) return;
+
+      dragEvent.preventDefault();
+      dragEvent.stopPropagation();
+      
+      dragCounter = 0;
+      if (dropOverlay) {
+        dropOverlay.removeClass('visible');
+      }
 
       let attachedCount = 0;
+      const filesToProcess: TFile[] = [];
 
-      // 1. Try to process Obsidian's internal drag and drop format
-      if (e.dataTransfer.types.includes('application/x-obsidian-dnd')) {
-        const data = e.dataTransfer.getData('application/x-obsidian-dnd');
+      const typesArray = Array.from(dragEvent.dataTransfer.types);
+
+      // 1. Internal Obsidian DND
+      if (typesArray.includes('application/x-obsidian-dnd')) {
+        const data = dragEvent.dataTransfer.getData('application/x-obsidian-dnd');
         if (data) {
           try {
             const parsed = JSON.parse(data);
-            const filesToAttach: string[] = [];
-            
             const items = Array.isArray(parsed) ? parsed : [parsed];
             for (const item of items) {
               if (item.type === 'file' && typeof item.file === 'string') {
-                filesToAttach.push(item.file);
+                const normalized = this.normalizePathForVault(item.file);
+                if (normalized) {
+                  const file = this.app.vault.getAbstractFileByPath(normalized);
+                  if (file instanceof TFile) filesToProcess.push(file);
+                }
               } else if (item.type === 'files' && Array.isArray(item.files)) {
-                filesToAttach.push(...item.files);
-              }
-            }
-
-            for (const rawPath of filesToAttach) {
-              const normalized = this.normalizePathForVault(rawPath);
-              if (normalized) {
-                const file = this.app.vault.getAbstractFileByPath(normalized);
-                if (file instanceof TFile && !this.hasExcludedTag(file)) {
-                  this.state.attachFile(normalized);
-                  attachedCount++;
+                for (const f of item.files) {
+                  const normalized = this.normalizePathForVault(f);
+                  if (normalized) {
+                    const file = this.app.vault.getAbstractFileByPath(normalized);
+                    if (file instanceof TFile) filesToProcess.push(file);
+                  }
                 }
               }
             }
-          } catch {
-            // Ignore parse errors, fall through to text/plain
-          }
+          } catch { /* ignore */ }
         }
       }
 
-      // 2. Fallback to text/plain (URI or Markdown links)
-      if (attachedCount === 0 && e.dataTransfer.types.includes('text/plain')) {
-        const text = e.dataTransfer.getData('text/plain');
+      // 2. text/plain
+      if (filesToProcess.length === 0 && typesArray.includes('text/plain')) {
+        const text = dragEvent.dataTransfer.getData('text/plain');
         if (text) {
-          // Match obsidian://open?vault=...&file=...
           const uriMatch = text.match(/file=([^&\]\s]+)/);
-          // Match markdown link [name](path.md)
           const mdMatch = text.match(/\]\(([^)]+\.md)\)/i);
-          // Match wikilink [[path]]
           const wikiMatch = text.match(/\[\[([^\]]+)\]\]/);
 
           let decodedPath = '';
@@ -201,7 +267,6 @@ export class FileContextManager {
           }
 
           if (decodedPath) {
-            // The path might be missing the .md extension in some URIs
             let file = this.app.vault.getAbstractFileByPath(decodedPath);
             if (!file && !decodedPath.toLowerCase().endsWith('.md')) {
               file = this.app.vault.getAbstractFileByPath(decodedPath + '.md');
@@ -209,28 +274,39 @@ export class FileContextManager {
             if (!file) {
               file = this.app.metadataCache.getFirstLinkpathDest(decodedPath, '');
             }
-
-            if (file instanceof TFile && !this.hasExcludedTag(file)) {
-              const normalized = this.normalizePathForVault(file.path);
-              if (normalized) {
-                this.state.attachFile(normalized);
-                attachedCount++;
-              }
-            }
+            if (file instanceof TFile) filesToProcess.push(file);
           }
         }
       }
 
-      // 3. If we successfully found files or if it's an obsidian DND event, intercept it
-      if (attachedCount > 0 || e.dataTransfer.types.includes('application/x-obsidian-dnd') || e.dataTransfer.types.includes('text/plain')) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (attachedCount > 0) {
-          this.refreshCurrentNoteChip();
-          this.callbacks.onChipsChanged?.();
+      // 3. Process Vault Files (.md)
+      for (const file of filesToProcess) {
+        if (file.extension === 'md' && !this.hasExcludedTag(file)) {
+          const normalized = this.normalizePathForVault(file.path);
+          if (normalized) {
+            this.state.attachFile(normalized);
+            attachedCount++;
+          }
         }
       }
-    });
+
+      // 4. OS Files Fallback
+      if (attachedCount === 0 && dragEvent.dataTransfer.files && dragEvent.dataTransfer.files.length > 0) {
+        // Only vault files are supported for file attachments in Claudian right now.
+        // External dropped files won't be read into input content per user request.
+        new Notice('Only files within the vault can be attached.');
+      }
+
+      if (attachedCount > 0) {
+        this.refreshCurrentNoteChip();
+        this.callbacks.onChipsChanged?.();
+      }
+    };
+
+    dropZone.addEventListener('dragenter', handleDragEnter);
+    dropZone.addEventListener('dragover', handleDragOver);
+    dropZone.addEventListener('dragleave', handleDragLeave);
+    dropZone.addEventListener('drop', handleDrop);
   }
 
   /** Returns the current note path (shown as chip). */
