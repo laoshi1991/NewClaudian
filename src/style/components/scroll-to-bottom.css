@@ -1,0 +1,45 @@
+/* Scroll to bottom floating button */
+.claudian-scroll-to-bottom-btn {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(10px);
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 50;
+  padding: 0;
+}
+
+.claudian-scroll-to-bottom-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+  transform: translateX(-50%) translateY(8px); /* slightly less translation on hover to give a lift effect */
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.claudian-scroll-to-bottom-btn.visible {
+  opacity: 0.9;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.claudian-scroll-to-bottom-btn.visible:hover {
+  opacity: 1;
+}
+
+.claudian-scroll-to-bottom-btn svg {
+  width: 20px;
+  height: 20px;
+}

@@ -180,6 +180,13 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   // Messages area (inside wrapper)
   const messagesEl = messagesWrapperEl.createDiv({ cls: 'claudian-messages' });
 
+  // Scroll to bottom button
+  const scrollToBottomBtnEl = messagesWrapperEl.createEl('button', {
+    cls: 'claudian-scroll-to-bottom-btn',
+    attr: { 'aria-label': 'Scroll to bottom' },
+  });
+  scrollToBottomBtnEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+
   // Welcome message placeholder
   const welcomeEl = messagesEl.createDiv({ cls: 'claudian-welcome' });
 
@@ -210,6 +217,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   return {
     contentEl,
     messagesEl,
+    scrollToBottomBtnEl,
     welcomeEl,
     statusPanelContainerEl,
     inputContainerEl,
@@ -1109,44 +1117,73 @@ export function wireTabInputEvents(tab: TabData, plugin: ClaudianPlugin): void {
 
   const isAutoScrollAllowed = (): boolean => plugin.settings.enableAutoScroll ?? true;
 
+  let scrollTicking = false;
   const scrollHandler = () => {
-    if (!isAutoScrollAllowed()) {
-      if (reEnableTimeout) {
-        clearTimeout(reEnableTimeout);
-        reEnableTimeout = null;
-      }
-      state.autoScrollEnabled = false;
-      return;
-    }
+    if (!scrollTicking) {
+      window.requestAnimationFrame(() => {
+        const { scrollTop, scrollHeight, clientHeight } = dom.messagesEl;
+        const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+        const isAtBottom = distanceToBottom <= SCROLL_THRESHOLD;
 
-    const { scrollTop, scrollHeight, clientHeight } = dom.messagesEl;
-    const isAtBottom = scrollHeight - scrollTop - clientHeight <= SCROLL_THRESHOLD;
+        // Scroll-to-bottom floating button visibility (approx 3 messages height = 200px)
+        if (distanceToBottom > 200) {
+          dom.scrollToBottomBtnEl.classList.add('visible');
+        } else {
+          dom.scrollToBottomBtnEl.classList.remove('visible');
+        }
 
-    if (!isAtBottom) {
-      // Immediately disable when user scrolls up
-      if (reEnableTimeout) {
-        clearTimeout(reEnableTimeout);
-        reEnableTimeout = null;
-      }
-      state.autoScrollEnabled = false;
-    } else if (!state.autoScrollEnabled) {
-      // Debounce re-enabling to avoid bounce during scroll animation
-      if (!reEnableTimeout) {
-        reEnableTimeout = setTimeout(() => {
-          reEnableTimeout = null;
-          // Re-verify position before enabling (content may have changed)
-          const { scrollTop, scrollHeight, clientHeight } = dom.messagesEl;
-          if (scrollHeight - scrollTop - clientHeight <= SCROLL_THRESHOLD) {
-            state.autoScrollEnabled = true;
+        if (!isAutoScrollAllowed()) {
+          if (reEnableTimeout) {
+            clearTimeout(reEnableTimeout);
+            reEnableTimeout = null;
           }
-        }, RE_ENABLE_DELAY);
-      }
+          state.autoScrollEnabled = false;
+          scrollTicking = false;
+          return;
+        }
+
+        if (!isAtBottom) {
+          // Immediately disable when user scrolls up
+          if (reEnableTimeout) {
+            clearTimeout(reEnableTimeout);
+            reEnableTimeout = null;
+          }
+          state.autoScrollEnabled = false;
+        } else if (!state.autoScrollEnabled) {
+          // Debounce re-enabling to avoid bounce during scroll animation
+          if (!reEnableTimeout) {
+            reEnableTimeout = setTimeout(() => {
+              reEnableTimeout = null;
+              // Re-verify position before enabling (content may have changed)
+              const { scrollTop, scrollHeight, clientHeight } = dom.messagesEl;
+              if (scrollHeight - scrollTop - clientHeight <= SCROLL_THRESHOLD) {
+                state.autoScrollEnabled = true;
+              }
+            }, RE_ENABLE_DELAY);
+          }
+        }
+        scrollTicking = false;
+      });
+      scrollTicking = true;
     }
   };
   dom.messagesEl.addEventListener('scroll', scrollHandler, { passive: true });
   dom.eventCleanups.push(() => {
     dom.messagesEl.removeEventListener('scroll', scrollHandler);
     if (reEnableTimeout) clearTimeout(reEnableTimeout);
+  });
+
+  // Scroll to bottom button click/touch handlers
+  const scrollToBottomHandler = (e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
+    dom.messagesEl.scrollTo({ top: dom.messagesEl.scrollHeight, behavior: 'smooth' });
+    dom.scrollToBottomBtnEl.classList.remove('visible');
+  };
+  dom.scrollToBottomBtnEl.addEventListener('click', scrollToBottomHandler);
+  dom.scrollToBottomBtnEl.addEventListener('touchstart', scrollToBottomHandler, { passive: false });
+  dom.eventCleanups.push(() => {
+    dom.scrollToBottomBtnEl.removeEventListener('click', scrollToBottomHandler);
+    dom.scrollToBottomBtnEl.removeEventListener('touchstart', scrollToBottomHandler);
   });
 }
 

@@ -147,6 +147,7 @@ export interface TabUIComponents {
 export interface TabDOMElements {
   contentEl: HTMLElement;
   messagesEl: HTMLElement;
+  scrollToBottomBtnEl: HTMLElement;
   welcomeEl: HTMLElement | null;
 
   /** Container for status panel (fixed between messages and input). */
