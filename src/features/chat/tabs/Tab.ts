@@ -445,6 +445,45 @@ function initializeInputToolbar(
     onInsertCommand: (command: string) => {
       const inputEl = dom.inputEl;
       
+      if (command === 'model' && tab.ui.modelDropdown?.isVisible()) {
+        const text = inputEl.value;
+        const cursorPos = inputEl.selectionStart || 0;
+        const textBeforeCursor = text.substring(0, cursorPos);
+        const afterCursor = text.substring(cursorPos);
+        
+        const slashIndex = textBeforeCursor.lastIndexOf('/model');
+        if (slashIndex !== -1) {
+          const beforeSlash = textBeforeCursor.substring(0, slashIndex);
+          inputEl.value = beforeSlash + afterCursor;
+          inputEl.selectionStart = beforeSlash.length;
+          inputEl.selectionEnd = beforeSlash.length;
+        }
+        tab.ui.modelDropdown.hide();
+        inputEl.focus();
+        // trigger input event so UI updates correctly
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+
+      if (command === '' && tab.ui.slashCommandDropdown?.isVisible()) {
+        const text = inputEl.value;
+        const cursorPos = inputEl.selectionStart || 0;
+        const textBeforeCursor = text.substring(0, cursorPos);
+        const afterCursor = text.substring(cursorPos);
+        
+        const slashIndex = textBeforeCursor.lastIndexOf('/');
+        if (slashIndex !== -1) {
+          const beforeSlash = textBeforeCursor.substring(0, slashIndex);
+          inputEl.value = beforeSlash + afterCursor;
+          inputEl.selectionStart = beforeSlash.length;
+          inputEl.selectionEnd = beforeSlash.length;
+        }
+        tab.ui.slashCommandDropdown.hide();
+        inputEl.focus();
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+      
       // If the command is empty, just insert /
       const insertText = command ? `/${command} ` : '/';
       

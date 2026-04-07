@@ -988,6 +988,5 @@ export function createInputToolbar(
   const modelCommandBtn = new SlashCommandButton(parentEl, callbacks, '/model', 'model');
   const skillCommandBtn = new SlashCommandButton(parentEl, callbacks, '✨ 技能', ''); // Empty string to just type /
   const permissionToggle = new PermissionToggle(parentEl, callbacks); // Moved to end
-
   return { modelSelector, thinkingBudgetSelector, contextUsageMeter, externalContextSelector, mcpServerSelector, permissionToggle, modelCommandBtn, skillCommandBtn };
 }
