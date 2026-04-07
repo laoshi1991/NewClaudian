@@ -158,7 +158,7 @@ export class FileContextManager {
       svg.appendChild(line);
       svg.appendChild(polyline2);
       dropContent.appendChild(svg);
-      dropContent.createSpan({ text: 'Drop files here' });
+      dropContent.createSpan({ text: '将文件拖放到此处以添加到您的消息中' });
     }
 
     let dragCounter = 0;
