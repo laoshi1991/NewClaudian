@@ -170,7 +170,8 @@ export class FileContextManager {
       return types.includes('application/x-obsidian-dnd') ||
              types.includes('text/plain') ||
              types.includes('Files') ||
-             types.includes('application/vnd.obsidian.drag.folder');
+             types.includes('application/vnd.obsidian.drag.folder') ||
+             types.includes('text/uri-list');
     };
 
     const handleDragEnter = (e: Event) => {
@@ -301,11 +302,17 @@ export class FileContextManager {
         }
       }
 
-      // 2. text/plain
-      if (filesToProcess.length === 0 && typesArray.includes('text/plain')) {
-        const text = dragEvent.dataTransfer.getData('text/plain');
+      // 2. text/plain & text/uri-list
+      if (filesToProcess.length === 0) {
+        let text = '';
+        if (typesArray.includes('text/uri-list')) {
+          text = dragEvent.dataTransfer.getData('text/uri-list');
+        } else if (typesArray.includes('text/plain')) {
+          text = dragEvent.dataTransfer.getData('text/plain');
+        }
+
         if (text) {
-          const uriMatch = text.match(/file=([^&\]\s]+)/);
+          const uriMatch = text.match(/file=([^&\]\s]+)/) || text.match(/file:\/\/([^\s]+)/);
           const mdMatch = text.match(/\]\(([^)]+\.md)\)/i);
           const wikiMatch = text.match(/\[\[([^\]]+)\]\]/);
 
@@ -316,6 +323,11 @@ export class FileContextManager {
             try { decodedPath = decodeURIComponent(mdMatch[1]); } catch { /* ignore */ }
           } else if (wikiMatch && wikiMatch[1]) {
             decodedPath = wikiMatch[1];
+          }
+
+          // If no complex match, treat the whole string as a path
+          if (!decodedPath && !text.includes('\n')) {
+            decodedPath = text.trim();
           }
 
           if (decodedPath) {
