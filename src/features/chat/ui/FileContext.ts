@@ -169,7 +169,8 @@ export class FileContextManager {
       const types = Array.from(e.dataTransfer.types);
       return types.includes('application/x-obsidian-dnd') ||
              types.includes('text/plain') ||
-             types.includes('Files');
+             types.includes('Files') ||
+             types.includes('application/vnd.obsidian.drag.folder');
     };
 
     const handleDragEnter = (e: Event) => {
@@ -221,6 +222,14 @@ export class FileContextManager {
 
       const typesArray = Array.from(dragEvent.dataTransfer.types);
 
+      // Debug: Log all types for missing DND folder issue
+      console.log('Drop event types:', typesArray);
+      for (const type of typesArray) {
+        try {
+          console.log(`Drop data for ${type}:`, dragEvent.dataTransfer.getData(type));
+        } catch { /* ignore */ }
+      }
+
       // 1. Internal Obsidian DND
       if (typesArray.includes('application/x-obsidian-dnd')) {
         const data = dragEvent.dataTransfer.getData('application/x-obsidian-dnd');
@@ -265,6 +274,26 @@ export class FileContextManager {
                       filesToProcess.push(file);
                     }
                   }
+                }
+              }
+            }
+          } catch { /* ignore */ }
+        }
+      }
+      
+      // 1.5. Internal Obsidian DND (Folder specific)
+      if (typesArray.includes('application/vnd.obsidian.drag.folder')) {
+        const data = dragEvent.dataTransfer.getData('application/vnd.obsidian.drag.folder');
+        if (data) {
+          try {
+            const parsed = JSON.parse(data);
+            const pathStr = parsed.path || parsed.folder || (typeof parsed === 'string' ? parsed : null);
+            if (pathStr) {
+              const normalized = this.normalizePathForVault(pathStr);
+              if (normalized) {
+                const file = this.app.vault.getAbstractFileByPath(normalized);
+                if (file instanceof TFolder) {
+                  filesToProcess.push(file);
                 }
               }
             }
