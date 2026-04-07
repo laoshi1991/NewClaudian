@@ -1,6 +1,7 @@
 import type { Component, WorkspaceLeaf } from 'obsidian';
 
 import type { ClaudianService } from '../../../core/agent';
+import type { DropZoneCoordinator } from '../../../shared/components/DropZoneCoordinator';
 import type { ModelDropdown } from '../../../shared/components/ModelDropdown';
 import type { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import type {
@@ -125,6 +126,7 @@ export interface TabServices {
  * UI components managed per-tab.
  */
 export interface TabUIComponents {
+  dropZoneCoordinator: DropZoneCoordinator | null;
   fileContextManager: FileContextManager | null;
   imageContextManager: ImageContextManager | null;
   modelSelector: ModelSelector | null;

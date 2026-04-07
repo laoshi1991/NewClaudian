@@ -3,6 +3,7 @@ import { Notice, TFile, TFolder } from 'obsidian';
 
 import type { AgentManager } from '../../../core/agents';
 import type { McpServerManager } from '../../../core/mcp';
+import type { DropHandler } from '../../../shared/components/DropZoneCoordinator';
 import { MentionDropdownController } from '../../../shared/mention/MentionDropdownController';
 import { VaultMentionDataProvider } from '../../../shared/mention/VaultMentionDataProvider';
 import {
@@ -128,129 +129,34 @@ export class FileContextManager {
     this.renameEventRef = this.app.vault.on('rename', (file, oldPath) => {
       if (file instanceof TFile) this.handleFileRenamed(oldPath, file.path);
     });
-
-    this.setupDragAndDrop();
   }
 
-  private setupDragAndDrop() {
-    const inputWrapper = typeof this.inputEl.closest === 'function' 
-      ? this.inputEl.closest('.claudian-input-wrapper') as HTMLElement || this.inputEl 
-      : this.inputEl;
-    
-    const dropZone = inputWrapper;
-
-    let dropOverlay = typeof dropZone.querySelector === 'function' 
-      ? dropZone.querySelector('.claudian-drop-overlay') as HTMLElement 
-      : null;
-      
-    if (!dropOverlay && dropZone !== this.inputEl && typeof dropZone.createDiv === 'function') {
-      dropOverlay = dropZone.createDiv({ cls: 'claudian-drop-overlay' });
-      const dropContent = dropOverlay.createDiv({ cls: 'claudian-drop-content' });
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('width', '32');
-      svg.setAttribute('height', '32');
-      svg.setAttribute('fill', 'none');
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('stroke-width', '2');
-      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      pathEl.setAttribute('d', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z');
-      const polyline1 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      polyline1.setAttribute('points', '14 2 14 8 20 8');
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', '12');
-      line.setAttribute('y1', '18');
-      line.setAttribute('x2', '12');
-      line.setAttribute('y2', '12');
-      const polyline2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      polyline2.setAttribute('points', '9 15 12 18 15 15');
-      
-      svg.appendChild(pathEl);
-      svg.appendChild(polyline1);
-      svg.appendChild(line);
-      svg.appendChild(polyline2);
-      dropContent.appendChild(svg);
-      dropContent.createSpan({ text: '将文件或文件夹拖放到此处以添加到您的消息中' });
-    }
-
-    let dragCounter = 0;
-
-    const isValidDrag = (e: DragEvent): boolean => {
-      const types = e.dataTransfer?.types;
+  /** DropHandler for use with DropZoneCoordinator. */
+  readonly dropHandler: DropHandler = {
+    isValidDrag: (types) => {
       if (!types) return false;
-      
-      // High-performance check avoiding Array.from() and object creation during frequent events
       for (let i = 0; i < types.length; i++) {
-        const type = types[i];
+        const t = types[i];
         if (
-          type === 'application/x-obsidian-dnd' ||
-          type === 'text/plain' ||
-          type === 'Files' ||
-          type === 'application/vnd.obsidian.drag.folder' ||
-          type === 'text/uri-list'
-        ) {
-          return true;
-        }
+          t === 'application/x-obsidian-dnd' ||
+          t === 'text/plain' ||
+          t === 'Files' ||
+          t === 'application/vnd.obsidian.drag.folder' ||
+          t === 'text/uri-list'
+        ) return true;
       }
       return false;
-    };
+    },
+    handleDrop: (e) => this.handleDrop(e),
+  };
 
-    const handleDragEnter = (e: Event) => {
-      const dragEvent = e as DragEvent;
-      if (!isValidDrag(dragEvent)) return;
-      dragEvent.preventDefault();
-      dragEvent.stopPropagation();
-      dragCounter++;
-      if (dragCounter === 1 && dropOverlay) {
-        dropOverlay.addClass('visible');
-      }
-    };
+  async handleDrop(dragEvent: DragEvent): Promise<void> {
+    if (!dragEvent.dataTransfer) return;
 
-    const handleDragOver = (e: Event) => {
-      const dragEvent = e as DragEvent;
-      
-      // Extremely lightweight check for dragover to prevent lag
-      if (!dragEvent.dataTransfer || !dragEvent.dataTransfer.types) return;
-      
-      dragEvent.preventDefault();
-      dragEvent.stopPropagation();
-      if (dragEvent.dataTransfer) {
-        dragEvent.dataTransfer.dropEffect = 'copy';
-      }
-    };
+    let attachedCount = 0;
+    const filesToProcess: (TFile | TFolder)[] = [];
 
-    const handleDragLeave = (e: Event) => {
-      const dragEvent = e as DragEvent;
-      // Lightweight check for dragleave
-      if (!dragEvent.dataTransfer || !dragEvent.dataTransfer.types) return;
-      
-      dragEvent.preventDefault();
-      dragEvent.stopPropagation();
-      dragCounter--;
-      if (dragCounter <= 0) {
-        dragCounter = 0;
-        if (dropOverlay) {
-          dropOverlay.removeClass('visible');
-        }
-      }
-    };
-
-    const handleDrop = async (e: Event) => {
-      const dragEvent = e as DragEvent;
-      if (!isValidDrag(dragEvent) || !dragEvent.dataTransfer) return;
-
-      dragEvent.preventDefault();
-      dragEvent.stopPropagation();
-      
-      dragCounter = 0;
-      if (dropOverlay) {
-        dropOverlay.removeClass('visible');
-      }
-
-      let attachedCount = 0;
-      const filesToProcess: (TFile | TFolder)[] = [];
-
-      const typesArray = Array.from(dragEvent.dataTransfer.types);
+    const typesArray = Array.from(dragEvent.dataTransfer.types);
 
       // 1. Internal Obsidian DND
       if (typesArray.includes('application/x-obsidian-dnd')) {
@@ -441,12 +347,6 @@ export class FileContextManager {
         this.refreshCurrentNoteChip();
         this.callbacks.onChipsChanged?.();
       }
-    };
-
-    dropZone.addEventListener('dragenter', handleDragEnter);
-    dropZone.addEventListener('dragover', handleDragOver);
-    dropZone.addEventListener('dragleave', handleDragLeave);
-    dropZone.addEventListener('drop', handleDrop);
   }
 
   /** Returns the current note path (shown as chip). */

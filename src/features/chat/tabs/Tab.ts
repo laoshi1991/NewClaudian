@@ -7,6 +7,7 @@ import type { ChatMessage, ClaudeModel, Conversation, EffortLevel, PermissionMod
 import { DEFAULT_CLAUDE_MODELS, DEFAULT_EFFORT_LEVEL, DEFAULT_THINKING_BUDGET, getContextWindowSize, isAdaptiveThinkingModel } from '../../../core/types';
 import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
+import { DropZoneCoordinator } from '../../../shared/components/DropZoneCoordinator';
 import { ModelDropdown } from '../../../shared/components/ModelDropdown';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import { getEnhancedPath } from '../../../utils/env';
@@ -115,6 +116,7 @@ export function createTab(options: TabCreateOptions): TabData {
       titleGenerationService: null,
     },
     ui: {
+      dropZoneCoordinator: null,
       fileContextManager: null,
       imageContextManager: null,
       modelSelector: null,
@@ -308,11 +310,57 @@ export async function initializeTabService(
 }
 
 /**
+ * Creates the drop overlay DOM element inside the input wrapper.
+ */
+function createDropOverlay(parent: HTMLElement): HTMLElement {
+  const overlay = parent.createDiv({ cls: 'claudian-drop-overlay' });
+  const dropContent = overlay.createDiv({ cls: 'claudian-drop-content' });
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('width', '32');
+  svg.setAttribute('height', '32');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+
+  const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  pathEl.setAttribute('d', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z');
+  const polyline1 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  polyline1.setAttribute('points', '14 2 14 8 20 8');
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  line.setAttribute('x1', '12');
+  line.setAttribute('y1', '18');
+  line.setAttribute('x2', '12');
+  line.setAttribute('y2', '12');
+  const polyline2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+  polyline2.setAttribute('points', '9 15 12 18 15 15');
+
+  svg.append(pathEl, polyline1, line, polyline2);
+  dropContent.appendChild(svg);
+  dropContent.createSpan({ text: '将文件或文件夹拖放到此处以添加到您的消息中' });
+
+  return overlay;
+}
+
+/**
  * Initializes file and image context managers for a tab.
  */
 function initializeContextManagers(tab: TabData, plugin: ClaudianPlugin): void {
   const { dom } = tab;
   const app = plugin.app;
+
+  // Single drop zone coordinator — one set of drag events, one overlay
+  const inputWrapper = dom.inputContainerEl.querySelector('.claudian-input-wrapper') as HTMLElement;
+  let coordinator: DropZoneCoordinator | null = null;
+  if (inputWrapper) {
+    let overlay = inputWrapper.querySelector('.claudian-drop-overlay') as HTMLElement | null;
+    if (!overlay && typeof document !== 'undefined') {
+      overlay = createDropOverlay(inputWrapper);
+    }
+    coordinator = new DropZoneCoordinator(inputWrapper, overlay);
+  }
+  tab.ui.dropZoneCoordinator = coordinator;
 
   // File context manager - chips in contextRowEl, dropdown in inputContainerEl
   tab.ui.fileContextManager = new FileContextManager(
@@ -334,10 +382,11 @@ function initializeContextManagers(tab: TabData, plugin: ClaudianPlugin): void {
   );
   tab.ui.fileContextManager.setMcpManager(plugin.mcpManager);
   tab.ui.fileContextManager.setAgentService(plugin.agentManager);
+  coordinator?.registerHandler(tab.ui.fileContextManager.dropHandler);
 
-  // Image context manager - drag/drop uses inputContainerEl, preview in contextRowEl
+  // Image context manager - preview in contextRowEl, drop handled via coordinator
   tab.ui.imageContextManager = new ImageContextManager(
-    dom.inputContainerEl,
+    dom.contextRowEl,
     dom.inputEl,
     {
       onImagesChanged: () => {
@@ -348,8 +397,8 @@ function initializeContextManagers(tab: TabData, plugin: ClaudianPlugin): void {
         tab.renderer?.scrollToBottomIfNeeded();
       },
     },
-    dom.contextRowEl
   );
+  coordinator?.registerHandler(tab.ui.imageContextManager.dropHandler);
 }
 
 /**
@@ -1231,6 +1280,8 @@ export async function destroyTab(tab: TabData): Promise<void> {
 
   // Cleanup UI components
   tab.controllers.inputController?.destroyResumeDropdown();
+  tab.ui.dropZoneCoordinator?.destroy();
+  tab.ui.dropZoneCoordinator = null;
   tab.ui.fileContextManager?.destroy();
   tab.ui.slashCommandDropdown?.destroy();
   tab.ui.slashCommandDropdown = null;

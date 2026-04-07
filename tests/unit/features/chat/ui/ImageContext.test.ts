@@ -177,11 +177,10 @@ describe('ImageContextManager', () => {
   describe('constructor with previewContainerEl', () => {
     it('should use previewContainerEl when provided', () => {
       const previewContainer = createMockEl();
-      const { container: c } = createContainerWithInputWrapper();
       const input = createMockTextArea();
       const cb = createMockCallbacks();
 
-      const mgr = new ImageContextManager(c, input, cb, previewContainer);
+      const mgr = new ImageContextManager(previewContainer, input, cb);
       expect(mgr).toBeDefined();
       const previewEl = previewContainer.querySelector('.claudian-image-preview');
       expect(previewEl).not.toBeNull();
@@ -193,11 +192,10 @@ describe('ImageContextManager', () => {
       // Patch parentElement to match check in constructor
       Object.defineProperty(fileIndicator, 'parentElement', { get: () => previewContainer });
 
-      const { container: c } = createContainerWithInputWrapper();
       const input = createMockTextArea();
       const cb = createMockCallbacks();
 
-      new ImageContextManager(c, input, cb, previewContainer);
+      new ImageContextManager(previewContainer, input, cb);
       const children = previewContainer.children;
       const fileIndicatorIdx = children.indexOf(fileIndicator);
       const previewIdx = children.findIndex((el: any) => el.hasClass?.('claudian-image-preview'));
@@ -468,114 +466,31 @@ describe('ImageContextManager - Private Helpers', () => {
     });
   });
 
-  describe('Drag and Drop handlers', () => {
-    it('handleDragEnter should show overlay when dragging files', () => {
-      const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'] },
-      };
-
-      manager['handleDragEnter'](event as any);
-
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(event.stopPropagation).toHaveBeenCalled();
-      expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
+  describe('Drop handler', () => {
+    it('dropHandler.isValidDrag should return true for Files type', () => {
+      expect(manager.dropHandler.isValidDrag(['Files'])).toBe(true);
     });
 
-    it('handleDragEnter should not show overlay when not dragging files', () => {
-      const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['text/plain'] },
-      };
-
-      manager['handleDragEnter'](event as any);
-
-      expect(event.preventDefault).not.toHaveBeenCalled();
-      expect(event.stopPropagation).not.toHaveBeenCalled();
-      expect(manager['dropOverlay']?.hasClass('visible')).toBeFalsy();
+    it('dropHandler.isValidDrag should return false for non-Files types', () => {
+      expect(manager.dropHandler.isValidDrag(['text/plain'])).toBe(false);
     });
 
-    it('handleDragOver should prevent default for files', () => {
-      const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'], dropEffect: 'none' },
-      };
-
-      manager['handleDragOver'](event as any);
-
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(event.stopPropagation).toHaveBeenCalled();
-      expect(event.dataTransfer.dropEffect).toBe('copy');
+    it('dropHandler.isValidDrag should return false for null/undefined', () => {
+      expect(manager.dropHandler.isValidDrag(null as any)).toBe(false);
+      expect(manager.dropHandler.isValidDrag(undefined as any)).toBe(false);
     });
 
-    it('handleDragOver should do nothing for non-files', () => {
-      const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: null },
-      };
-
-      manager['handleDragOver'](event as any);
-
-      expect(event.preventDefault).not.toHaveBeenCalled();
-      expect(event.stopPropagation).not.toHaveBeenCalled();
-    });
-
-    it('handleDragLeave should hide overlay when cursor leaves input wrapper', () => {
-      // Show overlay first
-      manager['dragCounter'] = 1;
-      manager['dropOverlay']?.addClass('visible');
-
-      const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'] },
-      };
-
-      manager['handleDragLeave'](event as any);
-
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(manager['dragCounter']).toBe(0);
-      expect(manager['dropOverlay']?.hasClass('visible')).toBe(false);
-    });
-
-    it('handleDragLeave should not hide overlay if entering a child element', () => {
-      manager['dragCounter'] = 2;
-      manager['dropOverlay']?.addClass('visible');
-
-      const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'] },
-      };
-
-      manager['handleDragLeave'](event as any);
-
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(manager['dragCounter']).toBe(1);
-      expect(manager['dropOverlay']?.hasClass('visible')).toBe(true);
-    });
-
-    it('handleDrop should hide overlay and process image files', async () => {
-      manager['dropOverlay']?.addClass('visible');
+    it('handleDrop should process image files', async () => {
       const addImageSpy = jest.spyOn(manager as any, 'addImageFromFile').mockResolvedValue(true);
 
       const mockFile = { type: 'image/png', name: 'test.png', size: 1024 };
       const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'], files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } } },
+        dataTransfer: { files: { length: 1, 0: mockFile, [Symbol.iterator]: function* () { yield mockFile; } } },
       };
 
-      await manager['handleDrop'](event as any);
+      await manager.handleDrop(event as any);
 
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(manager['dropOverlay']?.hasClass('visible')).toBe(false);
       expect(addImageSpy).toHaveBeenCalledWith(mockFile, 'drop');
-
       addImageSpy.mockRestore();
     });
 
@@ -585,12 +500,10 @@ describe('ImageContextManager - Private Helpers', () => {
 
       const mockFile = { type: 'application/pdf', name: 'doc.pdf', size: 1024 };
       const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'], files: { length: 1, 0: mockFile } },
+        dataTransfer: { files: { length: 1, 0: mockFile } },
       };
 
-      await manager['handleDrop'](event as any);
+      await manager.handleDrop(event as any);
 
       expect(addImageSpy).not.toHaveBeenCalled();
       addImageSpy.mockRestore();
@@ -598,14 +511,10 @@ describe('ImageContextManager - Private Helpers', () => {
 
     it('handleDrop should handle no files gracefully', async () => {
       const event = {
-        preventDefault: jest.fn(),
-        stopPropagation: jest.fn(),
-        dataTransfer: { types: ['Files'], files: undefined },
+        dataTransfer: { files: undefined },
       };
 
-      await manager['handleDrop'](event as any);
-      // Should not throw and still call preventDefault
-      expect(event.preventDefault).toHaveBeenCalled();
+      await expect(manager.handleDrop(event as any)).resolves.not.toThrow();
     });
   });
 

@@ -2,6 +2,7 @@ import { Notice } from 'obsidian';
 import * as path from 'path';
 
 import type { ImageAttachment, ImageMediaType } from '../../../core/types';
+import type { DropHandler } from '../../../shared/components/DropZoneCoordinator';
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
@@ -19,22 +20,17 @@ export interface ImageContextCallbacks {
 
 export class ImageContextManager {
   private callbacks: ImageContextCallbacks;
-  private containerEl: HTMLElement;
   private previewContainerEl: HTMLElement;
   private imagePreviewEl: HTMLElement;
   private inputEl: HTMLTextAreaElement;
-  private dropOverlay: HTMLElement | null = null;
-  private dragCounter = 0;
   private attachedImages: Map<string, ImageAttachment> = new Map();
 
   constructor(
-    containerEl: HTMLElement,
+    previewContainerEl: HTMLElement,
     inputEl: HTMLTextAreaElement,
-    callbacks: ImageContextCallbacks,
-    previewContainerEl?: HTMLElement
+    callbacks: ImageContextCallbacks
   ) {
-    this.containerEl = containerEl;
-    this.previewContainerEl = previewContainerEl ?? containerEl;
+    this.previewContainerEl = previewContainerEl;
     this.inputEl = inputEl;
     this.callbacks = callbacks;
 
@@ -45,9 +41,20 @@ export class ImageContextManager {
       this.previewContainerEl.insertBefore(this.imagePreviewEl, fileIndicator);
     }
 
-    this.setupDragAndDrop();
     this.setupPasteHandler();
   }
+
+  /** DropHandler for use with DropZoneCoordinator. */
+  readonly dropHandler: DropHandler = {
+    isValidDrag: (types) => {
+      if (!types) return false;
+      for (let i = 0; i < types.length; i++) {
+        if (types[i] === 'Files') return true;
+      }
+      return false;
+    },
+    handleDrop: (e) => this.handleDrop(e),
+  };
 
   getAttachedImages(): ImageAttachment[] {
     return Array.from(this.attachedImages.values());
@@ -73,107 +80,11 @@ export class ImageContextManager {
     this.callbacks.onImagesChanged();
   }
 
-  private setupDragAndDrop() {
-    const inputWrapper = this.containerEl.querySelector('.claudian-input-wrapper') as HTMLElement;
-    if (!inputWrapper) return;
+  async handleDrop(e: DragEvent): Promise<void> {
+    if (!e.dataTransfer?.files) return;
 
-    let dropOverlay = inputWrapper.querySelector('.claudian-drop-overlay') as HTMLElement | null;
-    
-    if (!dropOverlay) {
-      dropOverlay = inputWrapper.createDiv({ cls: 'claudian-drop-overlay' });
-      const dropContent = dropOverlay.createDiv({ cls: 'claudian-drop-content' });
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('width', '32');
-      svg.setAttribute('height', '32');
-      svg.setAttribute('fill', 'none');
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('stroke-width', '2');
-      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      pathEl.setAttribute('d', 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z');
-      const polyline1 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      polyline1.setAttribute('points', '14 2 14 8 20 8');
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', '12');
-      line.setAttribute('y1', '18');
-      line.setAttribute('x2', '12');
-      line.setAttribute('y2', '12');
-      const polyline2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      polyline2.setAttribute('points', '9 15 12 18 15 15');
-      
-      svg.appendChild(pathEl);
-      svg.appendChild(polyline1);
-      svg.appendChild(line);
-      svg.appendChild(polyline2);
-      dropContent.appendChild(svg);
-      dropContent.createSpan({ text: '将文件或文件夹拖放到此处以添加到您的消息中' });
-    }
-    
-    this.dropOverlay = dropOverlay;
-
-    const dropZone = inputWrapper;
-
-    dropZone.addEventListener('dragenter', (e) => this.handleDragEnter(e as DragEvent));
-    dropZone.addEventListener('dragover', (e) => this.handleDragOver(e as DragEvent));
-    dropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e as DragEvent));
-    dropZone.addEventListener('drop', (e) => this.handleDrop(e as DragEvent));
-  }
-
-  private hasFiles(types: DataTransferItemList | readonly string[] | DOMStringList): boolean {
-    for (let i = 0; i < types.length; i++) {
-      if (types[i] === 'Files') return true;
-    }
-    return false;
-  }
-
-  private handleDragEnter(e: DragEvent) {
-    if (!e.dataTransfer || !e.dataTransfer.types || !this.hasFiles(e.dataTransfer.types)) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.dragCounter++;
-    if (this.dragCounter === 1) {
-      this.dropOverlay?.addClass('visible');
-    }
-  }
-
-  private handleDragOver(e: DragEvent) {
-    // Extremely lightweight check for dragover to prevent lag
-    if (e.dataTransfer && e.dataTransfer.types) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.dataTransfer.dropEffect = 'copy';
-    }
-  }
-
-  private handleDragLeave(e: DragEvent) {
-    if (!e.dataTransfer || !e.dataTransfer.types) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.dragCounter--;
-    if (this.dragCounter <= 0) {
-      this.dragCounter = 0;
-      this.dropOverlay?.removeClass('visible');
-    }
-  }
-
-  private async handleDrop(e: DragEvent): Promise<void> {
-    if (!e.dataTransfer || !e.dataTransfer.types || !this.hasFiles(e.dataTransfer.types)) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    this.dragCounter = 0;
-    this.dropOverlay?.removeClass('visible');
-
-    const files = e.dataTransfer?.files;
-    if (!files) return;
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    for (let i = 0; i < e.dataTransfer.files.length; i++) {
+      const file = e.dataTransfer.files[i];
       if (this.isImageFile(file)) {
         await this.addImageFromFile(file, 'drop');
       }

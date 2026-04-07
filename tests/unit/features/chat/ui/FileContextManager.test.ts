@@ -922,32 +922,23 @@ describe('FileContextManager', () => {
     });
   });
 
-  describe('Drag and Drop', () => {
-    let mockAddEventListener: jest.Mock;
-    
-    beforeEach(() => {
-      mockAddEventListener = inputEl.addEventListener as jest.Mock;
-    });
-
-    it('should attach supported file types', () => {
+  describe('Drop handler', () => {
+    it('should attach supported file types', async () => {
       const app = createMockApp({ files: ['document.pdf', 'archive.zip', 'script.py'] });
       const manager = new FileContextManager(app, containerEl as any, inputEl, createMockCallbacks());
-      
-      const dropHandler = mockAddEventListener.mock.calls.find(c => c[0] === 'drop')[1];
-      
-      const dropEvent = new Event('drop') as any;
-      dropEvent.dataTransfer = {
-        types: ['Files'],
-        files: [
-          { path: '/vault/document.pdf' },
-          { path: '/vault/archive.zip' },
-          { path: '/vault/script.py' }
-        ]
-      };
-      dropEvent.preventDefault = jest.fn();
-      dropEvent.stopPropagation = jest.fn();
 
-      dropHandler(dropEvent);
+      const dropEvent = {
+        dataTransfer: {
+          types: ['Files'],
+          files: [
+            { path: '/vault/document.pdf' },
+            { path: '/vault/archive.zip' },
+            { path: '/vault/script.py' },
+          ],
+        },
+      };
+
+      await manager.handleDrop(dropEvent as any);
 
       const attached = Array.from(manager.getAttachedFiles());
       expect(attached).toContain('document.pdf');
@@ -956,27 +947,34 @@ describe('FileContextManager', () => {
       manager.destroy();
     });
 
-    it('should ignore unsupported file types and show notice', () => {
+    it('should ignore unsupported file types and show notice', async () => {
       const { Notice: NoticeMock } = jest.requireMock('obsidian');
       const app = createMockApp({ files: ['test.unknown'] });
       const manager = new FileContextManager(app, containerEl as any, inputEl, createMockCallbacks());
-      
-      const dropHandler = mockAddEventListener.mock.calls.find(c => c[0] === 'drop')[1];
 
-      const dropEvent = new Event('drop') as any;
-      dropEvent.dataTransfer = {
-        types: ['Files'],
-        files: [
-          { path: '/vault/test.unknown' }
-        ]
+      const dropEvent = {
+        dataTransfer: {
+          types: ['Files'],
+          files: [{ path: '/vault/test.unknown' }],
+        },
       };
-      dropEvent.preventDefault = jest.fn();
-      dropEvent.stopPropagation = jest.fn();
 
-      dropHandler(dropEvent);
+      await manager.handleDrop(dropEvent as any);
 
       expect(manager.getAttachedFiles().size).toBe(0);
       expect(NoticeMock).toHaveBeenCalledWith('Ignored 1 file(s) with unsupported formats.');
+      manager.destroy();
+    });
+
+    it('dropHandler.isValidDrag should detect obsidian dnd types', () => {
+      const manager = new FileContextManager(createMockApp(), containerEl as any, inputEl, createMockCallbacks());
+      expect(manager.dropHandler.isValidDrag(['application/x-obsidian-dnd'])).toBe(true);
+      expect(manager.dropHandler.isValidDrag(['text/plain'])).toBe(true);
+      expect(manager.dropHandler.isValidDrag(['Files'])).toBe(true);
+      expect(manager.dropHandler.isValidDrag(['application/vnd.obsidian.drag.folder'])).toBe(true);
+      expect(manager.dropHandler.isValidDrag(['text/uri-list'])).toBe(true);
+      expect(manager.dropHandler.isValidDrag(['text/html'])).toBe(false);
+      expect(manager.dropHandler.isValidDrag(null as any)).toBe(false);
       manager.destroy();
     });
   });
