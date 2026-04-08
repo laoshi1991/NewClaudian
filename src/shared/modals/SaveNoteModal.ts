@@ -30,10 +30,11 @@ export class SaveNoteModal extends Modal {
   private isGenerating: boolean;
   private markdown: string;
   private onSave: (filename: string, folderPath: string) => Promise<void>;
-  
+
   private filenameInput: TextComponent;
   private saveBtn: ButtonComponent;
   private folderPath: string = '/';
+  private generatingOverlay: HTMLSpanElement;
 
   constructor(
     app: App, 
@@ -55,8 +56,9 @@ export class SaveNoteModal extends Modal {
     if (this.filenameInput) {
       this.filenameInput.setValue(newFilename);
       this.filenameInput.setDisabled(false);
-      this.filenameInput.inputEl.classList.remove('claudian-generating-text');
       this.filenameInput.inputEl.style.color = '';
+      this.generatingOverlay?.remove();
+      this.generatingOverlay = null;
       this.validateInput();
     }
   }
@@ -67,8 +69,9 @@ export class SaveNoteModal extends Modal {
     if (this.filenameInput) {
       this.filenameInput.setValue(fallbackFilename);
       this.filenameInput.setDisabled(false);
-      this.filenameInput.inputEl.classList.remove('claudian-generating-text');
       this.filenameInput.inputEl.style.color = '';
+      this.generatingOverlay?.remove();
+      this.generatingOverlay = null;
       this.validateInput();
     }
   }
@@ -116,8 +119,8 @@ export class SaveNoteModal extends Modal {
       
       if (this.isGenerating) {
         text.setDisabled(true);
-        text.inputEl.style.color = '';
-        text.inputEl.classList.add('claudian-generating-text');
+        text.inputEl.style.color = 'transparent';
+        text.inputEl.style.caretColor = 'transparent';
       }
       
       // Expand the input box
@@ -134,6 +137,22 @@ export class SaveNoteModal extends Modal {
       
       text.inputEl.parentNode?.replaceChild(wrapper, text.inputEl);
       wrapper.appendChild(text.inputEl);
+
+      // Add gradient text overlay when generating
+      if (this.isGenerating) {
+        const overlay = document.createElement('span');
+        overlay.addClass('claudian-generating-overlay');
+        overlay.textContent = this.defaultFilename;
+        // Match input font styling
+        const inputEl = text.inputEl;
+        overlay.style.fontSize = getComputedStyle(inputEl).fontSize;
+        overlay.style.fontFamily = getComputedStyle(inputEl).fontFamily;
+        overlay.style.fontWeight = getComputedStyle(inputEl).fontWeight;
+        overlay.style.lineHeight = getComputedStyle(inputEl).lineHeight;
+        overlay.style.letterSpacing = getComputedStyle(inputEl).letterSpacing;
+        wrapper.appendChild(overlay);
+        this.generatingOverlay = overlay;
+      }
       
       // Add the clear (x) button
       const clearBtn = wrapper.createSpan({ cls: 'clickable-icon' });

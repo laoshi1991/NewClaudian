@@ -108,7 +108,7 @@
       "changeFolder": "更改目录",
       "searchFolder": "搜索目录...",
       "rootFolder": "仓库根目录",
-      "generatingTitle": "正在生成文件名，请稍等...",
+      "generatingTitle": "正在生成文件名，请稍后...",
       "thinking": "思考中 {time}s...",
       "writing": "写入中...",
       "done": "完成",
