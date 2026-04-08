@@ -1,9 +1,9 @@
 import { setIcon } from 'obsidian';
 
 import { getToolIcon } from '../../../core/tools';
-import { t } from '../../../i18n';
 import type { ToolCallInfo, ToolDiffData } from '../../../core/types';
 import type { DiffLine, DiffStats } from '../../../core/types/diff';
+import { t } from '../../../i18n';
 import { setupCollapsible } from './collapsible';
 import { renderDiffContent } from './DiffRenderer';
 import { fileNameOnly } from './ToolCallRenderer';

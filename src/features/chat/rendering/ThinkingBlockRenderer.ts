@@ -1,5 +1,5 @@
-import { collapseElement, setupCollapsible } from './collapsible';
 import { t } from '../../../i18n';
+import { collapseElement, setupCollapsible } from './collapsible';
 
 export type RenderContentFn = (el: HTMLElement, markdown: string) => Promise<void>;
 

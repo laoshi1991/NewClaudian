@@ -7,9 +7,10 @@
  * - Confirmation (final instruction review)
  */
 
-import { t } from '../../i18n';
 import type { App } from 'obsidian';
-import { Modal, Setting, TextAreaComponent } from 'obsidian';
+import { Modal, TextAreaComponent } from 'obsidian';
+
+import { t } from '../../i18n';
 
 export type InstructionDecision = 'accept' | 'reject';
 

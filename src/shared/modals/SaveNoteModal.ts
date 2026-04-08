@@ -1,4 +1,6 @@
-import { App, Modal, Setting, TextComponent, FuzzySuggestModal, TFolder, setIcon, ButtonComponent } from 'obsidian';
+import type { App, ButtonComponent,TextComponent } from 'obsidian';
+import { FuzzySuggestModal, Modal, setIcon,Setting, TFolder } from 'obsidian';
+
 import { t } from '../../i18n';
 
 export class FolderSuggestModal extends FuzzySuggestModal<TFolder> {
@@ -238,7 +240,7 @@ export class SaveNoteModal extends Modal {
              try {
                 await this.onSave(this.defaultFilename, this.folderPath);
                 this.close();
-             } catch (err) {
+             } catch {
                 btn.setDisabled(false);
                 btn.setButtonText(t('common.save' as any));
              }

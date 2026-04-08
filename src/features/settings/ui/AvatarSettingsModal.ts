@@ -1,5 +1,5 @@
 import type { App} from 'obsidian';
-import { Modal, Notice, Setting, setIcon } from 'obsidian';
+import { Modal, Notice, setIcon,Setting } from 'obsidian';
 
 import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';

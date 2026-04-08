@@ -1,8 +1,7 @@
 import { Notice, setIcon } from 'obsidian';
 
-import { t } from '../../../i18n';
-
 import type { ClaudianPlugin as ClaudianPluginType } from '../../../core/types';
+import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
 
 export class PluginSettingsManager {

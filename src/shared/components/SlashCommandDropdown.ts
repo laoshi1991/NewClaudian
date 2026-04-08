@@ -6,8 +6,8 @@
  */
 
 import { getBuiltInCommandsForDropdown } from '../../core/commands';
-import { t } from '../../i18n';
 import type { SlashCommand } from '../../core/types';
+import { t } from '../../i18n';
 import { normalizeArgumentHint } from '../../utils/slashCommand';
 
 /**

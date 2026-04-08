@@ -1,7 +1,7 @@
 import * as nodePath from 'path';
 
-import { t } from '../../../i18n';
 import type { ExitPlanModeDecision } from '../../../core/types/tools';
+import { t } from '../../../i18n';
 import type { RenderContentFn } from './MessageRenderer';
 
 const HINTS_TEXT = 'Arrow keys to navigate \u00B7 Enter to select \u00B7 Esc to cancel';

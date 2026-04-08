@@ -1,10 +1,10 @@
 import { Notice, setIcon } from 'obsidian';
 
-import { t } from '../../../i18n';
 import { testMcpServer } from '../../../core/mcp/McpTester';
 import { McpStorage } from '../../../core/storage';
 import type { ClaudianMcpServer, McpServerConfig, McpServerType } from '../../../core/types';
 import { DEFAULT_MCP_SERVER, getMcpServerType } from '../../../core/types';
+import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
 import { McpServerModal } from './McpServerModal';
 import { McpTestModal } from './McpTestModal';

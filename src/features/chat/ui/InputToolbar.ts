@@ -17,11 +17,11 @@ import {
   isAdaptiveThinkingModel,
   THINKING_BUDGETS
 } from '../../../core/types';
+import { t } from '../../../i18n';
 import { CHECK_ICON_SVG, MCP_ICON_SVG } from '../../../shared/icons';
 import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../../utils/env';
 import { filterValidPaths, findConflictingPath, isDuplicatePath, isValidDirectoryPath, validateDirectoryPath } from '../../../utils/externalContext';
 import { expandHomePath, normalizePathForFilesystem } from '../../../utils/path';
-import { t } from '../../../i18n';
 
 export interface ToolbarSettings {
   model: ClaudeModel;

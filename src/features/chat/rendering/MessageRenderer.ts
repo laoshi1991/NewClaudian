@@ -1,16 +1,16 @@
 import type { App, Component } from 'obsidian';
-import { MarkdownRenderer, Notice, setIcon, TFolder } from 'obsidian';
+import { MarkdownRenderer, Notice, setIcon } from 'obsidian';
 
 import { isSubagentToolName, isWriteEditTool, TOOL_AGENT_OUTPUT } from '../../../core/tools/toolNames';
 import type { ChatMessage, ImageAttachment, SubagentInfo, ToolCallInfo } from '../../../core/types';
 import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
+import { SaveNoteModal } from '../../../shared/modals/SaveNoteModal';
 import { formatDurationMmSs } from '../../../utils/date';
 import { processFileLinks, registerFileLinkHandler } from '../../../utils/fileLink';
 import { replaceImageEmbedsWithHtml } from '../../../utils/imageEmbed';
-import { SaveNoteModal } from '../../../shared/modals/SaveNoteModal';
-import { TitleGenerationService } from '../services/TitleGenerationService';
 import { findRewindContext } from '../rewind';
+import { TitleGenerationService } from '../services/TitleGenerationService';
 import {
   renderStoredAsyncSubagent,
   renderStoredSubagent,
@@ -767,7 +767,8 @@ export class MessageRenderer {
             }
           }
         );
-      } catch (error) {
+      } catch {
+        // Fallback handled silently
         saveModal.setGenerationFailed(fallbackFilename);
       }
     });

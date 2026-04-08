@@ -1,8 +1,8 @@
-import { t } from '../../../i18n';
 import type { App } from 'obsidian';
 import { Modal, Notice, setIcon } from 'obsidian';
 
 import type { McpTestResult, McpTool } from '../../../core/mcp/McpTester';
+import { t } from '../../../i18n';
 
 function formatToggleError(error: unknown): string {
   if (!(error instanceof Error)) return 'Failed to update tool setting';
