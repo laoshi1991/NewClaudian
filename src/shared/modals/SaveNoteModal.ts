@@ -34,7 +34,7 @@ export class SaveNoteModal extends Modal {
   private filenameInput: TextComponent;
   private saveBtn: ButtonComponent;
   private folderPath: string = '/';
-  private generatingOverlay: HTMLSpanElement;
+  private generatingOverlay: HTMLSpanElement | null = null;
 
   constructor(
     app: App, 
