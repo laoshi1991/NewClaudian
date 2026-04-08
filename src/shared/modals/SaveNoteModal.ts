@@ -55,7 +55,8 @@ export class SaveNoteModal extends Modal {
     if (this.filenameInput) {
       this.filenameInput.setValue(newFilename);
       this.filenameInput.setDisabled(false);
-      this.filenameInput.inputEl.style.color = ''; // Reset color
+      this.filenameInput.inputEl.classList.remove('claudian-generating-text');
+      this.filenameInput.inputEl.style.color = '';
       this.validateInput();
     }
   }
@@ -66,7 +67,8 @@ export class SaveNoteModal extends Modal {
     if (this.filenameInput) {
       this.filenameInput.setValue(fallbackFilename);
       this.filenameInput.setDisabled(false);
-      this.filenameInput.inputEl.style.color = ''; // Reset color
+      this.filenameInput.inputEl.classList.remove('claudian-generating-text');
+      this.filenameInput.inputEl.style.color = '';
       this.validateInput();
     }
   }
@@ -114,7 +116,8 @@ export class SaveNoteModal extends Modal {
       
       if (this.isGenerating) {
         text.setDisabled(true);
-        text.inputEl.style.color = 'var(--text-error)'; // Make the text red while generating
+        text.inputEl.style.color = '';
+        text.inputEl.classList.add('claudian-generating-text');
       }
       
       // Expand the input box

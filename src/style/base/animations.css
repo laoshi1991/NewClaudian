@@ -42,3 +42,32 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes flowing-shimmer {
+  0% {
+    color: #e8945a;
+    text-shadow: 0 0 4px rgba(232, 148, 90, 0.3);
+  }
+  25% {
+    color: #f0c27f;
+    text-shadow: 0 0 8px rgba(240, 194, 127, 0.6), 0 0 16px rgba(232, 148, 90, 0.2);
+  }
+  50% {
+    color: #fceabb;
+    text-shadow: 0 0 10px rgba(252, 234, 187, 0.8), 0 0 20px rgba(240, 194, 127, 0.4), 0 0 30px rgba(232, 148, 90, 0.2);
+  }
+  75% {
+    color: #f0c27f;
+    text-shadow: 0 0 8px rgba(240, 194, 127, 0.6), 0 0 16px rgba(232, 148, 90, 0.2);
+  }
+  100% {
+    color: #e8945a;
+    text-shadow: 0 0 4px rgba(232, 148, 90, 0.3);
+  }
+}
+
+.claudian-generating-text {
+  animation: flowing-shimmer 3s ease-in-out infinite;
+  color: #e8945a !important;
+  caret-color: transparent;
+}
