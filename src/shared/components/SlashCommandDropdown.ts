@@ -6,6 +6,7 @@
  */
 
 import { getBuiltInCommandsForDropdown } from '../../core/commands';
+import { t } from '../../i18n';
 import type { SlashCommand } from '../../core/types';
 import { normalizeArgumentHint } from '../../utils/slashCommand';
 
@@ -323,7 +324,7 @@ export class SlashCommandDropdown {
 
     if (this.filteredCommands.length === 0) {
       const emptyEl = this.dropdownEl.createDiv({ cls: 'claudian-slash-empty' });
-      emptyEl.setText('No matching commands');
+      emptyEl.setText(t('common.ui.noMatchingCommands' as any));
     } else {
       for (let i = 0; i < this.filteredCommands.length; i++) {
         const cmd = this.filteredCommands[i];

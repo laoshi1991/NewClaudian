@@ -1,5 +1,6 @@
 import * as nodePath from 'path';
 
+import { t } from '../../../i18n';
 import type { ExitPlanModeDecision } from '../../../core/types/tools';
 import type { RenderContentFn } from './MessageRenderer';
 
@@ -42,7 +43,7 @@ export class InlineExitPlanMode {
     this.rootEl = this.containerEl.createDiv({ cls: 'claudian-plan-approval-inline' });
 
     const titleEl = this.rootEl.createDiv({ cls: 'claudian-plan-inline-title' });
-    titleEl.setText('Plan complete');
+    titleEl.setText(t('chat.renderer.planComplete' as any));
 
     this.planContent = this.readPlanContent();
     if (this.planContent) {

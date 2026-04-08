@@ -13,13 +13,46 @@
     "success": "Erfolg",
     "warning": "Warnung",
     "confirm": "Bestätigen",
-    "settings": "Einstellungen",
+    "settingsText": "Einstellungen",
     "advanced": "Erweitert",
     "enabled": "Aktiviert",
     "disabled": "Deaktiviert",
     "platform": "Plattform",
     "refresh": "Aktualisieren",
-    "rewind": "Zurückspulen"
+    "rewind": "Zurückspulen",
+    "skills": "Fähigkeiten",
+    "ui": {
+      "effort": "Aufwand:",
+      "thinking": "Denken:",
+      "plan": "PLANEN",
+      "yolo": "YOLO",
+      "safe": "Sicher",
+      "mcpServers": "MCP-Server",
+      "noMatchingCommands": "Keine passenden Befehle"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "Keine Claude Code Plugins gefunden. Aktivieren Sie Plugins über die Claude CLI.",
+        "projectPlugins": "Projekt-Plugins",
+        "userPlugins": "Benutzer-Plugins"
+      },
+      "mcp": {
+        "connectionFailed": "Verbindung fehlgeschlagen",
+        "noTools": "Keine Werkzeuginformationen verfügbar. Werkzeuge werden geladen, wenn sie im Chat verwendet werden.",
+        "disableAll": "Alle deaktivieren",
+        "noServers": "Keine MCP-Server konfiguriert. Klicken Sie auf \"Hinzufügen\", um einen hinzuzufügen."
+      },
+      "slashCommands": {
+        "noCommands": "Keine Befehle oder Fähigkeiten konfiguriert. Klicken Sie auf +, um eine zu erstellen."
+      },
+      "instructionModal": {
+        "yourInput": "Ihre Eingabe:",
+        "yourResponse": "Ihre Antwort:",
+        "refinedSnippet": "Optimiertes Snippet:",
+        "preview": "Vorschau",
+        "edit": "Bearbeiten"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +95,37 @@
       "expandOutput": "Befehlsausgabe ausklappen",
       "running": "Wird ausgeführt...",
       "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen"
+    },
+    "externalContext": {
+      "title": "Externe Kontexte",
+      "empty": "Klicken Sie auf das Ordnersymbol zum Hinzufügen"
+    },
+    "renderer": {
+      "copied": "kopiert!",
+      "saved": "gespeichert!",
+      "thinking": "Denken {time}s...",
+      "writing": "Schreiben...",
+      "done": "FERTIG",
+      "noChanges": "Keine Änderungen",
+      "tasksUpdated": "Aufgaben aktualisiert",
+      "planComplete": "Plan abgeschlossen",
+      "subagent": {
+        "initializing": "Initialisierung",
+        "running": "Läuft im Hintergrund",
+        "orphaned": "Verwaist"
+      }
     }
   },
   "settings": {
     "title": "NewClaudian Einstellungen",
+    "avatarSettings": {
+      "title": "Avatar-Einstellungen",
+      "userAvatar": "Benutzer-Avatar",
+      "aiAvatar": "AI-Avatar",
+      "uploadDesc": "Bild hochladen (max. 5MB), wird automatisch auf 1:1 quadratisch zugeschnitten.",
+      "saved": "Avatare erfolgreich gespeichert",
+      "saveFailed": "Speichern der Avatare fehlgeschlagen"
+    },
     "customization": "Anpassung",
     "userName": {
       "name": "Wie soll NewClaudian dich nennen?",

@@ -1,6 +1,7 @@
 import { setIcon } from 'obsidian';
 
 import { getToolIcon } from '../../../core/tools';
+import { t } from '../../../i18n';
 import type { ToolCallInfo, ToolDiffData } from '../../../core/types';
 import type { DiffLine, DiffStats } from '../../../core/types/diff';
 import { setupCollapsible } from './collapsible';
@@ -95,7 +96,7 @@ export function createWriteEditBlock(
   // Initial loading state
   const loadingRow = contentEl.createDiv({ cls: 'claudian-write-edit-diff-row' });
   const loadingEl = loadingRow.createDiv({ cls: 'claudian-write-edit-loading' });
-  loadingEl.setText('Writing...');
+  loadingEl.setText(t('chat.renderer.writing' as any));
 
   // Create state object
   const state: WriteEditState = {
@@ -154,7 +155,7 @@ export function finalizeWriteEditBlock(state: WriteEditState, isError: boolean):
     state.contentEl.empty();
     const row = state.contentEl.createDiv({ cls: 'claudian-write-edit-diff-row' });
     const doneEl = row.createDiv({ cls: 'claudian-write-edit-done-text' });
-    doneEl.setText('DONE');
+    doneEl.setText(t('chat.renderer.done' as any));
   }
 
   // Update wrapper class

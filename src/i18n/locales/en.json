@@ -2,10 +2,8 @@
   "common": {
     "save": "Save",
     "cancel": "Cancel",
-    "delete": "Delete",
     "edit": "Edit",
-    "add": "Add",
-    "remove": "Remove",
+    "delete": "Delete",
     "clear": "Clear",
     "clearAll": "Clear all",
     "loading": "Loading",
@@ -13,13 +11,46 @@
     "success": "Success",
     "warning": "Warning",
     "confirm": "Confirm",
-    "settings": "Settings",
+    "settingsText": "Settings",
     "advanced": "Advanced",
     "enabled": "Enabled",
     "disabled": "Disabled",
     "platform": "Platform",
     "refresh": "Refresh",
-    "rewind": "Rewind"
+    "rewind": "Rewind",
+    "skills": "Skills",
+    "ui": {
+      "effort": "Effort:",
+      "thinking": "Thinking:",
+      "plan": "PLAN",
+      "yolo": "YOLO",
+      "safe": "Safe",
+      "mcpServers": "MCP Servers",
+      "noMatchingCommands": "No matching commands"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "No Claude Code plugins found. Enable plugins via the Claude CLI.",
+        "projectPlugins": "Project Plugins",
+        "userPlugins": "User Plugins"
+      },
+      "mcp": {
+        "connectionFailed": "Connection failed",
+        "noTools": "No tools information available. Tools will be loaded when used in chat.",
+        "disableAll": "Disable All",
+        "noServers": "No MCP servers configured. Click \"Add\" to add one."
+      },
+      "slashCommands": {
+        "noCommands": "No commands or skills configured. Click + to create one."
+      },
+      "instructionModal": {
+        "yourInput": "Your input:",
+        "yourResponse": "Your response:",
+        "refinedSnippet": "Refined snippet:",
+        "preview": "Preview",
+        "edit": "Edit"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +93,37 @@
       "expandOutput": "Expand command output",
       "running": "Running...",
       "copyFailed": "Failed to copy to clipboard"
+    },
+    "externalContext": {
+      "title": "External Contexts",
+      "empty": "Click folder icon to add"
+    },
+    "renderer": {
+      "copied": "copied!",
+      "saved": "saved!",
+      "thinking": "Thinking {time}s...",
+      "writing": "Writing...",
+      "done": "DONE",
+      "noChanges": "No changes",
+      "tasksUpdated": "Tasks updated",
+      "planComplete": "Plan complete",
+      "subagent": {
+        "initializing": "Initializing",
+        "running": "Running in background",
+        "orphaned": "Orphaned"
+      }
     }
   },
   "settings": {
     "title": "NewClaudian Settings",
+    "avatarSettings": {
+      "title": "Avatar Settings",
+      "userAvatar": "User Avatar",
+      "aiAvatar": "AI Avatar",
+      "uploadDesc": "Upload image (max 5MB), will be cropped to 1:1 square.",
+      "saved": "Avatars saved successfully",
+      "saveFailed": "Failed to save avatars"
+    },
     "customization": "Customization",
     "userName": {
       "name": "What should NewClaudian call you?",

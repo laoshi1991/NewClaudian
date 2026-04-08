@@ -13,13 +13,46 @@
     "success": "성공",
     "warning": "경고",
     "confirm": "확인",
-    "settings": "설정",
+    "settingsText": "설정",
     "advanced": "고급",
     "enabled": "활성화",
     "disabled": "비활성화",
     "platform": "플랫폼",
     "refresh": "새로고침",
-    "rewind": "되감기"
+    "rewind": "되감기",
+    "skills": "스킬",
+    "ui": {
+      "effort": "강도:",
+      "thinking": "생각:",
+      "plan": "계획",
+      "yolo": "과감",
+      "safe": "안전",
+      "mcpServers": "MCP 서버",
+      "noMatchingCommands": "일치하는 명령 없음"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "Claude Code 플러그인을 찾을 수 없습니다. Claude CLI를 통해 플러그인을 활성화하세요.",
+        "projectPlugins": "프로젝트 플러그인",
+        "userPlugins": "사용자 플러그인"
+      },
+      "mcp": {
+        "connectionFailed": "연결 실패",
+        "noTools": "사용 가능한 도구 정보가 없습니다. 도구는 채팅에서 사용될 때 로드됩니다.",
+        "disableAll": "모두 비활성화",
+        "noServers": "구성된 MCP 서버가 없습니다. '추가'를 클릭하여 추가하세요."
+      },
+      "slashCommands": {
+        "noCommands": "구성된 명령이나 스킬이 없습니다. +를 클릭하여 만드세요."
+      },
+      "instructionModal": {
+        "yourInput": "입력:",
+        "yourResponse": "응답:",
+        "refinedSnippet": "최적화된 스니펫:",
+        "preview": "미리보기",
+        "edit": "편집"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +95,37 @@
       "expandOutput": "명령 출력 펼치기",
       "running": "실행 중...",
       "copyFailed": "클립보드에 복사하지 못했습니다"
+    },
+    "externalContext": {
+      "title": "외부 컨텍스트",
+      "empty": "폴더 아이콘을 클릭하여 추가"
+    },
+    "renderer": {
+      "copied": "복사되었습니다!",
+      "saved": "저장되었습니다!",
+      "thinking": "생각 중 {time}s...",
+      "writing": "작성 중...",
+      "done": "완료",
+      "noChanges": "변경 사항 없음",
+      "tasksUpdated": "작업이 업데이트되었습니다",
+      "planComplete": "계획 완료",
+      "subagent": {
+        "initializing": "초기화 중",
+        "running": "백그라운드에서 실행 중",
+        "orphaned": "연결 끊김"
+      }
     }
   },
   "settings": {
     "title": "NewClaudian 설정",
+    "avatarSettings": {
+      "title": "아바타 설정",
+      "userAvatar": "사용자 아바타",
+      "aiAvatar": "AI 아바타",
+      "uploadDesc": "이미지 업로드 (최대 5MB), 1:1 정사각형으로 자동 자르기.",
+      "saved": "아바타가 성공적으로 저장되었습니다",
+      "saveFailed": "아바타 저장 실패"
+    },
     "customization": "사용자 정의",
     "userName": {
       "name": "NewClaudian이 당신을 어떻게 불러야 합니까?",

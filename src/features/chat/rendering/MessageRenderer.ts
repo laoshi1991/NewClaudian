@@ -616,7 +616,7 @@ export class MessageRenderer {
             label.addEventListener('click', async () => {
               try {
                 await navigator.clipboard.writeText(code.textContent || '');
-                label.setText('copied!');
+                label.setText(t('chat.renderer.copied' as any));
                 setTimeout(() => label.setText(match[1]), 1500);
               } catch {
                 // Clipboard API may fail in non-secure contexts
@@ -649,8 +649,8 @@ export class MessageRenderer {
   /** Clipboard icon SVG for copy button. */
   private static readonly COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
   
-  /** Save icon SVG for save to note button. */
-  private static readonly SAVE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
+  /** Save icon SVG for save to note button (lucide-file-text). */
+  private static readonly SAVE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>`;
 
   /**
    * Adds action buttons (Save to Note, Copy) to a text block.
@@ -661,7 +661,36 @@ export class MessageRenderer {
   addTextActionButtons(textEl: HTMLElement, markdown: string): void {
     const actionsContainer = textEl.createDiv({ cls: 'claudian-text-actions' });
 
-    // Save Button
+    // Copy Button (Moved to first)
+    const copyBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-copy-btn' });
+    copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+    copyBtn.setAttribute('aria-label', 'Copy message');
+
+    let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    copyBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+
+      try {
+        await navigator.clipboard.writeText(markdown);
+      } catch {
+        return;
+      }
+
+      if (copyFeedbackTimeout) clearTimeout(copyFeedbackTimeout);
+
+      copyBtn.innerHTML = '';
+      copyBtn.setText(t('chat.renderer.copied' as any));
+      copyBtn.classList.add('action-success');
+
+      copyFeedbackTimeout = setTimeout(() => {
+        copyBtn.innerHTML = MessageRenderer.COPY_ICON;
+        copyBtn.classList.remove('action-success');
+        copyFeedbackTimeout = null;
+      }, 1500);
+    });
+
+    // Save Button (Moved to second)
     const saveBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-save-btn' });
     saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
     saveBtn.setAttribute('aria-label', 'Save to Note');
@@ -696,42 +725,13 @@ export class MessageRenderer {
       if (saveFeedbackTimeout) clearTimeout(saveFeedbackTimeout);
 
       saveBtn.innerHTML = '';
-      saveBtn.setText('saved!');
+      saveBtn.setText(t('chat.renderer.saved' as any));
       saveBtn.classList.add('action-success');
 
       saveFeedbackTimeout = setTimeout(() => {
         saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
         saveBtn.classList.remove('action-success');
         saveFeedbackTimeout = null;
-      }, 1500);
-    });
-
-    // Copy Button
-    const copyBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-copy-btn' });
-    copyBtn.innerHTML = MessageRenderer.COPY_ICON;
-    copyBtn.setAttribute('aria-label', 'Copy message');
-
-    let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    copyBtn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-
-      try {
-        await navigator.clipboard.writeText(markdown);
-      } catch {
-        return;
-      }
-
-      if (copyFeedbackTimeout) clearTimeout(copyFeedbackTimeout);
-
-      copyBtn.innerHTML = '';
-      copyBtn.setText('copied!');
-      copyBtn.classList.add('action-success');
-
-      copyFeedbackTimeout = setTimeout(() => {
-        copyBtn.innerHTML = MessageRenderer.COPY_ICON;
-        copyBtn.classList.remove('action-success');
-        copyFeedbackTimeout = null;
       }, 1500);
     });
   }
@@ -782,7 +782,7 @@ export class MessageRenderer {
       }
       if (feedbackTimeout) clearTimeout(feedbackTimeout);
       copyBtn.innerHTML = '';
-      copyBtn.setText('copied!');
+      copyBtn.setText(t('chat.renderer.copied' as any));
       copyBtn.classList.add('copied');
       feedbackTimeout = setTimeout(() => {
         copyBtn.innerHTML = MessageRenderer.COPY_ICON;

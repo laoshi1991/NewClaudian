@@ -13,13 +13,46 @@
     "success": "成功",
     "warning": "警告",
     "confirm": "確認",
-    "settings": "設定",
+    "settingsText": "設定",
     "advanced": "詳細",
     "enabled": "有効",
     "disabled": "無効",
     "platform": "プラットフォーム",
     "refresh": "更新",
-    "rewind": "巻き戻し"
+    "rewind": "巻き戻し",
+    "skills": "スキル",
+    "ui": {
+      "effort": "強度:",
+      "thinking": "思考:",
+      "plan": "計画",
+      "yolo": "大胆",
+      "safe": "安全",
+      "mcpServers": "MCP サーバー",
+      "noMatchingCommands": "一致するコマンドがありません"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "Claude Codeプラグインが見つかりません。Claude CLI経由で有効にしてください。",
+        "projectPlugins": "プロジェクトプラグイン",
+        "userPlugins": "ユーザープラグイン"
+      },
+      "mcp": {
+        "connectionFailed": "接続に失敗しました",
+        "noTools": "ツール情報がありません。ツールはチャットで使用されるときに読み込まれます。",
+        "disableAll": "すべて無効化",
+        "noServers": "MCPサーバーが設定されていません。「追加」をクリックして設定してください。"
+      },
+      "slashCommands": {
+        "noCommands": "コマンドやスキルが設定されていません。+をクリックして作成してください。"
+      },
+      "instructionModal": {
+        "yourInput": "あなたの入力:",
+        "yourResponse": "あなたの返答:",
+        "refinedSnippet": "最適化されたスニペット:",
+        "preview": "プレビュー",
+        "edit": "編集"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +95,37 @@
       "expandOutput": "コマンド出力を展開",
       "running": "実行中...",
       "copyFailed": "クリップボードへのコピーに失敗しました"
+    },
+    "externalContext": {
+      "title": "外部コンテキスト",
+      "empty": "フォルダアイコンをクリックして追加"
+    },
+    "renderer": {
+      "copied": "コピーしました!",
+      "saved": "保存しました!",
+      "thinking": "思考中 {time}s...",
+      "writing": "書き込み中...",
+      "done": "完了",
+      "noChanges": "変更なし",
+      "tasksUpdated": "タスクが更新されました",
+      "planComplete": "計画完了",
+      "subagent": {
+        "initializing": "初期化中",
+        "running": "バックグラウンドで実行中",
+        "orphaned": "切断されました"
+      }
     }
   },
   "settings": {
     "title": "NewClaudian 設定",
+    "avatarSettings": {
+      "title": "アバター設定",
+      "userAvatar": "ユーザーアバター",
+      "aiAvatar": "AIアバター",
+      "uploadDesc": "画像（最大5MB）をアップロード。1:1の正方形に切り抜かれます。",
+      "saved": "アバターを保存しました",
+      "saveFailed": "アバターの保存に失敗しました"
+    },
     "customization": "カスタマイズ",
     "userName": {
       "name": "NewClaudian はどのように呼びますか？",

@@ -2,6 +2,7 @@ import { setIcon } from 'obsidian';
 
 import { getToolIcon, TOOL_TASK } from '../../../core/tools';
 import type { SubagentInfo, ToolCallInfo } from '../../../core/types';
+import { t } from '../../../i18n';
 import { setupCollapsible } from './collapsible';
 import {
   getToolLabel,
@@ -496,7 +497,7 @@ export function createAsyncSubagentBlock(
   labelEl.setText(truncateDescription(description));
 
   const statusTextEl = headerEl.createDiv({ cls: 'claudian-subagent-status-text' });
-  statusTextEl.setText('Initializing');
+  statusTextEl.setText(t('chat.renderer.subagent.initializing' as any));
 
   const statusEl = headerEl.createDiv({ cls: 'claudian-subagent-status status-running' });
   statusEl.setAttribute('aria-label', 'Status: running');
@@ -527,7 +528,7 @@ export function updateAsyncSubagentRunning(
   setAsyncWrapperStatus(state.wrapperEl, 'running');
   updateAsyncLabel(state);
 
-  state.statusTextEl.setText('Running in background');
+  state.statusTextEl.setText(t('chat.renderer.subagent.running' as any));
 
   renderAsyncContentLikeSync(state.contentEl, state.info, 'running');
 }
@@ -572,7 +573,7 @@ export function markAsyncSubagentOrphaned(state: AsyncSubagentState): void {
   setAsyncWrapperStatus(state.wrapperEl, 'orphaned');
   updateAsyncLabel(state);
 
-  state.statusTextEl.setText('Orphaned');
+  state.statusTextEl.setText(t('chat.renderer.subagent.orphaned' as any));
 
   state.statusEl.className = 'claudian-subagent-status status-error';
   state.statusEl.empty();

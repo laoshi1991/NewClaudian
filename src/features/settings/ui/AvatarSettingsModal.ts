@@ -1,6 +1,7 @@
 import type { App} from 'obsidian';
-import { Modal, Notice,Setting } from 'obsidian';
+import { Modal, Notice, Setting, setIcon } from 'obsidian';
 
+import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
 import { ImageCropperModal } from './ImageCropperModal';
 
@@ -24,13 +25,13 @@ export class AvatarSettingsModal extends Modal {
     contentEl.empty();
     contentEl.addClass('claudian-avatar-modal');
 
-    contentEl.createEl('h2', { text: 'Avatar Settings' });
+    contentEl.createEl('h2', { text: t('settings.avatarSettings.title' as any) });
 
     // User Avatar Setting
     this.createAvatarUploadSetting(
       contentEl,
-      '我的头像',
-      '上传图片（最大5MB），将自动裁剪为 1:1 正方形。',
+      t('settings.avatarSettings.userAvatar' as any),
+      t('settings.avatarSettings.uploadDesc' as any),
       this.tempUserAvatar,
       (base64) => { this.tempUserAvatar = base64; }
     );
@@ -38,8 +39,8 @@ export class AvatarSettingsModal extends Modal {
     // AI Avatar Setting
     this.createAvatarUploadSetting(
       contentEl,
-      'AI头像',
-      '上传图片（最大5MB），将自动裁剪为 1:1 正方形。',
+      t('settings.avatarSettings.aiAvatar' as any),
+      t('settings.avatarSettings.uploadDesc' as any),
       this.tempAIAvatar,
       (base64) => { this.tempAIAvatar = base64; }
     );
@@ -47,14 +48,14 @@ export class AvatarSettingsModal extends Modal {
     const buttonContainer = contentEl.createDiv({ cls: 'claudian-avatar-modal-buttons' });
     
     const saveBtn = buttonContainer.createEl('button', {
-      text: 'Save',
+      text: t('common.save' as any),
       cls: 'mod-cta'
     });
     saveBtn.addEventListener('click', async () => {
       this.plugin.settings.userAvatar = this.tempUserAvatar;
       this.plugin.settings.aiAvatar = this.tempAIAvatar;
       await this.plugin.saveSettings();
-      new Notice('Avatars saved successfully');
+      new Notice(t('settings.avatarSettings.saved' as any));
       
       // Trigger a re-render for all views
       for (const view of this.plugin.getAllViews()) {
@@ -75,7 +76,7 @@ export class AvatarSettingsModal extends Modal {
     });
     
     const cancelBtn = buttonContainer.createEl('button', {
-      text: 'Cancel'
+      text: t('common.cancel' as any)
     });
     cancelBtn.addEventListener('click', () => {
       this.close();
@@ -93,27 +94,43 @@ export class AvatarSettingsModal extends Modal {
       .setName(name)
       .setDesc(desc);
 
-    const previewContainer = setting.controlEl.createDiv({ cls: 'claudian-avatar-preview-container' });
+    // Main wrapper for avatar and clear button
+    const controlWrapper = setting.controlEl.createDiv({ cls: 'claudian-avatar-control-wrapper' });
+
+    // Interactive avatar area
+    const avatarWrapper = controlWrapper.createDiv({ cls: 'claudian-avatar-interactive-wrapper' });
     
-    const previewEl = previewContainer.createEl('img', { cls: 'claudian-avatar-preview' });
+    // The image preview
+    const previewEl = avatarWrapper.createEl('img', { cls: 'claudian-avatar-preview' });
     if (currentAvatar) {
       previewEl.src = currentAvatar;
       previewEl.style.display = 'block';
     } else {
       previewEl.style.display = 'none';
+      // Provide a fallback placeholder or empty state background if needed via CSS
+      avatarWrapper.addClass('claudian-avatar-empty');
     }
 
-    const inputContainer = setting.controlEl.createDiv({ cls: 'claudian-avatar-input-container' });
+    // The camera overlay
+    const overlayEl = avatarWrapper.createDiv({ cls: 'claudian-avatar-overlay' });
+    const cameraIconEl = overlayEl.createSpan({ cls: 'claudian-avatar-camera-icon' });
+    setIcon(cameraIconEl, 'camera');
 
-    const fileInput = inputContainer.createEl('input', {
+    // Hidden file input
+    const fileInput = avatarWrapper.createEl('input', {
       type: 'file',
       attr: { accept: ALLOWED_TYPES.join(',') }
     });
+    fileInput.style.display = 'none'; // Completely hidden
 
-    fileInput.title = ' ';
+    // Click anywhere on the avatar triggers the file input
+    avatarWrapper.addEventListener('click', () => {
+      fileInput.click();
+    });
 
-    const clearBtn = inputContainer.createEl('button', {
-      text: 'Clear',
+    // Clear button (now beside the avatar wrapper)
+    const clearBtn = controlWrapper.createEl('button', {
+      text: t('common.clear' as any),
       cls: 'claudian-avatar-clear-btn'
     });
     
@@ -125,6 +142,7 @@ export class AvatarSettingsModal extends Modal {
       onUpload('');
       previewEl.src = '';
       previewEl.style.display = 'none';
+      avatarWrapper.addClass('claudian-avatar-empty');
       clearBtn.style.display = 'none';
       fileInput.value = '';
     });
@@ -141,7 +159,7 @@ export class AvatarSettingsModal extends Modal {
       }
 
       if (file.size > MAX_FILE_SIZE) {
-        new Notice('File size exceeds 2MB limit.');
+        new Notice('File size exceeds 5MB limit.');
         target.value = '';
         return;
       }
@@ -156,6 +174,7 @@ export class AvatarSettingsModal extends Modal {
             onUpload(croppedBase64);
             previewEl.src = croppedBase64;
             previewEl.style.display = 'block';
+            avatarWrapper.removeClass('claudian-avatar-empty');
             clearBtn.style.display = 'inline-block';
             new Notice(`${name} uploaded and cropped successfully!`);
           }).open();

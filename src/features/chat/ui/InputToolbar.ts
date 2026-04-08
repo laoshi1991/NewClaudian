@@ -21,6 +21,7 @@ import { CHECK_ICON_SVG, MCP_ICON_SVG } from '../../../shared/icons';
 import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../../utils/env';
 import { filterValidPaths, findConflictingPath, isDuplicatePath, isValidDirectoryPath, validateDirectoryPath } from '../../../utils/externalContext';
 import { expandHomePath, normalizePathForFilesystem } from '../../../utils/path';
+import { t } from '../../../i18n';
 
 export interface ToolbarSettings {
   model: ClaudeModel;
@@ -299,8 +300,8 @@ export class PermissionToggle {
       this.labelEl.setText('PLAN');
       this.labelEl.addClass('plan-active');
     } else {
-      this.toggleEl.style.display = '';
-      this.labelEl.removeClass('plan-active');
+        this.toggleEl.style.display = '';
+        this.labelEl.removeClass('plan-active');
       if (mode === 'yolo') {
         this.toggleEl.addClass('active');
         this.labelEl.setText('YOLO');
@@ -576,14 +577,14 @@ export class ExternalContextSelector {
 
     // Header
     const headerEl = this.dropdownEl.createDiv({ cls: 'claudian-external-context-header' });
-    headerEl.setText('External Contexts');
+    headerEl.setText(t('chat.externalContext.title' as any));
 
     // Path list
     const listEl = this.dropdownEl.createDiv({ cls: 'claudian-external-context-list' });
 
     if (this.externalContextPaths.length === 0) {
       const emptyEl = listEl.createDiv({ cls: 'claudian-external-context-empty' });
-      emptyEl.setText('Click folder icon to add');
+      emptyEl.setText(t('chat.externalContext.empty' as any));
     } else {
       for (const pathStr of this.externalContextPaths) {
         const itemEl = listEl.createDiv({ cls: 'claudian-external-context-item' });
@@ -767,7 +768,7 @@ export class McpServerSelector {
 
     // Header
     const headerEl = this.dropdownEl.createDiv({ cls: 'claudian-mcp-selector-header' });
-    headerEl.setText('MCP Servers');
+    headerEl.setText(t('common.ui.mcpServers' as any));
 
     // Server list
     const listEl = this.dropdownEl.createDiv({ cls: 'claudian-mcp-selector-list' });
@@ -983,10 +984,10 @@ export function createInputToolbar(
   const modelSelector = new ModelSelector(parentEl, callbacks);
   const thinkingBudgetSelector = new ThinkingBudgetSelector(parentEl, callbacks);
   const contextUsageMeter = new ContextUsageMeter(parentEl);
+  const modelCommandBtn = new SlashCommandButton(parentEl, callbacks, '/model', 'model');
+  const skillCommandBtn = new SlashCommandButton(parentEl, callbacks, `✨ ${t('common.skills' as any)}`, ''); // Empty string to just type /
   const externalContextSelector = new ExternalContextSelector(parentEl, callbacks);
   const mcpServerSelector = new McpServerSelector(parentEl);
-  const modelCommandBtn = new SlashCommandButton(parentEl, callbacks, '/model', 'model');
-  const skillCommandBtn = new SlashCommandButton(parentEl, callbacks, '✨ 技能', ''); // Empty string to just type /
   const permissionToggle = new PermissionToggle(parentEl, callbacks); // Moved to end
   return { modelSelector, thinkingBudgetSelector, contextUsageMeter, externalContextSelector, mcpServerSelector, permissionToggle, modelCommandBtn, skillCommandBtn };
 }

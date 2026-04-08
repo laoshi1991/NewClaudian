@@ -20,6 +20,7 @@ import {
   TOOL_WRITE,
 } from '../../../core/tools/toolNames';
 import type { ToolCallInfo } from '../../../core/types';
+import { t } from '../../../i18n';
 import { MCP_ICON_SVG } from '../../../shared/icons';
 import { setupCollapsible } from './collapsible';
 import { renderTodoItems } from './todoUtils';
@@ -377,7 +378,7 @@ export function renderTodoWriteResult(
   const todos = input.todos as TodoItem[] | undefined;
   if (!todos || !Array.isArray(todos)) {
     const item = container.createSpan({ cls: 'claudian-tool-result-item' });
-    item.setText('Tasks updated');
+    item.setText(t('chat.renderer.tasksUpdated' as any));
     return;
   }
 

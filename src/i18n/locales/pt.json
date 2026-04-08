@@ -13,13 +13,46 @@
     "success": "Sucesso",
     "warning": "Aviso",
     "confirm": "Confirmar",
-    "settings": "Configurações",
+    "settingsText": "Configurações",
     "advanced": "Avançado",
     "enabled": "Ativado",
     "disabled": "Desativado",
     "platform": "Plataforma",
     "refresh": "Atualizar",
-    "rewind": "Retroceder"
+    "rewind": "Retroceder",
+    "skills": "Habilidades",
+    "ui": {
+      "effort": "Esforço:",
+      "thinking": "Pensando:",
+      "plan": "PLANO",
+      "yolo": "YOLO",
+      "safe": "Seguro",
+      "mcpServers": "Servidores MCP",
+      "noMatchingCommands": "Nenhum comando correspondente"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "Nenhum plugin do Claude Code encontrado. Ative os plugins via Claude CLI.",
+        "projectPlugins": "Plugins do projeto",
+        "userPlugins": "Plugins do usuário"
+      },
+      "mcp": {
+        "connectionFailed": "Falha na conexão",
+        "noTools": "Nenhuma informação de ferramentas disponível. As ferramentas serão carregadas quando usadas no chat.",
+        "disableAll": "Desativar tudo",
+        "noServers": "Nenhum servidor MCP configurado. Clique em \"Adicionar\" para configurar um."
+      },
+      "slashCommands": {
+        "noCommands": "Nenhum comando ou habilidade configurado. Clique em + para criar um."
+      },
+      "instructionModal": {
+        "yourInput": "Sua entrada:",
+        "yourResponse": "Sua resposta:",
+        "refinedSnippet": "Trecho otimizado:",
+        "preview": "Visualizar",
+        "edit": "Editar"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -55,17 +88,44 @@
       "placeholder": "> Executar um comando bash...",
       "commandPanel": "Painel de comandos",
       "copyAriaLabel": "Copiar a saída do comando mais recente",
-      "clearAriaLabel": "Limpar a saída do bash",
+      "clearAriaLabel": "Limpiar a saída do bash",
       "commandLabel": "{command}",
       "statusLabel": "Estado: {status}",
       "collapseOutput": "Recolher a saída do comando",
       "expandOutput": "Expandir a saída do comando",
       "running": "Executando...",
       "copyFailed": "Falha ao copiar para a área de transferência"
+    },
+    "externalContext": {
+      "title": "Contextos externos",
+      "empty": "Clique no ícone da pasta para adicionar"
+    },
+    "renderer": {
+      "copied": "copiado!",
+      "saved": "salvo!",
+      "thinking": "Pensando {time}s...",
+      "writing": "Escrevendo...",
+      "done": "CONCLUÍDO",
+      "noChanges": "Sem alterações",
+      "tasksUpdated": "Tarefas atualizadas",
+      "planComplete": "Plano concluído",
+      "subagent": {
+        "initializing": "Inicializando",
+        "running": "Executando em segundo plano",
+        "orphaned": "Órfão"
+      }
     }
   },
   "settings": {
     "title": "Configurações do NewClaudian",
+    "avatarSettings": {
+      "title": "Configurações de Avatar",
+      "userAvatar": "Avatar do usuário",
+      "aiAvatar": "Avatar de IA",
+      "uploadDesc": "Envie uma imagem (máx. 5MB), ela será cortada automaticamente para um quadrado 1:1.",
+      "saved": "Avatares salvos com sucesso",
+      "saveFailed": "Falha ao salvar avatares"
+    },
     "customization": "Personalização",
     "userName": {
       "name": "Como o NewClaudian deve chamá-lo?",

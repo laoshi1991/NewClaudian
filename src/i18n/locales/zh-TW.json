@@ -13,13 +13,46 @@
     "success": "成功",
     "warning": "警告",
     "confirm": "確認",
-    "settings": "設置",
+    "settingsText": "設置",
     "advanced": "高級",
     "enabled": "已啟用",
     "disabled": "已禁用",
     "platform": "平台",
     "refresh": "重新整理",
-    "rewind": "回退"
+    "rewind": "回退",
+    "skills": "技能",
+    "ui": {
+      "effort": "強度:",
+      "thinking": "思考:",
+      "plan": "計畫",
+      "yolo": "奔放",
+      "safe": "安全",
+      "mcpServers": "MCP 伺服器",
+      "noMatchingCommands": "沒有符合的指令"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "找不到 Claude Code 外掛。請透過 Claude CLI 啟用外掛。",
+        "projectPlugins": "專案外掛",
+        "userPlugins": "使用者外掛"
+      },
+      "mcp": {
+        "connectionFailed": "連線失敗",
+        "noTools": "沒有可用的工具資訊。工具將在聊天中使用時載入。",
+        "disableAll": "全部停用",
+        "noServers": "未設定 MCP 伺服器。點擊「新增」設定一個。"
+      },
+      "slashCommands": {
+        "noCommands": "未設定指令或技能。點擊 + 建立一個。"
+      },
+      "instructionModal": {
+        "yourInput": "您的輸入：",
+        "yourResponse": "您的回覆：",
+        "refinedSnippet": "最佳化後的片段：",
+        "preview": "預覽",
+        "edit": "編輯"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +95,37 @@
       "expandOutput": "展開指令輸出",
       "running": "執行中...",
       "copyFailed": "複製到剪貼簿失敗"
+    },
+    "externalContext": {
+      "title": "外部上下文",
+      "empty": "點擊資料夾圖示新增"
+    },
+    "renderer": {
+      "copied": "已複製!",
+      "saved": "已儲存!",
+      "thinking": "思考中 {time}s...",
+      "writing": "寫入中...",
+      "done": "完成",
+      "noChanges": "沒有變化",
+      "tasksUpdated": "任務已更新",
+      "planComplete": "計畫完成",
+      "subagent": {
+        "initializing": "初始化中",
+        "running": "背景執行中",
+        "orphaned": "已斷開"
+      }
     }
   },
   "settings": {
     "title": "NewClaudian 設定",
+    "avatarSettings": {
+      "title": "頭像設定",
+      "userAvatar": "我的頭像",
+      "aiAvatar": "AI頭像",
+      "uploadDesc": "上傳圖片（最大5MB），將自動裁剪為 1:1 正方形。",
+      "saved": "頭像儲存成功",
+      "saveFailed": "頭像儲存失敗"
+    },
     "customization": "個人化設定",
     "userName": {
       "name": "NewClaudian 應該如何稱呼您？",

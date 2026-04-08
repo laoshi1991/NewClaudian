@@ -347,7 +347,7 @@ export const DEFAULT_SETTINGS: ClaudianSettings = {
   aiAvatar: '',
 
   // Internationalization
-  locale: 'en',  // Default to English
+  locale: 'zh-CN',  // Default to Chinese (Simplified)
 
   // CLI paths
   claudeCliPath: '',  // Legacy field (empty = not migrated)

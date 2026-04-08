@@ -1,8 +1,8 @@
 {
   "id": "NewClaudian",
   "name": "NewClaudian",
-  "version": "2.1",
-  "minAppVersion": "1.7.0",
+  "version": "2.1.0",
+  "minAppVersion": "1.4.0",
   "description": "Embeds Claude Code as an AI collaborator in your vault. Your vault becomes Claude's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.",
   "author": "laoshi1991",
   "authorUrl": "https://github.com/laoshi1991",

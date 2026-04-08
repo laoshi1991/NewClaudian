@@ -2,24 +2,55 @@
   "common": {
     "save": "保存",
     "cancel": "取消",
-    "delete": "删除",
     "edit": "编辑",
-    "add": "添加",
-    "remove": "移除",
+    "delete": "删除",
     "clear": "清除",
-    "clearAll": "清除全部",
+    "clearAll": "清除所有",
     "loading": "加载中",
     "error": "错误",
     "success": "成功",
     "warning": "警告",
     "confirm": "确认",
-    "settings": "设置",
+    "settingsText": "设置",
     "advanced": "高级",
     "enabled": "已启用",
     "disabled": "已禁用",
     "platform": "平台",
     "refresh": "刷新",
-    "rewind": "回退"
+    "rewind": "撤回",
+    "skills": "技能",
+    "ui": {
+      "effort": "强度:",
+      "thinking": "思考:",
+      "plan": "计划",
+      "yolo": "奔放",
+      "safe": "安全",
+      "mcpServers": "MCP 服务器",
+      "noMatchingCommands": "没有匹配的命令"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "未找到 Claude Code 插件。请通过 Claude CLI 启用插件。",
+        "projectPlugins": "项目插件",
+        "userPlugins": "用户插件"
+      },
+      "mcp": {
+        "connectionFailed": "连接失败",
+        "noTools": "没有可用的工具信息。工具将在聊天中使用时加载。",
+        "disableAll": "全部禁用",
+        "noServers": "未配置 MCP 服务器。点击“添加”配置一个。"
+      },
+      "slashCommands": {
+        "noCommands": "未配置命令或技能。点击 + 创建一个。"
+      },
+      "instructionModal": {
+        "yourInput": "你的输入：",
+        "yourResponse": "你的回复：",
+        "refinedSnippet": "优化后的片段：",
+        "preview": "预览",
+        "edit": "编辑"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +93,37 @@
       "expandOutput": "展开命令输出",
       "running": "运行中...",
       "copyFailed": "复制到剪贴板失败"
+    },
+    "externalContext": {
+      "title": "外部上下文",
+      "empty": "点击文件夹图标添加"
+    },
+    "renderer": {
+      "copied": "已复制!",
+      "saved": "已保存!",
+      "thinking": "思考中 {time}s...",
+      "writing": "写入中...",
+      "done": "完成",
+      "noChanges": "没有变化",
+      "tasksUpdated": "任务已更新",
+      "planComplete": "计划完成",
+      "subagent": {
+        "initializing": "初始化中",
+        "running": "后台运行中",
+        "orphaned": "已断开"
+      }
     }
   },
   "settings": {
     "title": "NewClaudian 设置",
+    "avatarSettings": {
+      "title": "头像设置",
+      "userAvatar": "我的头像",
+      "aiAvatar": "AI头像",
+      "uploadDesc": "上传图片（最大5MB），将自动裁剪为 1:1 正方形。",
+      "saved": "头像保存成功",
+      "saveFailed": "头像保存失败"
+    },
     "customization": "个性化设置",
     "userName": {
       "name": "NewClaudian 应该如何称呼你？",

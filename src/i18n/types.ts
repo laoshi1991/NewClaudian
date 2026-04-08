@@ -23,7 +23,7 @@ export type TranslationKey =
   | 'common.success'
   | 'common.warning'
   | 'common.confirm'
-  | 'common.settings'
+  | 'common.settingsText'
   | 'common.advanced'
   | 'common.enabled'
   | 'common.disabled'

@@ -1,8 +1,8 @@
+import { t } from '../../../i18n';
 import type { App, ToggleComponent } from 'obsidian';
 import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
 import type { SlashCommand } from '../../../core/types';
-import { t } from '../../../i18n';
 import type ClaudianPlugin from '../../../main';
 import { extractFirstParagraph, isSkill, normalizeArgumentHint, parseSlashCommandContent, validateCommandName } from '../../../utils/slashCommand';
 
@@ -308,7 +308,7 @@ export class SlashCommandSettings {
 
     if (commands.length === 0) {
       const emptyEl = this.containerEl.createDiv({ cls: 'claudian-sp-empty-state' });
-      emptyEl.setText('No commands or skills configured. Click + to create one.');
+      emptyEl.setText(t('settings.slashCommands.noCommands' as any));
       return;
     }
 

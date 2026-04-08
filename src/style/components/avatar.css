@@ -4,39 +4,71 @@
   margin-bottom: 24px;
 }
 
-.claudian-avatar-preview-container {
+.claudian-avatar-control-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.claudian-avatar-interactive-wrapper {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 10px;
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.claudian-avatar-interactive-wrapper:hover {
+  border-color: var(--interactive-accent);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .claudian-avatar-preview {
-  max-width: 60px;
-  max-height: 60px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid var(--background-modifier-border);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.claudian-avatar-input-container {
+.claudian-avatar-empty {
+  background-color: var(--background-secondary-alt);
+}
+
+/* The camera overlay icon that sits on bottom right */
+.claudian-avatar-overlay {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 24px;
+  height: 24px;
+  background-color: var(--background-primary);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-/* Hide the "No file chosen" text unconditionally */
-.claudian-avatar-input-container input[type="file"] {
-  width: 90px; /* Constrain width to only show the button */
-  color: transparent;
-}
-
-.claudian-avatar-input-container input[type="file"]::file-selector-button,
-.claudian-avatar-input-container input[type="file"]::-webkit-file-upload-button {
+  justify-content: center;
+  border: 1px solid var(--background-modifier-border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
   color: var(--text-normal);
-  font-size: var(--font-text-size, 14px); /* Restore button text size */
+  transition: all 0.2s ease;
+}
+
+.claudian-avatar-interactive-wrapper:hover .claudian-avatar-overlay {
+  background-color: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+  transform: scale(1.1);
+}
+
+.claudian-avatar-camera-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .claudian-avatar-clear-btn {

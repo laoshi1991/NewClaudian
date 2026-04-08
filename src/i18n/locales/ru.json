@@ -13,13 +13,46 @@
     "success": "Успех",
     "warning": "Предупреждение",
     "confirm": "Подтвердить",
-    "settings": "Настройки",
+    "settingsText": "Настройки",
     "advanced": "Дополнительно",
     "enabled": "Включено",
     "disabled": "Отключено",
     "platform": "Платформа",
     "refresh": "Обновить",
-    "rewind": "Откатить"
+    "rewind": "Откатить",
+    "skills": "Навыки",
+    "ui": {
+      "effort": "Усилие:",
+      "thinking": "Размышление:",
+      "plan": "ПЛАН",
+      "yolo": "YOLO",
+      "safe": "Безопасный",
+      "mcpServers": "Серверы MCP",
+      "noMatchingCommands": "Нет подходящих команд"
+    },
+    "settings": {
+      "plugins": {
+        "noPlugins": "Плагины Claude Code не найдены. Включите плагины через Claude CLI.",
+        "projectPlugins": "Плагины проекта",
+        "userPlugins": "Пользовательские плагины"
+      },
+      "mcp": {
+        "connectionFailed": "Ошибка подключения",
+        "noTools": "Информация об инструментах недоступна. Инструменты будут загружены при использовании в чате.",
+        "disableAll": "Отключить все",
+        "noServers": "Серверы MCP не настроены. Нажмите «Добавить», чтобы добавить сервер."
+      },
+      "slashCommands": {
+        "noCommands": "Команды или навыки не настроены. Нажмите +, чтобы создать их."
+      },
+      "instructionModal": {
+        "yourInput": "Ваш ввод:",
+        "yourResponse": "Ваш ответ:",
+        "refinedSnippet": "Улучшенный фрагмент:",
+        "preview": "Предпросмотр",
+        "edit": "Редактировать"
+      }
+    }
   },
   "chat": {
     "rewind": {
@@ -62,10 +95,37 @@
       "expandOutput": "Развернуть вывод команды",
       "running": "Выполняется...",
       "copyFailed": "Не удалось скопировать в буфер обмена"
+    },
+    "externalContext": {
+      "title": "Внешние контексты",
+      "empty": "Нажмите на значок папки, чтобы добавить"
+    },
+    "renderer": {
+      "copied": "скопировано!",
+      "saved": "сохранено!",
+      "thinking": "Думает {time}с...",
+      "writing": "Запись...",
+      "done": "ГОТОВО",
+      "noChanges": "Нет изменений",
+      "tasksUpdated": "Задачи обновлены",
+      "planComplete": "План завершен",
+      "subagent": {
+        "initializing": "Инициализация",
+        "running": "Выполняется в фоновом режиме",
+        "orphaned": "Отсоединен"
+      }
     }
   },
   "settings": {
     "title": "Настройки NewClaudian",
+    "avatarSettings": {
+      "title": "Настройки аватара",
+      "userAvatar": "Аватар пользователя",
+      "aiAvatar": "Аватар ИИ",
+      "uploadDesc": "Загрузите изображение (макс. 5 МБ), оно будет автоматически обрезано до квадрата 1:1.",
+      "saved": "Аватары успешно сохранены",
+      "saveFailed": "Не удалось сохранить аватары"
+    },
     "customization": "Персонализация",
     "userName": {
       "name": "Как NewClaudian должен обращаться к вам?",

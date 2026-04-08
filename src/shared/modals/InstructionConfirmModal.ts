@@ -7,8 +7,9 @@
  * - Confirmation (final instruction review)
  */
 
+import { t } from '../../i18n';
 import type { App } from 'obsidian';
-import { Modal, TextAreaComponent } from 'obsidian';
+import { Modal, Setting, TextAreaComponent } from 'obsidian';
 
 export type InstructionDecision = 'accept' | 'reject';
 
@@ -64,7 +65,7 @@ export class InstructionModal extends Modal {
     // User input section (always visible)
     const inputSection = contentEl.createDiv({ cls: 'claudian-instruction-section' });
     const inputLabel = inputSection.createDiv({ cls: 'claudian-instruction-label' });
-    inputLabel.setText('Your input:');
+    inputLabel.setText(t('settings.instructionModal.yourInput' as any));
     const inputText = inputSection.createDiv({ cls: 'claudian-instruction-original' });
     inputText.setText(this.rawInstruction);
 
@@ -83,7 +84,7 @@ export class InstructionModal extends Modal {
 
     const responseSection = this.clarificationEl.createDiv({ cls: 'claudian-instruction-section' });
     const responseLabel = responseSection.createDiv({ cls: 'claudian-instruction-label' });
-    responseLabel.setText('Your response:');
+    responseLabel.setText(t('settings.instructionModal.yourResponse' as any));
 
     this.responseTextarea = new TextAreaComponent(responseSection);
     this.responseTextarea.inputEl.addClass('claudian-instruction-response-textarea');
@@ -105,7 +106,7 @@ export class InstructionModal extends Modal {
     // Refined instruction display/edit
     const refinedSection = this.confirmationEl.createDiv({ cls: 'claudian-instruction-section' });
     const refinedLabel = refinedSection.createDiv({ cls: 'claudian-instruction-label' });
-    refinedLabel.setText('Refined snippet:');
+    refinedLabel.setText(t('settings.instructionModal.refinedSnippet' as any));
 
     this.refinedDisplayEl = refinedSection.createDiv({ cls: 'claudian-instruction-refined' });
     this.editContainerEl = refinedSection.createDiv({ cls: 'claudian-instruction-edit-container' });
@@ -236,7 +237,7 @@ export class InstructionModal extends Modal {
     if (this.isEditing) {
       if (this.refinedDisplayEl) this.refinedDisplayEl.style.display = 'none';
       if (this.editContainerEl) this.editContainerEl.style.display = 'block';
-      if (this.editBtnEl) this.editBtnEl.setText('Preview');
+      if (this.editBtnEl) this.editBtnEl.setText(t('settings.instructionModal.preview' as any));
       this.editTextarea?.inputEl.focus();
     } else {
       const edited = this.editTextarea?.getValue() || this.refinedInstruction;
@@ -246,7 +247,7 @@ export class InstructionModal extends Modal {
         this.refinedDisplayEl.style.display = 'block';
       }
       if (this.editContainerEl) this.editContainerEl.style.display = 'none';
-      if (this.editBtnEl) this.editBtnEl.setText('Edit');
+      if (this.editBtnEl) this.editBtnEl.setText(t('settings.instructionModal.edit' as any));
     }
   }
 

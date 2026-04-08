@@ -1,5 +1,6 @@
 import { Notice, setIcon } from 'obsidian';
 
+import { t } from '../../../i18n';
 import { testMcpServer } from '../../../core/mcp/McpTester';
 import { McpStorage } from '../../../core/storage';
 import type { ClaudianMcpServer, McpServerConfig, McpServerType } from '../../../core/types';
@@ -87,7 +88,7 @@ export class McpSettingsManager {
 
     if (this.servers.length === 0) {
       const emptyEl = this.containerEl.createDiv({ cls: 'claudian-mcp-empty' });
-      emptyEl.setText('No MCP servers configured. Click "Add" to add one.');
+      emptyEl.setText(t('settings.mcp.noServers' as any));
       return;
     }
 

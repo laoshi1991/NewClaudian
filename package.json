@@ -1,7 +1,7 @@
 {
   "name": "NewClaudian",
-  "version": "2.1",
-  "description": "NewClaudian - Claude Code embedded in Obsidian sidebar",
+  "version": "2.1.0",
+  "description": "Embeds Claude Code as an AI collaborator in your vault.",
   "main": "main.js",
   "scripts": {
     "postinstall": "node scripts/postinstall.mjs",

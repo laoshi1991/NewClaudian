@@ -231,9 +231,30 @@ export class ClaudianView extends ItemView {
     // Version text
     this.titleSlotEl.createEl('span', { text: this.plugin.manifest.version, cls: 'claudian-version-text' });
 
+    // Right side container for all header actions
+    const rightContainer = header.createDiv({ cls: 'claudian-header-right' });
+    rightContainer.style.display = 'flex';
+    rightContainer.style.alignItems = 'center';
+    rightContainer.style.gap = '12px';
+    rightContainer.style.marginInlineStart = 'auto';
+
     // Header actions container (for header mode - initially hidden)
-    this.headerActionsEl = header.createDiv({ cls: 'claudian-header-actions claudian-header-actions-slot' });
+    this.headerActionsEl = rightContainer.createDiv({ cls: 'claudian-header-actions-slot' });
     this.headerActionsEl.style.display = 'none';
+
+    // Global actions container (always visible at top right)
+    const globalActionsEl = rightContainer.createDiv({ cls: 'claudian-global-actions' });
+    globalActionsEl.style.display = 'flex';
+    globalActionsEl.style.alignItems = 'center';
+    globalActionsEl.style.gap = '12px';
+    
+    // Avatar Settings button (gear icon)
+    const settingsBtn = globalActionsEl.createDiv({ cls: 'claudian-header-btn' });
+    setIcon(settingsBtn, 'settings');
+    settingsBtn.setAttribute('aria-label', 'Avatar Settings');
+    settingsBtn.addEventListener('click', () => {
+      new AvatarSettingsModal(this.app, this.plugin).open();
+    });
   }
 
   /**
@@ -286,14 +307,6 @@ export class ClaudianView extends ItemView {
     historyBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.toggleHistoryDropdown();
-    });
-
-    // Avatar Settings button (gear icon)
-    const settingsBtn = this.headerActionsContent.createDiv({ cls: 'claudian-header-btn' });
-    setIcon(settingsBtn, 'settings');
-    settingsBtn.setAttribute('aria-label', 'Avatar Settings');
-    settingsBtn.addEventListener('click', () => {
-      new AvatarSettingsModal(this.app, this.plugin).open();
     });
 
     fragment.appendChild(this.headerActionsContent);

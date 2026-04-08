@@ -1,3 +1,4 @@
+import { t } from '../../../i18n';
 import type { App } from 'obsidian';
 import { Modal, Notice, setIcon } from 'obsidian';
 
@@ -115,7 +116,7 @@ export class McpTestModal extends Modal {
       }
       textEl.setText(statusText);
     } else {
-      textEl.setText('Connection failed');
+      textEl.setText(t('settings.mcp.connectionFailed' as any));
     }
 
     if (this.result.error) {
@@ -139,7 +140,7 @@ export class McpTestModal extends Modal {
       }
     } else if (this.result.success) {
       const noToolsEl = this.contentEl_.createDiv({ cls: 'claudian-mcp-test-no-tools' });
-      noToolsEl.setText('No tools information available. Tools will be loaded when used in chat.');
+      noToolsEl.setText(t('settings.mcp.noTools' as any));
     }
 
     const buttonContainer = this.contentEl_.createDiv({ cls: 'claudian-mcp-test-buttons' });
@@ -256,7 +257,7 @@ export class McpTestModal extends Modal {
     const allDisabled = this.disabledTools.size === this.result.tools.length;
 
     if (allEnabled) {
-      this.toggleAllBtn.setText('Disable All');
+      this.toggleAllBtn.setText(t('settings.mcp.disableAll' as any));
       this.toggleAllBtn.toggleClass('is-destructive', true);
     } else {
       this.toggleAllBtn.setText(allDisabled ? 'Enable All' : 'Enable All');
