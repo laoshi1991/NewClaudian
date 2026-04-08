@@ -1,6 +1,6 @@
 {
   "name": "NewClaudian",
-  "version": "2.1.13",
+  "version": "2.1.4",
   "description": "Embeds Claude Code as an AI collaborator in your vault.",
   "main": "main.js",
   "scripts": {
