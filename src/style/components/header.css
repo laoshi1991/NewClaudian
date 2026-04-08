@@ -73,3 +73,13 @@
   width: 16.8px;
   height: 16.8px;
 }
+
+/* Version text on the right side of the header */
+.claudian-version-text {
+  font-size: 0.8em;
+  color: var(--text-faint);
+  font-family: var(--font-monospace);
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 2px; /* Slight optical adjustment for monospace font baseline */
+}

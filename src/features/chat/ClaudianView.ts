@@ -228,6 +228,9 @@ export class ClaudianView extends ItemView {
     // Title text (hidden in header mode when 2+ tabs)
     this.titleTextEl = this.titleSlotEl.createEl('h4', { text: 'NewClaudian', cls: 'claudian-title-text' });
 
+    // Version text
+    this.titleSlotEl.createEl('span', { text: this.plugin.manifest.version, cls: 'claudian-version-text' });
+
     // Header actions container (for header mode - initially hidden)
     this.headerActionsEl = header.createDiv({ cls: 'claudian-header-actions claudian-header-actions-slot' });
     this.headerActionsEl.style.display = 'none';

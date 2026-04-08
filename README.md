@@ -1,5 +1,7 @@
 # NewClaudian
 
+[English](README.md) | [中文](README_zh.md)
+
 ![GitHub stars](https://img.shields.io/github/stars/laoshi1991/NewClaudian?style=social)
 ![GitHub release](https://img.shields.io/github/v/release/laoshi1991/NewClaudian)
 ![License](https://img.shields.io/github/license/laoshi1991/NewClaudian)
@@ -8,7 +10,21 @@
 
 An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. Your vault becomes Claude's working directory, giving it full agentic capabilities: file read/write, search, bash commands, and multi-step workflows.
 
+> **Note:** This project is a fork and enhanced version based on the original [YishenTu/claudian](https://github.com/YishenTu/claudian) project.
+
 ## Features
+
+### ✨ New in NewClaudian
+
+- **Full-Format and Folder Drag-and-Drop**: Massively enhanced the chat input interaction capabilities:
+  - **Recursive Folder Drag-and-Drop**: Directly drag and drop entire folders (from the OS or file tree) into the chat box. The system automatically parses the nested hierarchy and files recursively to import them as context in bulk.
+  - **Universal File Format Support**: Expanded drag-and-drop parsing support to include various documents, archives, and other common file formats, going far beyond just images.
+  - **Smart Icon Rendering**: Dragged-in context files now display specific, recognizable icons based on their file types for clear visual distinction.
+- **Custom Avatars**: Personalize your workspace by setting custom avatars for both the user and the AI assistant.
+- **Custom Models & Skills Selection**: Easily select and switch between your configured custom models and specialized skills directly from the interface.
+- **Quick Scroll to Bottom**: Added a convenient floating button to instantly scroll to the latest messages at the bottom of the chat.
+
+### 🚀 Core Features (from original claudian)
 
 - **Full Agentic Capabilities**: Leverage Claude Code's power to read, write, and edit files, search, and execute bash commands, all within your Obsidian vault.
 - **Context-Aware**: Automatically attach the focused note, mention files with `@`, exclude notes by tag, include editor selection (Highlight), and access external directories for additional context.
