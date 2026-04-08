@@ -99,8 +99,16 @@
       "empty": "Click folder icon to add"
     },
     "renderer": {
-      "copied": "copied!",
+      "copyMessage": "Copy message",
+      "copied": "Copied!",
       "saved": "saved!",
+      "saveToNote": "Save to Note",
+      "fileName": "File Name",
+      "folder": "Folder",
+      "changeFolder": "Change Folder",
+      "searchFolder": "Search folder...",
+      "rootFolder": "Vault Root",
+      "generatingTitle": "Generating filename, please wait 2 seconds...",
       "thinking": "Thinking {time}s...",
       "writing": "Writing...",
       "done": "DONE",

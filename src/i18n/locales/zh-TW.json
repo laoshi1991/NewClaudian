@@ -101,8 +101,16 @@
       "empty": "點擊資料夾圖示新增"
     },
     "renderer": {
-      "copied": "已複製!",
+      "copyMessage": "複製訊息",
+      "copied": "已複製！",
       "saved": "已儲存!",
+      "saveToNote": "儲存為筆記",
+      "fileName": "檔案名稱",
+      "folder": "儲存目錄",
+      "changeFolder": "更改目錄",
+      "searchFolder": "搜尋目錄...",
+      "rootFolder": "儲存庫根目錄",
+      "generatingTitle": "正在生成檔案名稱，請稍等2秒鐘...",
       "thinking": "思考中 {time}s...",
       "writing": "寫入中...",
       "done": "完成",

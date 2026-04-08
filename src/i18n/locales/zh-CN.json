@@ -99,8 +99,16 @@
       "empty": "点击文件夹图标添加"
     },
     "renderer": {
-      "copied": "已复制!",
-      "saved": "已保存!",
+      "copyMessage": "复制消息",
+      "copied": "已复制！",
+      "saved": "已保存！",
+      "saveToNote": "保存为笔记",
+      "fileName": "文件名称",
+      "folder": "保存目录",
+      "changeFolder": "更改目录",
+      "searchFolder": "搜索目录...",
+      "rootFolder": "仓库根目录",
+      "generatingTitle": "正在生成文件名，请稍等2秒钟...",
       "thinking": "思考中 {time}s...",
       "writing": "写入中...",
       "done": "完成",

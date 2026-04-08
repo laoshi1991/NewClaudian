@@ -101,8 +101,16 @@
       "empty": "フォルダアイコンをクリックして追加"
     },
     "renderer": {
-      "copied": "コピーしました!",
+      "copyMessage": "メッセージをコピー",
+      "copied": "コピーしました！",
       "saved": "保存しました!",
+      "saveToNote": "ノートに保存",
+      "fileName": "ファイル名",
+      "folder": "フォルダー",
+      "changeFolder": "フォルダーを変更",
+      "searchFolder": "フォルダーを検索...",
+      "rootFolder": "Vaultのルート",
+      "generatingTitle": "ファイル名を生成しています。2秒ほどお待ちください...",
       "thinking": "思考中 {time}s...",
       "writing": "書き込み中...",
       "done": "完了",

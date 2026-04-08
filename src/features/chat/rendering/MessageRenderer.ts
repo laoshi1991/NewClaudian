@@ -1,5 +1,5 @@
 import type { App, Component } from 'obsidian';
-import { MarkdownRenderer, Notice, setIcon } from 'obsidian';
+import { MarkdownRenderer, Notice, setIcon, TFolder } from 'obsidian';
 
 import { isSubagentToolName, isWriteEditTool, TOOL_AGENT_OUTPUT } from '../../../core/tools/toolNames';
 import type { ChatMessage, ImageAttachment, SubagentInfo, ToolCallInfo } from '../../../core/types';
@@ -8,6 +8,8 @@ import type ClaudianPlugin from '../../../main';
 import { formatDurationMmSs } from '../../../utils/date';
 import { processFileLinks, registerFileLinkHandler } from '../../../utils/fileLink';
 import { replaceImageEmbedsWithHtml } from '../../../utils/imageEmbed';
+import { SaveNoteModal } from '../../../shared/modals/SaveNoteModal';
+import { TitleGenerationService } from '../services/TitleGenerationService';
 import { findRewindContext } from '../rewind';
 import {
   renderStoredAsyncSubagent,
@@ -664,7 +666,7 @@ export class MessageRenderer {
     // Copy Button (Moved to first)
     const copyBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-copy-btn' });
     copyBtn.innerHTML = MessageRenderer.COPY_ICON;
-    copyBtn.setAttribute('aria-label', 'Copy message');
+    copyBtn.setAttribute('aria-label', t('chat.renderer.copyMessage' as any));
 
     let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -693,46 +695,81 @@ export class MessageRenderer {
     // Save Button (Moved to second)
     const saveBtn = actionsContainer.createSpan({ cls: 'claudian-text-action-btn claudian-text-save-btn' });
     saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
-    saveBtn.setAttribute('aria-label', 'Save to Note');
+    saveBtn.setAttribute('aria-label', t('chat.renderer.saveToNote' as any));
 
     let saveFeedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 
     saveBtn.addEventListener('click', async (e) => {
       e.stopPropagation();
 
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const MM = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      const formattedTime = `${yyyy}${MM}${dd}-${hh}${mm}${ss}`;
+      const fallbackFilename = `response-${formattedTime}.md`;
+        
+      const saveModal = new SaveNoteModal(
+        this.app, 
+        t('chat.renderer.generatingTitle' as any) || 'Generating filename...', 
+        markdown, 
+        async (filename, folderPath) => {
+          try {
+            // Construct full path
+            const fullPath = folderPath === '/' ? filename : `${folderPath}/${filename}`;
+            
+            // Create the file
+            const file = await this.app.vault.create(fullPath, markdown);
+            
+            // Open the file in a new leaf
+            const leaf = this.app.workspace.getLeaf(true);
+            await leaf.openFile(file);
+
+            if (saveFeedbackTimeout) clearTimeout(saveFeedbackTimeout);
+
+            saveBtn.innerHTML = '';
+            saveBtn.setText(t('chat.renderer.saved' as any));
+            saveBtn.classList.add('action-success');
+
+            saveFeedbackTimeout = setTimeout(() => {
+              saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
+              saveBtn.classList.remove('action-success');
+              saveFeedbackTimeout = null;
+            }, 1500);
+          } catch (err) {
+            new Notice(`Failed to save note: ${err instanceof Error ? err.message : 'Unknown error'}`);
+            throw err;
+          }
+        },
+        true // isGenerating = true
+      );
+      saveModal.open();
+
+      // Call LLM to generate title
       try {
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const MM = String(now.getMonth() + 1).padStart(2, '0');
-        const dd = String(now.getDate()).padStart(2, '0');
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
-        const ss = String(now.getSeconds()).padStart(2, '0');
-        const formattedTime = `${yyyy}${MM}${dd}-${hh}${mm}${ss}`;
-        const defaultFilename = `response-${formattedTime}.md`;
+        const titleService = new TitleGenerationService(this.plugin);
+        const tempId = `save-note-${Date.now()}`;
         
-        // Create the file in the root of the vault (or a default folder if specified)
-        const file = await this.app.vault.create(defaultFilename, markdown);
-        
-        // Open the file in a new leaf
-        const leaf = this.app.workspace.getLeaf(true);
-        await leaf.openFile(file);
-      } catch (err) {
-        new Notice(`Failed to save note: ${err instanceof Error ? err.message : 'Unknown error'}`);
-        return;
+        // Pass the markdown content to generate a short title
+        await titleService.generateTitle(
+          tempId,
+          `Provide a very short, concise filename in Chinese (without extension, max 10 chars) for this text:\n\n${markdown}`,
+          async (id, result) => {
+            if (result.success && result.title) {
+              // Sanitize the title to be a valid filename
+              const cleanTitle = result.title.replace(/[\\/:"*?<>|]/g, '').replace(/\s+/g, '-');
+              saveModal.updateFilename(`${cleanTitle}.md`);
+            } else {
+              saveModal.setGenerationFailed(fallbackFilename);
+            }
+          }
+        );
+      } catch (error) {
+        saveModal.setGenerationFailed(fallbackFilename);
       }
-
-      if (saveFeedbackTimeout) clearTimeout(saveFeedbackTimeout);
-
-      saveBtn.innerHTML = '';
-      saveBtn.setText(t('chat.renderer.saved' as any));
-      saveBtn.classList.add('action-success');
-
-      saveFeedbackTimeout = setTimeout(() => {
-        saveBtn.innerHTML = MessageRenderer.SAVE_ICON;
-        saveBtn.classList.remove('action-success');
-        saveFeedbackTimeout = null;
-      }, 1500);
     });
   }
 
@@ -769,7 +806,7 @@ export class MessageRenderer {
     const toolbar = this.getOrCreateActionsToolbar(msgEl);
     const copyBtn = toolbar.createSpan({ cls: 'claudian-user-msg-copy-btn' });
     copyBtn.innerHTML = MessageRenderer.COPY_ICON;
-    copyBtn.setAttribute('aria-label', 'Copy message');
+    copyBtn.setAttribute('aria-label', t('chat.renderer.copyMessage' as any));
 
     let feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 

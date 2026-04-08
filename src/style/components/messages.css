@@ -97,7 +97,7 @@
   align-items: center;
   gap: 4px;
   margin-top: 8px;
-  opacity: 0;
+  opacity: 1; /* Changed from 0 to 1 to make it visible by default */
   transition: opacity 0.15s ease;
   z-index: 2;
 }

@@ -1128,8 +1128,26 @@ export function wireTabInputEvents(tab: TabData, plugin: ClaudianPlugin): void {
       return;
     }
 
-    // Enter: Send message
-    if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+    // Option+Enter (altKey): Insert newline, don't send
+    if (e.key === 'Enter' && e.altKey) {
+      e.preventDefault(); // Prevent default to manage it manually
+      const textarea = dom.inputEl;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      // Insert newline at cursor
+      textarea.value = textarea.value.substring(0, start) + '\n' + textarea.value.substring(end);
+      
+      // Move cursor right after the newly inserted newline
+      textarea.selectionStart = textarea.selectionEnd = start + 1;
+      
+      // Trigger input event to auto-resize the textarea
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+
+    // Enter: Send message (without Shift or Option/Alt)
+    if (e.key === 'Enter' && !e.shiftKey && !e.altKey && !e.isComposing) {
       e.preventDefault();
       void controllers.inputController?.sendMessage();
     }

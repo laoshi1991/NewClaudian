@@ -101,8 +101,16 @@
       "empty": "Klicken Sie auf das Ordnersymbol zum Hinzufügen"
     },
     "renderer": {
-      "copied": "kopiert!",
+      "copyMessage": "Nachricht kopieren",
+      "copied": "Kopiert!",
       "saved": "gespeichert!",
+      "saveToNote": "In Notiz speichern",
+      "fileName": "Dateiname",
+      "folder": "Ordner",
+      "changeFolder": "Ordner ändern",
+      "searchFolder": "Ordner suchen...",
+      "rootFolder": "Vault-Stammverzeichnis",
+      "generatingTitle": "Dateiname wird generiert, bitte warten Sie 2 Sekunden...",
       "thinking": "Denken {time}s...",
       "writing": "Schreiben...",
       "done": "FERTIG",

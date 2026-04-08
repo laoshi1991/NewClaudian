@@ -101,8 +101,16 @@
       "empty": "Cliquez sur l'icône de dossier pour ajouter"
     },
     "renderer": {
-      "copied": "copié !",
+      "copyMessage": "Copier le message",
+      "copied": "Copié !",
       "saved": "enregistré !",
+      "saveToNote": "Enregistrer dans la note",
+      "fileName": "Nom du fichier",
+      "folder": "Dossier",
+      "changeFolder": "Changer de dossier",
+      "searchFolder": "Rechercher un dossier...",
+      "rootFolder": "Racine du coffre",
+      "generatingTitle": "Génération du nom de fichier, veuillez patienter 2 secondes...",
       "thinking": "Réflexion {time}s...",
       "writing": "Écriture...",
       "done": "TERMINÉ",

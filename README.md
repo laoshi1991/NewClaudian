@@ -20,9 +20,11 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
   - **Recursive Folder Drag-and-Drop**: Directly drag and drop entire folders (from the OS or file tree) into the chat box. The system automatically parses the nested hierarchy and files recursively to import them as context in bulk.
   - **Universal File Format Support**: Expanded drag-and-drop parsing support to include various documents, archives, and other common file formats, going far beyond just images.
   - **Smart Icon Rendering**: Dragged-in context files now display specific, recognizable icons based on their file types for clear visual distinction.
+- **Save AI Responses to Notes**: Seamlessly save high-quality AI answers as independent Markdown notes in your Vault with a single click. It automatically leverages LLMs to generate concise, contextual filenames and allows you to choose the destination folder via a native fuzzy-search modal.
 - **Custom Avatars**: Personalize your workspace by setting custom avatars for both the user and the AI assistant.
 - **Custom Models & Skills Selection**: Easily select and switch between your configured custom models and specialized skills directly from the interface.
 - **Quick Scroll to Bottom**: Added a convenient floating button to instantly scroll to the latest messages at the bottom of the chat.
+- **Comprehensive Multilingual Support (i18n)**: Deeply optimized internationalization. Fully supports 10 languages including English, Simplified Chinese, Traditional Chinese, Japanese, Korean, French, German, Russian, Spanish, and Portuguese. All interactive buttons, modals, and tooltips are localized to provide a seamless immersive experience for global users.
 
 ### 🚀 Core Features (from original claudian)
 
