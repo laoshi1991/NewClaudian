@@ -1,4 +1,6 @@
 import { setIcon } from 'obsidian';
+import { mount, unmount } from 'svelte';
+import ChatFileIcon from '../../../../../components/ChatFileIcon.svelte';
 
 export interface FileChipsViewCallbacks {
   onRemoveAttachment: (path: string) => void;
@@ -9,6 +11,7 @@ export class FileChipsView {
   private containerEl: HTMLElement;
   private callbacks: FileChipsViewCallbacks;
   private fileIndicatorEl: HTMLElement;
+  private svelteComponents: any[] = [];
 
   constructor(containerEl: HTMLElement, callbacks: FileChipsViewCallbacks) {
     this.containerEl = containerEl;
@@ -22,10 +25,23 @@ export class FileChipsView {
   }
 
   destroy(): void {
+    this.cleanupSvelteComponents();
     this.fileIndicatorEl.remove();
   }
 
+  private cleanupSvelteComponents(): void {
+    for (const comp of this.svelteComponents) {
+      try {
+        unmount(comp);
+      } catch (e) {
+        // ignore
+      }
+    }
+    this.svelteComponents = [];
+  }
+
   renderFileChips(currentNotePath: string | null, attachedFiles: string[]): void {
+    this.cleanupSvelteComponents();
     this.fileIndicatorEl.empty();
 
     const allFiles = new Set<string>();
@@ -48,62 +64,6 @@ export class FileChipsView {
     }
   }
 
-  private getIconForFile(filename: string): string {
-    const ext = filename.split('.').pop()?.toLowerCase() || '';
-    switch (ext) {
-      // Images
-      case 'png':
-      case 'jpg':
-      case 'jpeg':
-      case 'gif':
-      case 'webp':
-      case 'svg':
-      case 'bmp':
-      case 'ico':
-        return 'image';
-      // Audio/Video
-      case 'mp3':
-      case 'mp4':
-      case 'wav':
-      case 'avi':
-      case 'mov':
-      case 'mkv':
-        return 'file-audio';
-      // Archives
-      case 'zip':
-      case 'rar':
-      case '7z':
-      case 'tar':
-      case 'gz':
-      case 'bz2':
-        return 'file-archive';
-      // Code
-      case 'js':
-      case 'jsx':
-      case 'ts':
-      case 'tsx':
-      case 'json':
-      case 'html':
-      case 'css':
-        return 'file-code';
-      // Documents
-      case 'pdf':
-      case 'doc':
-      case 'docx':
-      case 'xls':
-      case 'xlsx':
-      case 'ppt':
-      case 'pptx':
-      case 'csv':
-        return 'file-text';
-      // Default Obsidian Notes
-      case 'md':
-        return 'file-text'; // Or consider 'document' if you want it distinct from default file
-      default:
-        return 'file';
-    }
-  }
-
   private renderFileChip(filePath: string, onRemove: () => void): void {
     const chipEl = this.fileIndicatorEl.createDiv({ cls: 'claudian-file-chip' });
 
@@ -115,7 +75,18 @@ export class FileChipsView {
     const iconWrapperEl = chipEl.createDiv({ cls: 'claudian-file-chip-icon-wrapper' });
     
     const iconEl = iconWrapperEl.createSpan({ cls: 'claudian-file-chip-icon' });
-    setIcon(iconEl, isFolder ? 'folder' : this.getIconForFile(filename));
+    
+    // Mount Svelte Icon Component
+    const comp = mount(ChatFileIcon, {
+      target: iconEl,
+      props: {
+        filename: filename,
+        isDir: isFolder,
+        isEmptyDir: false, // We don't have this info here, assume false for now
+        className: 'lucide' // Match standard Obsidian icon size roughly
+      }
+    });
+    this.svelteComponents.push(comp);
 
     const removeEl = iconWrapperEl.createSpan({ cls: 'claudian-file-chip-remove' });
     setIcon(removeEl, 'x');
