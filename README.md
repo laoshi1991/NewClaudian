@@ -295,3 +295,34 @@ Licensed under the [MIT License](LICENSE).
 
 - [Obsidian](https://obsidian.md) for the plugin API
 - [Anthropic](https://anthropic.com) for Claude and the [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)
+
+## 文件图标规则
+
+我们在聊天框拖拽上传组件中实现了一套完整的文件类型差异化图标显示方案，支持超过 15 种常见类型的文件。
+
+### 支持的文件类型与颜色
+
+| 文件类型 | 扩展名 | 图标 | 主题色 |
+| --- | --- | --- | --- |
+| JavaScript / TypeScript | `.js`, `.ts`, `.jsx`, `.tsx` | 📄 FileCode2 | <span style="color:#F7DF1E">#F7DF1E</span> / <span style="color:#3178C6">#3178C6</span> |
+| Vue / Svelte | `.vue`, `.svelte` | 📄 FileCode2 | <span style="color:#41B883">#41B883</span> / <span style="color:#FF3E00">#FF3E00</span> |
+| JSON | `.json` | 📄 FileJson | <span style="color:#FBC02D">#FBC02D</span> |
+| Markdown | `.md`, `.mdx` | 📖 BookOpen | <span style="color:#519ABA">#519ABA</span> |
+| PDF | `.pdf` | 📄 FileText | <span style="color:#FF5252">#FF5252</span> |
+| 压缩包 | `.zip`, `.tar`, `.gz`, `.rar`, `.7z` | 📦 Binary | <span style="color:#757575">#757575</span> |
+| 图片 | `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.webp` | 🖼️ Image | <span style="color:#4CAF50">#4CAF50</span> |
+| 视频 | `.mp4`, `.mkv`, `.avi`, `.mov`, `.webm` | 🎬 Video | <span style="color:#F06292">#F06292</span> |
+| 音频 | `.mp3`, `.wav`, `.ogg`, `.flac` | 🎵 Music | <span style="color:#FF9800">#FF9800</span> |
+| 网页 | `.html`, `.htm` | 📄 FileCode2 | <span style="color:#E34F26">#E34F26</span> |
+| 样式表 | `.css`, `.scss`, `.less` | 📄 FileCode2 | <span style="color:#1572B6">#1572B6</span> |
+| 数据库 | `.db`, `.sql`, `.sqlite` | 💾 Database | <span style="color:#607D8B">#607D8B</span> |
+| 文本/日志 | `.txt`, `.log` | 📄 FileText | <span style="color:#9E9E9E">#9E9E9E</span> |
+| Word / Doc | `.doc`, `.docx` | 📄 FileText | <span style="color:#2B579A">#2B579A</span> |
+| Excel / CSV | `.xls`, `.xlsx`, `.csv` | 📊 Table | <span style="color:#217346">#217346</span> |
+| PPT | `.ppt`, `.pptx` | 📽️ Presentation | <span style="color:#B7472A">#B7472A</span> |
+| 脚本 / 可执行文件 | `.sh`, `.bash`, `.exe` | 💻 TerminalSquare | <span style="color:#4CAF50">#4CAF50</span> |
+| 文件夹（空） | | 📁 Folder | <span style="color:#B0BEC5">#B0BEC5</span> |
+| 文件夹（非空） | | 📂 FolderOpen | <span style="color:#FFCA28">#FFCA28</span> |
+| 其他类型 | | 📄 File | <span style="color:#9E9E9E">#9E9E9E</span> |
+
+所有图标使用 `lucide-svelte` 渲染，默认大小为 `24x24 px`。在支持大量文件上传时，我们采用了虚拟滚动技术，确保首次渲染小于 200ms。

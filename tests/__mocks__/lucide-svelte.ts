@@ -1,0 +1,16 @@
+export const File = 'File';
+export const FileJson = 'FileJson';
+export const FileCode2 = 'FileCode2';
+export const FileText = 'FileText';
+export const Image = 'Image';
+export const TerminalSquare = 'TerminalSquare';
+export const BookOpen = 'BookOpen';
+export const Database = 'Database';
+export const Binary = 'Binary';
+export const Video = 'Video';
+export const Music = 'Music';
+export const Folder = 'Folder';
+export const FolderOpen = 'FolderOpen';
+export const Presentation = 'Presentation';
+export const Table = 'Table';
+export type Icon = any;
