@@ -3,6 +3,8 @@ import path from 'path';
 import process from 'process';
 import builtins from 'builtin-modules';
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
+import esbuildSvelte from 'esbuild-svelte';
+import { sveltePreprocess } from 'svelte-preprocess';
 
 // Load .env.local if it exists
 if (existsSync('.env.local')) {
@@ -48,7 +50,13 @@ const copyToObsidian = {
 const context = await esbuild.context({
   entryPoints: ['src/main.ts'],
   bundle: true,
-  plugins: [copyToObsidian],
+  plugins: [
+    esbuildSvelte({
+      preprocess: sveltePreprocess(),
+      compilerOptions: { css: 'injected' },
+    }),
+    copyToObsidian
+  ],
   external: [
     'obsidian',
     'electron',

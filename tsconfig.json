@@ -18,6 +18,7 @@
     "isolatedModules": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
     "lib": ["DOM", "ES6", "ES7"],
     "outDir": "./dist",
     "rootDir": "."
