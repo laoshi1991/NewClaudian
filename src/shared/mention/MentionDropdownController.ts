@@ -585,8 +585,8 @@ export class MentionDropdownController {
       case 'context-file': {
         // Display friendly name in input; absolute path resolution happens at send time.
         const displayName = selectedItem.folderName
-          ? `@${selectedItem.folderName}/${selectedItem.name}`
-          : `@${selectedItem.name}`;
+          ? `[[${selectedItem.folderName}/${selectedItem.name}]]`
+          : `[[${selectedItem.name}]]`;
         if (selectedItem.absolutePath) {
           this.callbacks.onAttachFile(selectedItem.absolutePath);
         }
@@ -595,7 +595,7 @@ export class MentionDropdownController {
       }
       case 'folder': {
         const normalizedPath = this.callbacks.normalizePathForVault(selectedItem.path);
-        this.insertReplacement(beforeAt, `@${normalizedPath ?? selectedItem.path}/ `, afterCursor);
+        this.insertReplacement(beforeAt, `[[${normalizedPath ?? selectedItem.path}/]] `, afterCursor);
         break;
       }
       default: {
@@ -604,7 +604,7 @@ export class MentionDropdownController {
         if (normalizedPath) {
           this.callbacks.onAttachFile(normalizedPath);
         }
-        this.insertReplacement(beforeAt, `@${normalizedPath ?? selectedItem.name} `, afterCursor);
+        this.insertReplacement(beforeAt, `[[${normalizedPath ?? selectedItem.name}]] `, afterCursor);
         break;
       }
     }

@@ -86,6 +86,43 @@
   box-shadow: none !important;
   overflow-y: auto;
   unicode-bidi: plaintext; /* Proper BiDi text handling for mixed RTL/LTR */
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.claudian-input:empty::before {
+  content: attr(placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+  display: block; /* For Firefox */
+}
+
+.claudian-inline-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: var(--background-modifier-hover);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: var(--radius-s);
+  margin: 0 4px;
+  font-size: 0.9em;
+  user-select: all;
+  vertical-align: middle;
+}
+
+.claudian-inline-chip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.claudian-inline-chip-name {
+  color: var(--text-normal);
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .claudian-input:hover,

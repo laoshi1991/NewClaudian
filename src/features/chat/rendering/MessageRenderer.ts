@@ -1,6 +1,5 @@
 import type { App, Component } from 'obsidian';
-import { MarkdownRenderer, Notice, setIcon } from 'obsidian';
-
+import { MarkdownRenderer, Notice, setIcon, TFile } from 'obsidian';
 import { isSubagentToolName, isWriteEditTool, TOOL_AGENT_OUTPUT } from '../../../core/tools/toolNames';
 import type { ChatMessage, ImageAttachment, SubagentInfo, ToolCallInfo } from '../../../core/types';
 import { t } from '../../../i18n';
@@ -16,8 +15,9 @@ import {
   renderStoredSubagent,
 } from './SubagentRenderer';
 import { renderStoredThinkingBlock } from './ThinkingBlockRenderer';
-import { renderStoredToolCall } from './ToolCallRenderer';
+import { renderStoredToolCall, updateToolCallResult } from './ToolCallRenderer';
 import { renderStoredWriteEdit } from './WriteEditRenderer';
+import { insertChipAtCursor } from '../ui/mixedInputPolyfill';
 
 export type RenderContentFn = (el: HTMLElement, markdown: string) => Promise<void>;
 
@@ -636,6 +636,39 @@ export class MessageRenderer {
 
       // Process file paths to make them clickable links
       processFileLinks(this.app, el);
+
+      // Convert Obsidian's internal links back to our rich inline file chips
+      el.querySelectorAll('a.internal-link').forEach(link => {
+        const a = link as HTMLAnchorElement;
+        const path = a.getAttribute('data-href');
+        if (path) {
+          a.classList.add('claudian-inline-file');
+          a.innerHTML = '';
+          
+          const isFolder = path.endsWith('/');
+          const filename = path.split('/').filter(Boolean).pop() || path;
+          
+          const iconWrapper = a.createDiv({ cls: 'claudian-inline-chip-icon' });
+        
+        // Dynamically import Svelte components to avoid CJS Jest test failures
+        Promise.all([
+          import('svelte'),
+          import('../../../components/ChatFileIcon.svelte')
+        ]).then(([{ mount }, { default: ChatFileIcon }]) => {
+          mount(ChatFileIcon, {
+            target: iconWrapper,
+            props: {
+              filename: filename,
+              isDir: isFolder,
+              isEmptyDir: false,
+              className: 'lucide'
+            }
+          });
+        }).catch(() => { /* ignore */ });
+        
+        a.createSpan({ cls: 'claudian-inline-chip-name', text: filename });
+        }
+      });
     } catch {
       el.createDiv({
         cls: 'claudian-render-error',

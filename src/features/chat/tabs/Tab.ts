@@ -40,6 +40,8 @@ import {
 import type { TabData, TabDOMElements, TabId } from './types';
 import { generateTabId, TEXTAREA_MAX_HEIGHT_PERCENT, TEXTAREA_MIN_MAX_HEIGHT } from './types';
 
+import { createMixedInput } from '../ui/mixedInputPolyfill';
+
 export interface TabCreateOptions {
   plugin: ClaudianPlugin;
   mcpManager: McpServerManager;
@@ -207,14 +209,7 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
   const contextRowEl = inputWrapper.createDiv({ cls: 'claudian-context-row' });
 
   // Input textarea
-  const inputEl = inputWrapper.createEl('textarea', {
-    cls: 'claudian-input',
-    attr: {
-      placeholder: 'How can I help you today?',
-      rows: '3',
-      dir: 'auto',
-    },
-  });
+  const inputEl = createMixedInput(inputWrapper);
 
   return {
     contentEl,

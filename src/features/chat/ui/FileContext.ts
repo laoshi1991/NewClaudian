@@ -16,6 +16,7 @@ import { externalContextScanner } from '../../../utils/externalContextScanner';
 import { getVaultPath, normalizePathForVault as normalizePathForVaultUtil } from '../../../utils/path';
 import { FileContextState } from './file-context/state/FileContextState';
 import { FileChipsView } from './file-context/view/FileChipsView';
+import { insertChipAtCursor } from './mixedInputPolyfill';
 
 const SUPPORTED_EXTENSIONS = new Set([
   // Documents & Text
@@ -129,7 +130,45 @@ export class FileContextManager {
     this.renameEventRef = this.app.vault.on('rename', (file, oldPath) => {
       if (file instanceof TFile) this.handleFileRenamed(oldPath, file.path);
     });
+
+    this.inputEl.addEventListener('input', this.handleInputChanged);
+    
+    // Initial sync in case there's value
+    this.handleInputChanged();
   }
+
+  private handleInputChanged = () => {
+    // Extract [[path]] from inputEl.value
+    const text = this.inputEl.value;
+    const regex = /\[\[([^\]]+)\]\]/g;
+    const foundPaths = new Set<string>();
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      foundPaths.add(match[1]);
+    }
+
+    // Sync state
+    let changed = false;
+    const currentAttached = this.state.getAttachedFiles();
+    
+    for (const path of Array.from(currentAttached)) {
+      if (!foundPaths.has(path)) {
+        this.state.detachFile(path);
+        changed = true;
+      }
+    }
+    
+    for (const path of foundPaths) {
+      if (!currentAttached.has(path)) {
+        this.state.attachFile(path);
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      this.refreshCurrentNoteChip();
+    }
+  };
 
   /** DropHandler for use with DropZoneCoordinator. */
   readonly dropHandler: DropHandler = {
@@ -296,6 +335,7 @@ export class FileContextManager {
             if (normalized) {
               this.state.attachFile(normalized);
               attachedCount++;
+              insertChipAtCursor(normalized, dragEvent);
             }
           } else if (!SUPPORTED_EXTENSIONS.has(ext)) {
             unsupportedCount++;
@@ -305,6 +345,7 @@ export class FileContextManager {
           if (normalized) {
             this.state.attachFile(normalized + '/');
             attachedCount++;
+            insertChipAtCursor(normalized + '/', dragEvent);
           }
         }
       }
@@ -324,12 +365,14 @@ export class FileContextManager {
                 if (SUPPORTED_EXTENSIONS.has(ext) && !this.hasExcludedTag(file)) {
                   this.state.attachFile(normalized);
                   attachedCount++;
+                  insertChipAtCursor(normalized, dragEvent);
                 } else if (!SUPPORTED_EXTENSIONS.has(ext)) {
                   unsupportedCount++;
                 }
               } else if (file instanceof TFolder) {
                 this.state.attachFile(normalized + '/');
                 attachedCount++;
+                insertChipAtCursor(normalized + '/', dragEvent);
               }
             }
           }
@@ -346,6 +389,8 @@ export class FileContextManager {
       if (attachedCount > 0) {
         this.refreshCurrentNoteChip();
         this.callbacks.onChipsChanged?.();
+        // Since we insert chips into inputEl, trigger input event to update everything
+        this.inputEl.dispatchEvent(new Event('input', { bubbles: true }));
       }
   }
 
@@ -504,6 +549,7 @@ export class FileContextManager {
     if (this.renameEventRef) this.app.vault.offref(this.renameEventRef);
     this.mentionDropdown.destroy();
     this.chipsView.destroy();
+    this.inputEl.removeEventListener('input', this.handleInputChanged);
   }
 
   /** Normalizes a file path to be vault-relative with forward slashes. */

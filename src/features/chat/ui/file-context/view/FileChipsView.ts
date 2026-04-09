@@ -44,9 +44,10 @@ export class FileChipsView {
     this.cleanupSvelteComponents();
     this.fileIndicatorEl.empty();
 
+    // In mixed layout mode, we only show the current note if it's automatically attached
+    // All other attached files are inline in the input editor!
     const allFiles = new Set<string>();
     if (currentNotePath) allFiles.add(currentNotePath);
-    for (const file of attachedFiles) allFiles.add(file);
 
     if (allFiles.size === 0) {
       this.fileIndicatorEl.style.display = 'none';
