@@ -14,9 +14,10 @@ const baseConfig = {
     '^obsidian$': '<rootDir>/tests/__mocks__/obsidian.ts',
     '^lucide-svelte$': '<rootDir>/tests/__mocks__/lucide-svelte.ts',
     '^@modelcontextprotocol/sdk/(.*)$': '<rootDir>/node_modules/@modelcontextprotocol/sdk/dist/cjs/$1',
+    '^.+\\.svelte$': '<rootDir>/tests/__mocks__/svelteMock.ts',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(@anthropic-ai/claude-agent-sdk|lucide-svelte|@testing-library/.*|svelte|esm-env|is-extglob)/)',
+    'node_modules/(?!(@anthropic-ai/claude-agent-sdk|lucide-svelte|@testing-library/.*|svelte|esm-env|is-extglob|pkce-challenge)/)',
   ],
 };
 

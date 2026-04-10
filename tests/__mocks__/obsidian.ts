@@ -166,6 +166,15 @@ export class Modal {
   onClose = jest.fn();
 }
 
+export class FuzzySuggestModal<T> extends Modal {
+  constructor(app: any) {
+    super(app);
+  }
+  getItems(): T[] { return []; }
+  getItemText(item: T): string { return ''; }
+  onChooseItem(item: T, evt: MouseEvent | KeyboardEvent): void {}
+}
+
 export const MarkdownRenderer = {
   renderMarkdown: jest.fn().mockResolvedValue(undefined),
 };

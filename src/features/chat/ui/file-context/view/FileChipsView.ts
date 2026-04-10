@@ -1,5 +1,6 @@
 import { setIcon } from 'obsidian';
 import { mount, unmount } from 'svelte';
+
 import ChatFileIcon from '../../../../../components/ChatFileIcon.svelte';
 
 export interface FileChipsViewCallbacks {
@@ -33,7 +34,7 @@ export class FileChipsView {
     for (const comp of this.svelteComponents) {
       try {
         unmount(comp);
-      } catch (e) {
+      } catch {
         // ignore
       }
     }

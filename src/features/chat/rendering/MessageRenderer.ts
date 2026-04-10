@@ -1,5 +1,6 @@
 import type { App, Component } from 'obsidian';
-import { MarkdownRenderer, Notice, setIcon, TFile } from 'obsidian';
+import { MarkdownRenderer, Notice, setIcon } from 'obsidian';
+
 import { isSubagentToolName, isWriteEditTool, TOOL_AGENT_OUTPUT } from '../../../core/tools/toolNames';
 import type { ChatMessage, ImageAttachment, SubagentInfo, ToolCallInfo } from '../../../core/types';
 import { t } from '../../../i18n';
@@ -15,9 +16,8 @@ import {
   renderStoredSubagent,
 } from './SubagentRenderer';
 import { renderStoredThinkingBlock } from './ThinkingBlockRenderer';
-import { renderStoredToolCall, updateToolCallResult } from './ToolCallRenderer';
+import { renderStoredToolCall } from './ToolCallRenderer';
 import { renderStoredWriteEdit } from './WriteEditRenderer';
-import { insertChipAtCursor } from '../ui/mixedInputPolyfill';
 
 export type RenderContentFn = (el: HTMLElement, markdown: string) => Promise<void>;
 

@@ -37,10 +37,9 @@ import {
   NavigationSidebar,
   StatusPanel,
 } from '../ui';
+import { createMixedInput } from '../ui/mixedInputPolyfill';
 import type { TabData, TabDOMElements, TabId } from './types';
 import { generateTabId, TEXTAREA_MAX_HEIGHT_PERCENT, TEXTAREA_MIN_MAX_HEIGHT } from './types';
-
-import { createMixedInput } from '../ui/mixedInputPolyfill';
 
 export interface TabCreateOptions {
   plugin: ClaudianPlugin;

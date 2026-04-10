@@ -584,7 +584,7 @@ describe('Tab - Event Wiring', () => {
       wireTabInputEvents(tab, options.plugin);
 
       // Check that event listeners were added (cast to any to access mock method)
-      const inputListeners = (tab.dom.inputEl as any).getEventListeners();
+      const inputListeners = (tab.dom.inputContainerEl as any).getEventListeners();
       expect(inputListeners.get('keydown')).toBeDefined();
       expect(inputListeners.get('input')).toBeDefined();
       // focusin is registered on contentEl (not inputEl) to catch focus on any sidebar element
@@ -1218,7 +1218,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: '#', preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1265,7 +1265,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
 
       keydownHandler({ key: '!', preventDefault: jest.fn() });
@@ -1293,7 +1293,7 @@ describe('Tab - Event Handler Behavior', () => {
       wireTabInputEvents(tab, options.plugin);
 
       // Simulate keydown
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: '#', preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1317,7 +1317,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'Tab', preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1341,7 +1341,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'ArrowDown', preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1365,7 +1365,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'ArrowDown', preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1392,7 +1392,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'ArrowUp', preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1418,7 +1418,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'Escape', isComposing: false, preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1445,7 +1445,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'Escape', isComposing: true, preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1471,7 +1471,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'Enter', shiftKey: false, isComposing: false, preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1497,7 +1497,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'Enter', shiftKey: true, isComposing: false, preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1523,7 +1523,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const keydownHandler = listeners.get('keydown')[0];
       const event = { key: 'Enter', shiftKey: false, isComposing: true, preventDefault: jest.fn() };
       keydownHandler(event);
@@ -1545,7 +1545,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const inputHandler = listeners.get('input')[0];
       inputHandler();
 
@@ -1587,7 +1587,7 @@ describe('Tab - Event Handler Behavior', () => {
 
       wireTabInputEvents(tab, options.plugin);
 
-      const listeners = (tab.dom.inputEl as any).getEventListeners();
+      const listeners = (tab.dom.inputContainerEl as any).getEventListeners();
       const inputHandler = listeners.get('input')[0];
       inputHandler();
 

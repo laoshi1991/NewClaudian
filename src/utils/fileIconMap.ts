@@ -1,21 +1,20 @@
 import {
-  File,
-  FileJson,
-  FileCode2,
-  FileText,
-  Image,
-  TerminalSquare,
+  Binary,
   BookOpen,
   Database,
-  Binary,
-  Video,
-  Music,
+  File,
+  FileCode2,
+  FileJson,
+  FileText,
   Folder,
   FolderOpen,
+  type Icon,
+  Image,
+  Music,
   Presentation,
   Table,
-  type Icon
-} from "lucide-svelte";
+  TerminalSquare,
+  Video} from "lucide-svelte";
 
 export interface IconConfig {
   icon: typeof Icon;
