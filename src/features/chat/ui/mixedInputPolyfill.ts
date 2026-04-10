@@ -141,7 +141,8 @@ function serializeToText(root: HTMLElement): string {
   let text = '';
   for (const node of Array.from(root.childNodes)) {
     if (node.nodeType === Node.TEXT_NODE) {
-      text += node.textContent;
+      // Remove zero-width spaces used for cursor positioning
+      text += (node.textContent || '').replace(/\u200B/g, '');
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       const el = node as HTMLElement;
       if (el.classList.contains('claudian-inline-file')) {
@@ -231,10 +232,32 @@ function setCaretPosition(root: HTMLElement, targetOffset: number) {
     if (found) return;
 
     if (node.nodeType === Node.TEXT_NODE) {
-      const length = node.textContent?.length || 0;
+      const text = node.textContent || '';
+      // Only count actual characters, not zero-width spaces
+      const actualText = text.replace(/\u200B/g, '');
+      const length = actualText.length;
+      
       if (currentOffset + length >= targetOffset) {
-        range.setStart(node, targetOffset - currentOffset);
-        range.setEnd(node, targetOffset - currentOffset);
+        // Find the correct index in the original text that corresponds to the targetOffset
+        let originalIndex = 0;
+        let actualCount = 0;
+        const targetActualCount = targetOffset - currentOffset;
+        
+        while (originalIndex < text.length && actualCount < targetActualCount) {
+          if (text[originalIndex] !== '\u200B') {
+            actualCount++;
+          }
+          originalIndex++;
+        }
+        
+        // If we stopped at a zero-width space, advance past it so the cursor
+        // goes to the right side of the chip
+        while (originalIndex < text.length && text[originalIndex] === '\u200B') {
+          originalIndex++;
+        }
+        
+        range.setStart(node, originalIndex);
+        range.setEnd(node, originalIndex);
         found = true;
       } else {
         currentOffset += length;

@@ -1126,6 +1126,14 @@ export function wireTabInputEvents(tab: TabData, plugin: ClaudianPlugin): void {
     if (e.key === 'Enter' && e.altKey) {
       e.preventDefault(); // Prevent default to manage it manually
       const textarea = dom.inputEl;
+      
+      // If the input element is a contenteditable div (from createMixedInput)
+      if (textarea.tagName === 'DIV' && textarea.isContentEditable) {
+        document.execCommand('insertText', false, '\n');
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        return;
+      }
+
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
       
