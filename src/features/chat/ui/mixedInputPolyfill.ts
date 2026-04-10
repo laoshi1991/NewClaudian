@@ -102,14 +102,27 @@ function mountChip(el: HTMLElement, componentsMap: Map<HTMLElement, any>) {
 
   el.innerHTML = '';
   
-  const iconWrapper = el.createDiv({ cls: 'claudian-inline-chip-icon' });
+  const iconWrapper = el.createDiv({ cls: 'claudian-inline-chip-icon-wrapper' });
+  const iconInner = iconWrapper.createDiv({ cls: 'claudian-inline-chip-icon' });
+  const removeInner = iconWrapper.createDiv({ cls: 'claudian-inline-chip-remove' });
+  removeInner.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
+  
+  // Make the remove button clickable
+  removeInner.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    el.remove();
+    // Trigger input event so Reactivity picks it up
+    const inputEvent = new Event('input', { bubbles: true });
+    el.dispatchEvent(inputEvent);
+  });
   
   Promise.all([
     import('svelte'),
     import('../../../components/ChatFileIcon.svelte')
   ]).then(([{ mount }, { default: ChatFileIcon }]) => {
     const comp = mount(ChatFileIcon, {
-      target: iconWrapper,
+      target: iconInner,
       props: {
         filename: filename,
         isDir: isFolder,

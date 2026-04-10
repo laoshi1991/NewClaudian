@@ -642,13 +642,14 @@ export class MessageRenderer {
         const a = link as HTMLAnchorElement;
         const path = a.getAttribute('data-href');
         if (path) {
-          a.classList.add('claudian-inline-file');
+          a.classList.add('claudian-inline-file', 'claudian-file-chip-readonly');
           a.innerHTML = '';
           
           const isFolder = path.endsWith('/');
           const filename = path.split('/').filter(Boolean).pop() || path;
           
-          const iconWrapper = a.createDiv({ cls: 'claudian-inline-chip-icon' });
+          const iconWrapper = a.createDiv({ cls: 'claudian-inline-chip-icon-wrapper' });
+        const iconInner = iconWrapper.createDiv({ cls: 'claudian-inline-chip-icon' });
         
         // Dynamically import Svelte components to avoid CJS Jest test failures
         Promise.all([
@@ -656,7 +657,7 @@ export class MessageRenderer {
           import('../../../components/ChatFileIcon.svelte')
         ]).then(([{ mount }, { default: ChatFileIcon }]) => {
           mount(ChatFileIcon, {
-            target: iconWrapper,
+            target: iconInner,
             props: {
               filename: filename,
               isDir: isFolder,

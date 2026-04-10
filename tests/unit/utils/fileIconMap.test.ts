@@ -1,4 +1,4 @@
-import { getFileIconConfig, iconMap, emptyFolderIcon, nonEmptyFolderIcon, defaultIcon } from '@/utils/fileIconMap';
+import { getFileIconConfig, iconMap, emptyFolderIcon, nonEmptyFolderIcon, defaultIcon } from '../../../src/utils/fileIconMap';
 
 describe('fileIconMap', () => {
   it('returns default icon for unknown extension', () => {

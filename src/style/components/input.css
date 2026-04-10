@@ -111,10 +111,67 @@
   vertical-align: middle;
 }
 
-.claudian-inline-chip-icon {
+.claudian-inline-chip-icon-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.claudian-inline-chip-icon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease;
+  opacity: 1;
+}
+
+.claudian-inline-chip-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.claudian-inline-chip-remove {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  transition: opacity 0.15s ease, color 0.15s ease;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.claudian-inline-chip-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.claudian-inline-chip-remove:hover {
+  color: var(--text-error);
+  background: var(--background-modifier-hover);
+}
+
+.claudian-inline-file:hover .claudian-inline-chip-icon {
+  opacity: 0;
+}
+
+.claudian-inline-file:hover .claudian-inline-chip-remove {
+  opacity: 1;
+}
+
+.claudian-inline-file.claudian-file-chip-readonly:hover .claudian-inline-chip-icon {
+  opacity: 1;
+}
+.claudian-inline-file.claudian-file-chip-readonly:hover .claudian-inline-chip-remove {
+  display: none;
 }
 
 .claudian-inline-chip-name {
