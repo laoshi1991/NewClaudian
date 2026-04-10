@@ -111,6 +111,7 @@
       "searchFolder": "Buscar carpeta...",
       "rootFolder": "Raíz del baúl",
       "generatingTitle": "Generando nombre de archivo, espere 2 segundos...",
+      "generateFilenamePrompt": "Proporcione un nombre de archivo muy corto y conciso en español (sin extensión, máx. 10 caracteres) para este texto:\n\n{text}",
       "thinking": "Pensando {time}s...",
       "writing": "Escribiendo...",
       "done": "HECHO",

@@ -111,6 +111,7 @@
       "searchFolder": "Pesquisar pasta...",
       "rootFolder": "Raiz do cofre",
       "generatingTitle": "Gerando nome do arquivo, aguarde 2 segundos...",
+      "generateFilenamePrompt": "Forneça um nome de arquivo muito curto e conciso em português (sem extensão, máx. 10 caracteres) para este texto:\n\n{text}",
       "thinking": "Pensando {time}s...",
       "writing": "Escrevendo...",
       "done": "CONCLUÍDO",

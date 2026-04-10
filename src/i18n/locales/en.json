@@ -109,6 +109,7 @@
       "searchFolder": "Search folder...",
       "rootFolder": "Vault Root",
       "generatingTitle": "Generating filename, please wait 2 seconds...",
+      "generateFilenamePrompt": "Provide a very short, concise filename in English (without extension, max 10 chars) for this text:\n\n{text}",
       "thinking": "Thinking {time}s...",
       "writing": "Writing...",
       "done": "DONE",

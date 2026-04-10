@@ -113,6 +113,7 @@
       "searchFolder": "搜尋目錄...",
       "rootFolder": "儲存庫根目錄",
       "generatingTitle": "正在生成檔案名稱，請稍等2秒鐘...",
+      "generateFilenamePrompt": "請根據以下內容，提取一個非常簡短、精煉的繁體中文檔案名稱（不含副檔名，最多10個字元）：\n\n{text}",
       "thinking": "思考中 {time}s...",
       "writing": "寫入中...",
       "done": "完成",

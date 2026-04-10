@@ -111,6 +111,7 @@
       "searchFolder": "Rechercher un dossier...",
       "rootFolder": "Racine du coffre",
       "generatingTitle": "Génération du nom de fichier, veuillez patienter 2 secondes...",
+      "generateFilenamePrompt": "Fournissez un nom de fichier très court et concis en français (sans extension, max 10 caractères) pour ce texte :\n\n{text}",
       "thinking": "Réflexion {time}s...",
       "writing": "Écriture...",
       "done": "TERMINÉ",

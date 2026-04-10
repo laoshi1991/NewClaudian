@@ -787,10 +787,13 @@ export class MessageRenderer {
         const titleService = new TitleGenerationService(this.plugin);
         const tempId = `save-note-${Date.now()}`;
         
-        // Pass the markdown content to generate a short title
+        // Pass the markdown content to generate a short title using localized prompt
+        const prompt = t('chat.renderer.generateFilenamePrompt' as any, { text: markdown }) ||
+                       `Provide a very short, concise filename in English (without extension, max 10 chars) for this text:\n\n${markdown}`;
+
         await titleService.generateTitle(
           tempId,
-          `Provide a very short, concise filename in Chinese (without extension, max 10 chars) for this text:\n\n${markdown}`,
+          prompt,
           async (id, result) => {
             if (result.success && result.title) {
               // Sanitize the title to be a valid filename

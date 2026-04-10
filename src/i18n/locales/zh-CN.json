@@ -109,6 +109,7 @@
       "searchFolder": "搜索目录...",
       "rootFolder": "仓库根目录",
       "generatingTitle": "正在生成文件名，请稍后...",
+      "generateFilenamePrompt": "请根据以下内容，提取一个非常简短、精炼的中文文件名（不带扩展名，最多10个字符）：\n\n{text}",
       "thinking": "思考中 {time}s...",
       "writing": "写入中...",
       "done": "完成",

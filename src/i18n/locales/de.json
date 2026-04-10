@@ -111,6 +111,7 @@
       "searchFolder": "Ordner suchen...",
       "rootFolder": "Vault-Stammverzeichnis",
       "generatingTitle": "Dateiname wird generiert, bitte warten Sie 2 Sekunden...",
+      "generateFilenamePrompt": "Geben Sie einen sehr kurzen, prägnanten deutschen Dateinamen (ohne Erweiterung, max. 10 Zeichen) für diesen Text an:\n\n{text}",
       "thinking": "Denken {time}s...",
       "writing": "Schreiben...",
       "done": "FERTIG",

@@ -111,6 +111,7 @@
       "searchFolder": "フォルダーを検索...",
       "rootFolder": "Vaultのルート",
       "generatingTitle": "ファイル名を生成しています。2秒ほどお待ちください...",
+      "generateFilenamePrompt": "以下のテキストから、非常に短く簡潔な日本語のファイル名（拡張子なし、最大10文字）を作成してください:\n\n{text}",
       "thinking": "思考中 {time}s...",
       "writing": "書き込み中...",
       "done": "完了",
