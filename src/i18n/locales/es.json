@@ -3,6 +3,7 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
+    "dropFileMessage": "Suelte archivos o carpetas aquí para agregarlos a su mensaje",
     "edit": "Editar",
     "add": "Agregar",
     "remove": "Eliminar",

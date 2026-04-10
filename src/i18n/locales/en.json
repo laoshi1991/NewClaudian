@@ -2,6 +2,7 @@
   "common": {
     "save": "Save",
     "cancel": "Cancel",
+    "dropFileMessage": "Drop files or folders here to add to your message",
     "edit": "Edit",
     "delete": "Delete",
     "clear": "Clear",

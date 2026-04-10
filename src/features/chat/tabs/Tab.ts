@@ -333,7 +333,7 @@ function createDropOverlay(parent: HTMLElement): HTMLElement {
 
   svg.append(pathEl, polyline1, line, polyline2);
   dropContent.appendChild(svg);
-  dropContent.createSpan({ text: '将文件或文件夹拖放到此处以添加到您的消息中' });
+  dropContent.createSpan({ text: t('common.dropFileMessage' as any) || 'Drop files or folders here to add to your message' });
 
   return overlay;
 }
