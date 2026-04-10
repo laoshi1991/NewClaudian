@@ -16,11 +16,11 @@ An Obsidian plugin that embeds Claude Code as an AI collaborator in your vault. 
 
 ### ✨ New in NewClaudian
 
-- **Full-Format and Folder Drag-and-Drop**: Massively enhanced the chat input interaction capabilities:
-  - **Recursive Folder Drag-and-Drop**: Directly drag and drop entire folders (from the OS or file tree) into the chat box. The system automatically parses the nested hierarchy and files recursively to import them as context in bulk.
-  - **Universal File Format Support**: Expanded drag-and-drop parsing support to include various documents, archives, and other common file formats, going far beyond just images.
-  - **Smart Icon Rendering**: Dragged-in context files now display specific, recognizable icons based on their file types for clear visual distinction.
-- **Save AI Responses to Notes**: Seamlessly save high-quality AI answers as independent Markdown notes in your Vault with a single click. It automatically leverages LLMs to generate concise, contextual filenames and allows you to choose the destination folder via a native fuzzy-search modal.
+- **Full-Format File & Folder Interaction**: Massively enhanced the chat input's drag-and-drop and interactive capabilities:
+  - **Mixed Text & File Inline Layout**: The chat input has been entirely refactored to support a true rich-text experience. Files and folders can be dragged and dropped or inserted via `@` mentions **directly inline** with your text at any cursor position. You can select, copy, or intuitively delete these file chips using the `Backspace` key, just like regular text.
+  - **Recursive Folder Parsing**: Directly drag and drop entire folders (from the OS or file tree) into the chat box. The system automatically parses the nested hierarchy and files recursively to import them as context in bulk.
+  - **Smart Differentiated Icons**: Dragged-in context files and file references in chat history now dynamically display specific, recognizable colored icons based on their file extensions (supporting 15+ formats like .ts, .vue, .md, .pdf, .zip, audio/video). Empty and non-empty folders are also visually distinguished by color.
+- **Save AI Responses to Notes**: Seamlessly save high-quality AI answers as independent Markdown notes in your Vault with a single click. The system automatically leverages LLMs to generate concise, contextual filenames **dynamically based on your current UI language (i18n)**, ensuring the generated titles match your native language habits perfectly.
 - **Custom Avatars**: Personalize your workspace by setting custom avatars for both the user and the AI assistant.
 - **Custom Models & Skills Selection**: Easily select and switch between your configured custom models and specialized skills directly from the interface.
 - **Quick Scroll to Bottom**: Added a convenient floating button to instantly scroll to the latest messages at the bottom of the chat.
